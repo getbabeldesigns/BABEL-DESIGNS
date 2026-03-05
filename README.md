@@ -10,7 +10,8 @@ A Vite + React + TypeScript storefront for Babel Designs.
 - Tailwind CSS
 - shadcn-ui
 - React Query
-- Supabase
+- PocketBase (catalog/auth/forms/cart sync)
+- Supabase (temporary for checkout + admin functions)
 
 ## Local Development
 
@@ -27,32 +28,61 @@ npm run test
 npm run build
 ```
 
-## Supabase Setup
+## PocketBase Setup
 
-This project uses Supabase for:
+This project now uses PocketBase for:
 
 - Catalog data (`collections`, `products`)
 - Consultancy submissions (`consultancy_requests`)
-- Cart checkout requests (`orders`, `order_items`)
 - Authenticated persistent carts (`user_carts`)
 - Newsletter subscriptions (`studio_dispatch_subscribers`)
-- Payments via Razorpay (`orders`, `order_items`)
 
 ### 1. Environment variables
 
 Copy `.env.example` to `.env` and set:
 
+- `VITE_POCKETBASE_URL`
+
+### 2. PocketBase collections
+
+Create collections in PocketBase with compatible fields:
+
+- `collections`
+- `products`
+- `consultancy_requests`
+- `studio_dispatch_subscribers`
+- `user_carts`
+- `leads`
+
+Optional env:
+
+- `VITE_CRM_ACCESS_TOKEN` (protects `/crm` page when set)
+
+### 3. Start the app
+
+```sh
+npm run dev
+```
+
+If `VITE_POCKETBASE_URL` is missing, catalog pages fall back to local demo data.
+
+## Supabase Setup (Temporary)
+
+Checkout/payment and admin dashboard still use Supabase edge functions during migration.
+
+Set:
+
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
 
-### 2. Database schema
+### Database schema
 
 Run these scripts in Supabase SQL Editor:
 
 1. `supabase/schema.sql`
 2. `supabase/seed.sql` (optional sample data)
 
-### 3. Deploy edge function for subscribe emails
+### Deploy edge function for subscribe emails
 
 Use Supabase CLI:
 
@@ -69,13 +99,7 @@ Notes:
 - `STUDIO_DISPATCH_REPLY_TO` is optional. Set this to your Gmail if you want user replies in Gmail.
 - For Gmail deliverability, keep `STUDIO_DISPATCH_FROM_EMAIL` on a verified custom domain (not `@gmail.com`).
 
-### 4. Start the app
-
-```sh
-npm run dev
-```
-
-If env vars are missing, catalog pages fall back to local demo data. Checkout and consultancy submission require Supabase configuration.
+Checkout requires Supabase configuration until payment endpoints are migrated.
 
 ## Razorpay Setup
 

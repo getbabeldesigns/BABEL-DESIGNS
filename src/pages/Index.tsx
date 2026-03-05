@@ -13,13 +13,13 @@ import {
   heroCTAVariants,
   imageZoomInVariants,
 } from '@/lib/animations';
-import heroBg from '@/assets/bench-viola-hero.webp';
+import heroBg from '@/assets/BENCH VIOLA.png';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
-import { fetchCollections } from '@/integrations/supabase/catalog';
-import { createStudioDispatchSubscription } from '@/integrations/supabase/studio_dispatch';
-import { isSupabaseConfigured } from '@/integrations/supabase/client';
+import { fetchCollections } from '@/integrations/pocketbase/catalog';
+import { createStudioDispatchSubscription } from '@/integrations/pocketbase/studio_dispatch';
+import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
 import { trackEvent } from '@/lib/analytics';
 
 const Index = () => {
@@ -50,8 +50,8 @@ const Index = () => {
       return;
     }
 
-    if (!isSupabaseConfigured) {
-      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+    if (!isPocketBaseConfigured) {
+      toast.error('PocketBase is not configured yet. Add VITE_POCKETBASE_URL.');
       return;
     }
 
@@ -66,6 +66,7 @@ const Index = () => {
       trackEvent({ event: 'subscribe_failed', placement: 'homepage' });
       toast.error(message);
     } finally {
+      
       setIsSubmitting(false);
     }
   };
@@ -74,14 +75,7 @@ const Index = () => {
     <div className="min-h-screen">
       <section className="relative h-screen flex items-center justify-center overflow-hidden section-transition">
         <motion.div variants={imageZoomInVariants} initial="hidden" animate="visible" className="absolute inset-0" style={{ y: heroOffset }}>
-          <img
-            src={heroBg}
-            alt="Babel Designs architectural interior"
-            className="w-full h-full object-cover"
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-          />
+          <img src={heroBg} alt="Babel Designs architectural interior" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-foreground/65" />
         </motion.div>
 

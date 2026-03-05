@@ -3,9 +3,9 @@ import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import type { User } from '@supabase/supabase-js';
-import { getCurrentUser, onAuthChange } from '@/integrations/supabase/auth';
-import { isSupabaseConfigured } from '@/integrations/supabase/client';
+import type { AppUser } from '@/integrations/pocketbase/auth';
+import { getCurrentUser, onAuthChange } from '@/integrations/pocketbase/auth';
+import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
 
 const Navbar = () => {
   const { totalItems } = useCart();
@@ -15,7 +15,7 @@ const Navbar = () => {
   const linksRef = useRef<HTMLDivElement>(null);
   const cartRef = useRef<HTMLAnchorElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -26,7 +26,7 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isPocketBaseConfigured) return;
 
     let mounted = true;
     getCurrentUser()

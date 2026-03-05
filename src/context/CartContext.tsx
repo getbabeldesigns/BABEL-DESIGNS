@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState, ReactNode } from 'react';
-import type { User } from '@supabase/supabase-js';
-import { fetchUserCartItems, saveUserCartItems } from '@/integrations/supabase/user_cart';
-import { getCurrentUser, onAuthChange } from '@/integrations/supabase/auth';
-import { isSupabaseConfigured } from '@/integrations/supabase/client';
+import type { AppUser } from '@/integrations/pocketbase/auth';
+import { fetchUserCartItems, saveUserCartItems } from '@/integrations/pocketbase/user_cart';
+import { getCurrentUser, onAuthChange } from '@/integrations/pocketbase/auth';
+import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
 import { toast } from 'sonner';
 
 export interface CartItem {
@@ -78,7 +78,7 @@ const mergeCartItems = (primary: CartItem[], secondary: CartItem[]): CartItem[] 
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const hasHydratedRef = useRef(false);
   const isSyncingRef = useRef(false);
 
@@ -89,7 +89,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return;
+    if (!isPocketBaseConfigured) return;
 
     let mounted = true;
     getCurrentUser()
@@ -110,7 +110,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     if (!hasHydratedRef.current) return;
-    if (!isSupabaseConfigured) return;
+    if (!isPocketBaseConfigured) return;
 
     let cancelled = false;
 

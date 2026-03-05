@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/context/CartContext';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
-import { fetchProductById, fetchProducts } from '@/integrations/supabase/catalog';
+import { fetchProductById, fetchProducts } from '@/integrations/pocketbase/catalog';
 import { trackEvent } from '@/lib/analytics';
 
 const recentKey = 'babel_recent_products';
@@ -143,7 +143,7 @@ const ProductDetail = () => {
 
               <div className="border-t border-border pt-6 mb-6">
                 <h3 className="font-sans text-xs tracking-widest uppercase text-muted-foreground mb-3">Materials</h3>
-                <p className="font-sans text-foreground">{product.materials.join(' · ')}</p>
+                <p className="font-sans text-foreground">{product.materials.join(' ï¿½ ')}</p>
               </div>
 
               <div className="border-t border-border pt-6 mb-6">
@@ -172,7 +172,7 @@ const ProductDetail = () => {
                 Add to Cart
               </button>
 
-              <p className="font-sans text-xs text-muted-foreground text-center mt-4">Made to order · 8-12 weeks delivery</p>
+              <p className="font-sans text-xs text-muted-foreground text-center mt-4">Made to order ï¿½ 8-12 weeks delivery</p>
             </motion.div>
           </div>
         </div>
@@ -191,7 +191,7 @@ const ProductDetail = () => {
                         <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.materials.join(' · ')}</p>
+                      <p className="text-sm text-muted-foreground">{item.materials.join(' ï¿½ ')}</p>
                     </Link>
                   ))}
                 </div>
@@ -208,7 +208,7 @@ const ProductDetail = () => {
                         <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.materials.join(' · ')}</p>
+                      <p className="text-sm text-muted-foreground">{item.materials.join(' ï¿½ ')}</p>
                     </Link>
                   ))}
                 </div>

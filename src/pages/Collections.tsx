@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
-import { fetchCollections, fetchProducts } from '@/integrations/supabase/catalog';
+import { fetchCollections, fetchProducts } from '@/integrations/pocketbase/catalog';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
@@ -71,7 +71,7 @@ const Collections = () => {
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial text-center">
             <h1 className="font-serif text-3xl text-foreground mb-4">Unable to load collections</h1>
-            <p className="font-sans text-muted-foreground">Please verify your Supabase configuration and try again.</p>
+            <p className="font-sans text-muted-foreground">Please verify your PocketBase configuration and try again.</p>
           </div>
         </section>
       </div>
@@ -113,7 +113,7 @@ const Collections = () => {
                   <div key={product.id} className="border border-border bg-card/50 p-4">
                     <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={product.image} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div></Link>
                     <p className="font-serif text-xl">{product.name}</p>
-                    <p className="mb-4 text-sm text-muted-foreground">{product.materials.join(' · ')}</p>
+                    <p className="mb-4 text-sm text-muted-foreground">{product.materials.join(' / ')}</p>
                     <div className="flex items-center justify-between">
                       <p className="text-sm uppercase tracking-[0.2em]">${product.price}</p>
                       <button onClick={() => { addItem({ id: product.id, name: product.name, price: product.price, image: product.image, material: product.materials[0] }); trackEvent({ event: 'add_to_cart', source: 'collections_discovery', product_id: product.id }); }} className="border border-foreground/30 px-3 py-2 text-xs uppercase tracking-[0.2em]">Add</button>

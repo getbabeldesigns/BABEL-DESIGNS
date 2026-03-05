@@ -1,18 +1,18 @@
 ﻿import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { User } from "@supabase/supabase-js";
+import type { AppUser } from "@/integrations/pocketbase/auth";
 import { toast } from "sonner";
-import { isSupabaseConfigured } from "@/integrations/supabase/client";
-import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/supabase/auth";
+import { isPocketBaseConfigured } from "@/integrations/pocketbase/client";
+import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/pocketbase/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<"google" | null>(null);
 
   useEffect(() => {
-    if (!isSupabaseConfigured) {
+    if (!isPocketBaseConfigured) {
       setIsLoading(false);
       return;
     }
@@ -88,22 +88,22 @@ const Auth = () => {
             </div>
 
             <div className="p-8 md:p-12">
-              {!isSupabaseConfigured && (
+              {!isPocketBaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background p-4">
                   <p className="font-sans text-sm text-destructive">
-                    Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+                    PocketBase is not configured. Add `VITE_POCKETBASE_URL`.
                   </p>
                 </div>
               )}
 
-              {isSupabaseConfigured && isLoading && (
+              {isPocketBaseConfigured && isLoading && (
                 <div className="space-y-3">
                   <div className="h-10 w-full animate-pulse bg-muted" />
                   <div className="h-10 w-full animate-pulse bg-muted" />
                 </div>
               )}
 
-              {isSupabaseConfigured && !isLoading && !user && (
+              {isPocketBaseConfigured && !isLoading && !user && (
                 <div className="space-y-4">
                   <button
                     onClick={handleOAuth}
@@ -121,7 +121,7 @@ const Auth = () => {
                 </div>
               )}
 
-              {isSupabaseConfigured && !isLoading && user && (
+              {isPocketBaseConfigured && !isLoading && user && (
                 <div className="border border-border bg-background p-6">
                   <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Signed in as</p>
                   <p className="mt-2 font-serif text-2xl">{user.email}</p>

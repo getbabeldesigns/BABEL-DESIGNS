@@ -24,12 +24,13 @@ const Cart = lazy(() => import("./pages/Cart"));
 const Auth = lazy(() => import("./pages/Auth"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const Admin = lazy(() => import("./pages/Admin"));
+const CRM = lazy(() => import("./pages/CRM"));
 const Policies = lazy(() => import("./pages/Policies"));
 const Blogs = lazy(() => import("./pages/CaseStudies"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LaunchCountdown = lazy(() => import("./pages/LaunchCountdown"));
 
-const isLaunchGateEnabled = import.meta.env.VITE_LAUNCH_GATE_ENABLED !== "false";
+const isLaunchGateEnabled = import.meta.env.VITE_LAUNCH_GATE_ENABLED === "true";
 
 const queryClient = new QueryClient();
 
@@ -135,6 +136,15 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Admin Dashboard | Babel Designs",
       description: "Overview of orders, consultancy requests, and subscribers.",
+      canonicalPath: pathname,
+      noIndex: true,
+    };
+  }
+
+  if (pathname === "/crm") {
+    return {
+      title: "Lead CRM | Babel Designs",
+      description: "Internal lead management dashboard.",
       canonicalPath: pathname,
       noIndex: true,
     };
@@ -283,6 +293,7 @@ const AppContent = () => {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/crm" element={<CRM />} />
                 <Route path="/policies" element={<Policies />} />
                 <Route path="/blogs" element={<Blogs />} />
                 <Route path="/case-studies" element={<Blogs />} />

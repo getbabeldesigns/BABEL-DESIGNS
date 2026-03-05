@@ -1,4 +1,5 @@
 import { FormEvent, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchAdminDashboard,
@@ -166,7 +167,10 @@ const Admin = () => {
         <div className="container-editorial">
           <div className="mb-8 flex items-center justify-between">
             <h1 className="font-serif text-4xl md:text-5xl">Admin Dashboard</h1>
-            <button onClick={clearToken} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Lock</button>
+            <div className="flex items-center gap-3">
+              <Link to="/crm" className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">CRM</Link>
+              <button onClick={clearToken} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Lock</button>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">

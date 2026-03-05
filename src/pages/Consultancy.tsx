@@ -4,8 +4,9 @@ import { Check } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 import { toast } from 'sonner';
-import { createConsultancyRequest } from '@/integrations/supabase/consultancy';
-import { isSupabaseConfigured } from '@/integrations/supabase/client';
+import { createConsultancyRequest } from '@/integrations/pocketbase/consultancy';
+import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
+import { createLead } from '@/integrations/pocketbase/leads';
 import { trackEvent } from '@/lib/analytics';
 
 const Consultancy = () => {
@@ -21,14 +22,23 @@ const Consultancy = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!isSupabaseConfigured) {
-      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+    if (!isPocketBaseConfigured) {
+      toast.error('PocketBase is not configured yet. Add VITE_POCKETBASE_URL.');
       return;
     }
 
     setIsSubmitting(true);
     try {
       await createConsultancyRequest(formData);
+      await createLead({
+        name: formData.name,
+        email: formData.email,
+        phone: formData.phone,
+        source: 'consultancy_form',
+        projectType: formData.projectType,
+        timeline: formData.timeline,
+        message: formData.message,
+      });
       trackEvent({ event: 'consultancy_submit_success', project_type: formData.projectType || 'unknown' });
       toast.success('Thank you for your inquiry. We will be in touch within 48 hours.');
       setFormData({
