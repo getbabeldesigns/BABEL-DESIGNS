@@ -58,6 +58,15 @@ Optional env:
 
 - `VITE_CRM_ACCESS_TOKEN` (protects `/crm` page when set)
 
+### PocketBase OAuth setup
+
+For `/auth` OAuth sign-in:
+
+1. In PocketBase, open `users` auth collection settings and enable Google/GitHub provider.
+2. In provider console, set redirect URL to:
+   `https://<your-pocketbase-domain>/api/oauth2-redirect`
+3. Add your frontend origin to PocketBase allowed origins/CORS.
+
 ### 3. Start the app
 
 ```sh

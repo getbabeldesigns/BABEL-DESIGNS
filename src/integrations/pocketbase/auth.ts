@@ -26,7 +26,22 @@ export const startOAuthSignIn = async (provider: OAuthProvider) => {
     throw new Error("PocketBase is not configured. Set VITE_POCKETBASE_URL.");
   }
 
+  const providers = await getOAuthProviders();
+  if (!providers.includes(provider)) {
+    throw new Error(`OAuth provider "${provider}" is not enabled in PocketBase.`);
+  }
+
   await getPocketBaseClient().collection("users").authWithOAuth2({ provider });
+};
+
+export const getOAuthProviders = async (): Promise<OAuthProvider[]> => {
+  if (!isPocketBaseConfigured) return [];
+
+  const methods = await getPocketBaseClient().collection("users").listAuthMethods();
+  const available = methods.oauth2.providers
+    .map((provider) => provider.name)
+    .filter((name): name is OAuthProvider => name === "google" || name === "github");
+  return available;
 };
 
 export const getCurrentUser = async (): Promise<AppUser | null> => {

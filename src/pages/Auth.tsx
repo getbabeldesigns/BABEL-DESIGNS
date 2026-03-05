@@ -1,15 +1,16 @@
 ﻿import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { AppUser } from "@/integrations/pocketbase/auth";
+import type { AppUser, OAuthProvider } from "@/integrations/pocketbase/auth";
 import { toast } from "sonner";
 import { isPocketBaseConfigured } from "@/integrations/pocketbase/client";
-import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/pocketbase/auth";
+import { getCurrentUser, getOAuthProviders, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/pocketbase/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<AppUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isSubmitting, setIsSubmitting] = useState<"google" | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | null>(null);
+  const [providers, setProviders] = useState<OAuthProvider[]>([]);
 
   useEffect(() => {
     if (!isPocketBaseConfigured) {
@@ -30,6 +31,12 @@ const Auth = () => {
         if (mounted) setIsLoading(false);
       });
 
+    getOAuthProviders()
+      .then((availableProviders) => {
+        if (mounted) setProviders(availableProviders);
+      })
+      .catch(() => undefined);
+
     const subscription = onAuthChange((nextUser) => {
       if (mounted) setUser(nextUser);
     });
@@ -40,15 +47,16 @@ const Auth = () => {
     };
   }, []);
 
-  const handleOAuth = async () => {
-    setIsSubmitting("google");
-    try {
-      await startOAuthSignIn("google");
-    } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to start sign in";
-      toast.error(message);
-      setIsSubmitting(null);
-    }
+  const handleOAuth = (provider: OAuthProvider) => {
+    setIsSubmitting(provider);
+    startOAuthSignIn(provider)
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : "Failed to start sign in";
+        toast.error(message);
+      })
+      .finally(() => {
+        setIsSubmitting(null);
+      });
   };
 
   const handleContinueAsGuest = () => {
@@ -105,13 +113,29 @@ const Auth = () => {
 
               {isPocketBaseConfigured && !isLoading && !user && (
                 <div className="space-y-4">
-                  <button
-                    onClick={handleOAuth}
-                    disabled={isSubmitting !== null}
-                    className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
-                  >
-                    {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
-                  </button>
+                  {providers.includes("google") && (
+                    <button
+                      onClick={() => handleOAuth("google")}
+                      disabled={isSubmitting !== null}
+                      className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+                    >
+                      {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
+                    </button>
+                  )}
+                  {providers.includes("github") && (
+                    <button
+                      onClick={() => handleOAuth("github")}
+                      disabled={isSubmitting !== null}
+                      className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+                    >
+                      {isSubmitting === "github" ? "Connecting to GitHub..." : "Continue with GitHub"}
+                    </button>
+                  )}
+                  {providers.length === 0 && (
+                    <p className="border border-destructive/40 bg-background p-4 text-sm text-destructive">
+                      No OAuth providers are enabled in PocketBase. Enable Google or GitHub in the `users` collection auth settings.
+                    </p>
+                  )}
                   <button
                     onClick={handleContinueAsGuest}
                     className="w-full border border-foreground/20 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
