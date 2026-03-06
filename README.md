@@ -71,6 +71,17 @@ For `/auth` OAuth sign-in:
    `https://<your-pocketbase-domain>/api/oauth2-redirect`
 3. Add your frontend origin to PocketBase allowed origins/CORS.
 
+### Deployment checklist (Vercel)
+
+For production auth/account to work:
+
+1. Set `VITE_POCKETBASE_URL` to a public PocketBase URL (never `127.0.0.1` or `localhost`).
+2. Set `VITE_LAUNCH_GATE_ENABLED=false` unless you intentionally want the countdown page only.
+3. Confirm Vercel production branch is `main`.
+4. In PocketBase OAuth provider settings, use callback:
+   `https://<your-pocketbase-domain>/api/oauth2-redirect`
+5. In Google/GitHub OAuth app settings, add your live frontend origin and authorized redirect settings required by that provider.
+
 ### 3. Start the app
 
 ```sh

@@ -2,7 +2,11 @@
 import { Link, useNavigate } from "react-router-dom";
 import type { AppUser, OAuthProvider } from "@/integrations/pocketbase/auth";
 import { toast } from "sonner";
-import { isPocketBaseConfigured } from "@/integrations/pocketbase/client";
+import {
+  isPocketBaseConfigured,
+  isPocketBaseLocalhostInHostedRuntime,
+  resolvedPocketBaseUrl,
+} from "@/integrations/pocketbase/client";
 import {
   getCurrentUser,
   getOAuthProviders,
@@ -115,6 +119,15 @@ const Auth = () => {
                   <p className="font-sans text-sm text-destructive">
                     PocketBase is not configured. Add `VITE_POCKETBASE_URL`.
                   </p>
+                </div>
+              )}
+              {isPocketBaseLocalhostInHostedRuntime && (
+                <div className="mb-6 border border-destructive/40 bg-background p-4">
+                  <p className="font-sans text-sm text-destructive">
+                    PocketBase URL is set to localhost in a hosted deployment. Set `VITE_POCKETBASE_URL` to your
+                    public PocketBase domain in Vercel env vars.
+                  </p>
+                  <p className="mt-2 font-mono text-xs text-muted-foreground">Current value: {resolvedPocketBaseUrl}</p>
                 </div>
               )}
 
