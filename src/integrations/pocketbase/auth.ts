@@ -1,5 +1,5 @@
 import type { RecordModel } from "pocketbase";
-import { getPocketBaseClient, isPocketBaseConfigured } from "./client";
+import { getPocketBaseClient, isPocketBaseConfigured, isPocketBaseLocalhostConfigured } from "./client";
 
 export type OAuthProvider = "google" | "github";
 
@@ -55,7 +55,7 @@ export const getOAuthProviders = async (): Promise<OAuthProvider[]> => {
 };
 
 export const isLocalPocketBaseUrl = () =>
-  /127\.0\.0\.1|localhost/i.test(import.meta.env.VITE_POCKETBASE_URL ?? "");
+  isPocketBaseLocalhostConfigured;
 
 export const getCurrentUser = async (): Promise<AppUser | null> => {
   if (!isPocketBaseConfigured) return null;

@@ -18,6 +18,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | null>(null);
   const [providers, setProviders] = useState<OAuthProvider[]>([]);
+  const [providersLoadFailed, setProvidersLoadFailed] = useState(false);
   const displayedProviders: OAuthProvider[] = providers.length ? providers : ["google", "github"];
 
   useEffect(() => {
@@ -41,9 +42,14 @@ const Auth = () => {
 
     getOAuthProviders()
       .then((availableProviders) => {
-        if (mounted) setProviders(availableProviders);
+        if (mounted) {
+          setProviders(availableProviders);
+          setProvidersLoadFailed(false);
+        }
       })
-      .catch(() => undefined);
+      .catch(() => {
+        if (mounted) setProvidersLoadFailed(true);
+      });
 
     const subscription = onAuthChange((nextUser) => {
       if (mounted) setUser(nextUser);
@@ -139,9 +145,14 @@ const Auth = () => {
                       {isSubmitting === "github" ? "Connecting to GitHub..." : "Continue with GitHub"}
                     </button>
                   )}
-                  {providers.length === 0 && (
+                  {providersLoadFailed && (
                     <p className="border border-border/60 bg-background p-4 text-sm text-muted-foreground">
                       Couldn&apos;t read provider list from PocketBase, so both OAuth options are shown. If sign-in fails, verify provider setup in PocketBase.
+                    </p>
+                  )}
+                  {!providersLoadFailed && providers.length === 0 && (
+                    <p className="border border-border/60 bg-background p-4 text-sm text-muted-foreground">
+                      No OAuth providers enabled yet. Enable Google or GitHub in PocketBase `users` auth settings.
                     </p>
                   )}
                   {isLocalPocketBaseUrl() && (
