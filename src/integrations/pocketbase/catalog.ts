@@ -52,7 +52,13 @@ const readStringArray = (value: unknown): string[] =>
 
 const shouldFallbackRead = (error: PocketBaseErrorLike | null) => {
   if (!error) return false;
-  return error.status === 404 || error.message?.toLowerCase().includes("not found") === true;
+  return (
+    error.status === 404 ||
+    error.message?.toLowerCase().includes("not found") === true ||
+    error.message?.toLowerCase().includes("failed to fetch") === true ||
+    error.message?.toLowerCase().includes("network") === true ||
+    error.message?.toLowerCase().includes("timeout") === true
+  );
 };
 
 const resolveRecordFileOrUrl = (record: RecordModel, value: unknown): string | null => {
@@ -113,8 +119,9 @@ export const fetchCollections = async (): Promise<Collection[]> => {
     });
     return records.map(toCollection);
   } catch (error) {
+    // Keep storefront usable for guests when PocketBase is temporarily unreachable.
     if (shouldFallbackRead(error as PocketBaseErrorLike)) return fallbackCollectionsWithDemoImages;
-    throw error;
+    return fallbackCollectionsWithDemoImages;
   }
 };
 
@@ -128,7 +135,7 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
     return toCollection(record);
   } catch (error) {
     if (shouldFallbackRead(error as PocketBaseErrorLike)) return getFallbackCollectionBySlug(slug) ?? null;
-    throw error;
+    return getFallbackCollectionBySlug(slug) ?? null;
   }
 };
 
@@ -151,7 +158,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
     return rows.map(toProduct(collectionMap));
   } catch (error) {
     if (shouldFallbackRead(error as PocketBaseErrorLike)) return fallbackProducts;
-    throw error;
+    return fallbackProducts;
   }
 };
 
@@ -173,6 +180,6 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
     return toProduct(collectionMap)(row);
   } catch (error) {
     if (shouldFallbackRead(error as PocketBaseErrorLike)) return getFallbackProductById(id) ?? null;
-    throw error;
+    return getFallbackProductById(id) ?? null;
   }
 };

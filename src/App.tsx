@@ -22,6 +22,7 @@ const Philosophy = lazy(() => import("./pages/Philosophy"));
 const Consultancy = lazy(() => import("./pages/Consultancy"));
 const Cart = lazy(() => import("./pages/Cart"));
 const Auth = lazy(() => import("./pages/Auth"));
+const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const Admin = lazy(() => import("./pages/Admin"));
 const CRM = lazy(() => import("./pages/CRM"));
@@ -102,6 +103,15 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Account | Babel Designs",
       description: "Sign in to your Babel Designs account using secure OAuth.",
+      canonicalPath: pathname,
+      noIndex: true,
+    };
+  }
+
+  if (pathname === "/account") {
+    return {
+      title: "My Account | Babel Designs",
+      description: "Manage your Babel Designs profile and account details.",
       canonicalPath: pathname,
       noIndex: true,
     };
@@ -291,6 +301,7 @@ const AppContent = () => {
                 <Route path="/consultancy" element={<Consultancy />} />
                 <Route path="/cart" element={<Cart />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/account" element={<Account />} />
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/crm" element={<CRM />} />

@@ -58,6 +58,10 @@ Optional env:
 
 - `VITE_CRM_ACCESS_TOKEN` (protects `/crm` page when set)
 
+For account profile management (`/account`), add these fields to `users` auth collection:
+- `name` (text)
+- `avatar` (file, single)
+
 ### PocketBase OAuth setup
 
 For `/auth` OAuth sign-in:

@@ -3,7 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import type { AppUser, OAuthProvider } from "@/integrations/pocketbase/auth";
 import { toast } from "sonner";
 import { isPocketBaseConfigured } from "@/integrations/pocketbase/client";
-import { getCurrentUser, getOAuthProviders, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/pocketbase/auth";
+import {
+  getCurrentUser,
+  getOAuthProviders,
+  isLocalPocketBaseUrl,
+  onAuthChange,
+  signOutUser,
+  startOAuthSignIn,
+} from "@/integrations/pocketbase/auth";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -11,6 +18,7 @@ const Auth = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | null>(null);
   const [providers, setProviders] = useState<OAuthProvider[]>([]);
+  const displayedProviders: OAuthProvider[] = providers.length ? providers : ["google", "github"];
 
   useEffect(() => {
     if (!isPocketBaseConfigured) {
@@ -113,7 +121,7 @@ const Auth = () => {
 
               {isPocketBaseConfigured && !isLoading && !user && (
                 <div className="space-y-4">
-                  {providers.includes("google") && (
+                  {displayedProviders.includes("google") && (
                     <button
                       onClick={() => handleOAuth("google")}
                       disabled={isSubmitting !== null}
@@ -122,7 +130,7 @@ const Auth = () => {
                       {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
                     </button>
                   )}
-                  {providers.includes("github") && (
+                  {displayedProviders.includes("github") && (
                     <button
                       onClick={() => handleOAuth("github")}
                       disabled={isSubmitting !== null}
@@ -132,8 +140,13 @@ const Auth = () => {
                     </button>
                   )}
                   {providers.length === 0 && (
-                    <p className="border border-destructive/40 bg-background p-4 text-sm text-destructive">
-                      No OAuth providers are enabled in PocketBase. Enable Google or GitHub in the `users` collection auth settings.
+                    <p className="border border-border/60 bg-background p-4 text-sm text-muted-foreground">
+                      Couldn&apos;t read provider list from PocketBase, so both OAuth options are shown. If sign-in fails, verify provider setup in PocketBase.
+                    </p>
+                  )}
+                  {isLocalPocketBaseUrl() && (
+                    <p className="border border-amber-500/40 bg-background p-4 text-xs text-amber-700">
+                      Mobile note: `127.0.0.1` points to the phone itself. Use your computer&apos;s LAN IP in `VITE_POCKETBASE_URL` for mobile OAuth.
                     </p>
                   )}
                   <button
@@ -157,10 +170,10 @@ const Auth = () => {
                       Sign out
                     </button>
                     <Link
-                      to="/collections"
+                      to="/account"
                       className="border border-foreground/20 px-5 py-2 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                     >
-                      Explore collections
+                      Manage account
                     </Link>
                   </div>
                 </div>

@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import type { AppUser } from '@/integrations/pocketbase/auth';
 import { getCurrentUser, onAuthChange } from '@/integrations/pocketbase/auth';
 import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
   const { totalItems } = useCart();
@@ -18,6 +19,16 @@ const Navbar = () => {
   const [user, setUser] = useState<AppUser | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
+  const initials = (value: AppUser | null) => {
+    const source = value?.name || value?.email || '';
+    if (!source) return 'BD';
+    return source
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase() ?? '')
+      .join('');
+  };
 
   const navLinks = [
     { path: '/collections', label: 'Collections' },
@@ -218,14 +229,30 @@ const Navbar = () => {
             ))}
 
             <Link
-              to="/auth"
-              className={`font-sans text-sm tracking-widest uppercase ${isActive('/auth') ? 'text-foreground' : 'text-muted-foreground'}`}
+              to={user ? "/account" : "/auth"}
+              className={`font-sans text-sm tracking-widest uppercase ${
+                isActive('/auth') || isActive('/account') ? 'text-foreground' : 'text-muted-foreground'
+              }`}
               onMouseEnter={handleNavLinkHover}
-              onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive('/auth'))}
+              onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive('/auth') || isActive('/account'))}
               data-cursor="Account"
             >
               {user ? 'Account' : 'Sign In'}
             </Link>
+
+            {user && (
+              <Link
+                to="/account"
+                className="ml-1"
+                aria-label="Account profile"
+                data-cursor="Profile"
+              >
+                <Avatar className="h-8 w-8 border border-border/70">
+                  <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name ?? user.email ?? 'Account avatar'} />
+                  <AvatarFallback className="text-[10px] font-sans">{initials(user)}</AvatarFallback>
+                </Avatar>
+              </Link>
+            )}
 
             {/* Cart */}
             <Link
@@ -252,12 +279,20 @@ const Navbar = () => {
           {/* Mobile Nav */}
           <div className="flex md:hidden items-center gap-4">
             <Link
-              to="/auth"
+              to={user ? "/account" : "/auth"}
               className="font-sans text-[10px] uppercase tracking-[0.16em] text-muted-foreground"
               data-cursor="Account"
             >
               {user ? 'Account' : 'Sign In'}
             </Link>
+            {user && (
+              <Link to="/account" aria-label="Account profile" data-cursor="Profile">
+                <Avatar className="h-7 w-7 border border-border/70">
+                  <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name ?? user.email ?? 'Account avatar'} />
+                  <AvatarFallback className="text-[9px] font-sans">{initials(user)}</AvatarFallback>
+                </Avatar>
+              </Link>
+            )}
             <Link
               to="/cart"
               className="relative text-foreground transition-opacity hover:opacity-70"
