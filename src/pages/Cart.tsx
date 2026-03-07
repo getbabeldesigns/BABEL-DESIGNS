@@ -77,7 +77,7 @@ const Cart = () => {
 
   const handleCheckout = async () => {
     if (!isSupabaseConfigured) {
-      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).');
       return;
     }
     if (!import.meta.env.VITE_RAZORPAY_KEY_ID) {

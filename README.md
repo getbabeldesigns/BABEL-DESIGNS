@@ -36,7 +36,7 @@ Set:
 
 ### Deployment checklist (Vercel)
 
-1. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project env vars.
+1. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`) in Vercel project env vars.
 2. Set `VITE_LAUNCH_GATE_ENABLED=false` unless you intentionally want the countdown page only.
 3. Confirm Vercel production branch is `main`.
 4. Redeploy after any `VITE_*` env change (Vite embeds env vars at build time).

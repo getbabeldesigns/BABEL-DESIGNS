@@ -85,7 +85,7 @@ const Auth = () => {
               {!isSupabaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background p-4">
                   <p className="font-sans text-sm text-destructive">
-                    Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
+                    Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`).
                   </p>
                 </div>
               )}

@@ -5,7 +5,7 @@ export type OAuthProvider = "google" | "github";
 
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
   if (!isSupabaseConfigured) {
-    throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.");
+    throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");
   }
 
   const redirectTo = `${window.location.origin}/auth`;

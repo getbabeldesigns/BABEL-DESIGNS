@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
@@ -22,7 +22,7 @@ const Consultancy = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isSupabaseConfigured) {
-      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
+      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).');
       return;
     }
 
@@ -178,7 +178,7 @@ const Consultancy = () => {
                 step: '02',
                 title: 'Consultation',
                 description:
-                  'A 90-minute dialogue â€” in person or virtual â€” to understand your space, lifestyle, and design aspirations.',
+                  'A 90-minute dialogue — in person or virtual — to understand your space, lifestyle, and design aspirations.',
               },
               {
                 step: '03',
