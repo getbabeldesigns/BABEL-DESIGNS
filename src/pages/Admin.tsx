@@ -168,7 +168,6 @@ const Admin = () => {
           <div className="mb-8 flex items-center justify-between">
             <h1 className="font-serif text-4xl md:text-5xl">Admin Dashboard</h1>
             <div className="flex items-center gap-3">
-              <Link to="/crm" className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">CRM</Link>
               <button onClick={clearToken} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Lock</button>
             </div>
           </div>

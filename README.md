@@ -10,8 +10,7 @@ A Vite + React + TypeScript storefront for Babel Designs.
 - Tailwind CSS
 - shadcn-ui
 - React Query
-- PocketBase (catalog/auth/forms/cart sync)
-- Supabase (temporary for checkout + admin functions)
+- Supabase
 
 ## Local Development
 
@@ -28,78 +27,19 @@ npm run test
 npm run build
 ```
 
-## PocketBase Setup
-
-This project now uses PocketBase for:
-
-- Catalog data (`collections`, `products`)
-- Consultancy submissions (`consultancy_requests`)
-- Authenticated persistent carts (`user_carts`)
-- Newsletter subscriptions (`studio_dispatch_subscribers`)
-
-### 1. Environment variables
-
-Copy `.env.example` to `.env` and set:
-
-- `VITE_POCKETBASE_URL`
-- `VITE_POCKETBASE_PUBLIC_URL` (optional fallback used only on hosted domains when `VITE_POCKETBASE_URL` is localhost)
-
-### 2. PocketBase collections
-
-Create collections in PocketBase with compatible fields:
-
-- `collections`
-- `products`
-- `consultancy_requests`
-- `studio_dispatch_subscribers`
-- `user_carts`
-- `leads`
-
-Optional env:
-
-- `VITE_CRM_ACCESS_TOKEN` (protects `/crm` page when set)
-
-For account profile management (`/account`), add these fields to `users` auth collection:
-- `name` (text)
-- `avatar` (file, single)
-
-### PocketBase OAuth setup
-
-For `/auth` OAuth sign-in:
-
-1. In PocketBase, open `users` auth collection settings and enable Google/GitHub provider.
-2. In provider console, set redirect URL to:
-   `https://<your-pocketbase-domain>/api/oauth2-redirect`
-3. Add your frontend origin to PocketBase allowed origins/CORS.
-
-### Deployment checklist (Vercel)
-
-For production auth/account to work:
-
-1. Set `VITE_POCKETBASE_URL` to a public PocketBase URL (never `127.0.0.1` or `localhost`).
-   - If you want localhost in local dev, also set `VITE_POCKETBASE_PUBLIC_URL` in Vercel to your public PocketBase URL.
-2. Set `VITE_LAUNCH_GATE_ENABLED=false` unless you intentionally want the countdown page only.
-3. Confirm Vercel production branch is `main`.
-4. In PocketBase OAuth provider settings, use callback:
-   `https://<your-pocketbase-domain>/api/oauth2-redirect`
-5. In Google/GitHub OAuth app settings, add your live frontend origin and authorized redirect settings required by that provider.
-
-### 3. Start the app
-
-```sh
-npm run dev
-```
-
-If `VITE_POCKETBASE_URL` is missing, catalog pages fall back to local demo data.
-
-## Supabase Setup (Temporary)
-
-Checkout/payment and admin dashboard still use Supabase edge functions during migration.
+## Supabase Setup
 
 Set:
 
 - `VITE_SUPABASE_URL`
 - `VITE_SUPABASE_ANON_KEY`
+
+### Deployment checklist (Vercel)
+
+1. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in Vercel project env vars.
+2. Set `VITE_LAUNCH_GATE_ENABLED=false` unless you intentionally want the countdown page only.
+3. Confirm Vercel production branch is `main`.
+4. Redeploy after any `VITE_*` env change (Vite embeds env vars at build time).
 
 ### Database schema
 

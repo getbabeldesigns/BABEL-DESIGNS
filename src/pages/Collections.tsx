@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
-import { fetchCollections, fetchProducts } from '@/integrations/pocketbase/catalog';
+import { fetchCollections, fetchProducts } from '@/integrations/supabase/catalog';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
@@ -71,7 +71,7 @@ const Collections = () => {
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial text-center">
             <h1 className="font-serif text-3xl text-foreground mb-4">Unable to load collections</h1>
-            <p className="font-sans text-muted-foreground">Please verify your PocketBase configuration and try again.</p>
+            <p className="font-sans text-muted-foreground">Please verify your Supabase configuration and try again.</p>
           </div>
         </section>
       </div>

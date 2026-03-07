@@ -1,8 +1,4 @@
-import React, { createContext, useContext, useEffect, useMemo, useRef, useState, ReactNode } from 'react';
-import type { AppUser } from '@/integrations/pocketbase/auth';
-import { fetchUserCartItems, saveUserCartItems } from '@/integrations/pocketbase/user_cart';
-import { getCurrentUser, onAuthChange } from '@/integrations/pocketbase/auth';
-import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
+import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
 
 export interface CartItem {
@@ -55,109 +51,17 @@ const writeGuestCart = (items: CartItem[]) => {
   window.localStorage.setItem(GUEST_CART_KEY, JSON.stringify(items));
 };
 
-const mergeCartItems = (primary: CartItem[], secondary: CartItem[]): CartItem[] => {
-  const map = new Map<string, CartItem>();
-
-  const push = (item: CartItem) => {
-    const key = `${item.id}::${item.material ?? ''}`;
-    const existing = map.get(key);
-    if (existing) {
-      map.set(key, {
-        ...existing,
-        quantity: existing.quantity + item.quantity,
-      });
-      return;
-    }
-    map.set(key, { ...item });
-  };
-
-  primary.forEach(push);
-  secondary.forEach(push);
-  return Array.from(map.values());
-};
-
 export const CartProvider = ({ children }: { children: ReactNode }) => {
   const [items, setItems] = useState<CartItem[]>([]);
-  const [user, setUser] = useState<AppUser | null>(null);
-  const hasHydratedRef = useRef(false);
-  const isSyncingRef = useRef(false);
 
   useEffect(() => {
     const guestItems = readGuestCart();
     setItems(guestItems);
-    hasHydratedRef.current = true;
   }, []);
 
   useEffect(() => {
-    if (!isPocketBaseConfigured) return;
-
-    let mounted = true;
-    getCurrentUser()
-      .then((nextUser) => {
-        if (mounted) setUser(nextUser);
-      })
-      .catch(() => undefined);
-
-    const subscription = onAuthChange((nextUser) => {
-      if (mounted) setUser(nextUser);
-    });
-
-    return () => {
-      mounted = false;
-      subscription.unsubscribe();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (!hasHydratedRef.current) return;
-    if (!isPocketBaseConfigured) return;
-
-    let cancelled = false;
-
-    const syncForUser = async () => {
-      if (!user) {
-        setItems(readGuestCart());
-        return;
-      }
-
-      isSyncingRef.current = true;
-      try {
-        const guestItems = readGuestCart();
-        const remoteItems = await fetchUserCartItems(user.id);
-        const merged = mergeCartItems(remoteItems, guestItems);
-        if (cancelled) return;
-
-        setItems(merged);
-        await saveUserCartItems(user.id, merged);
-        writeGuestCart([]);
-      } catch {
-        // Keep local cart usable even if sync fails.
-      } finally {
-        isSyncingRef.current = false;
-      }
-    };
-
-    syncForUser();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [user]);
-
-  useEffect(() => {
-    if (!hasHydratedRef.current || isSyncingRef.current) return;
-
-    if (!user) {
-      writeGuestCart(items);
-      return;
-    }
-
-    const timeout = window.setTimeout(() => {
-      saveUserCartItems(user.id, items).catch(() => undefined);
-    }, 250);
-
-    return () => window.clearTimeout(timeout);
-  }, [items, user]);
+    writeGuestCart(items);
+  }, [items]);
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     toast.success('Added to cart');

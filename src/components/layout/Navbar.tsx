@@ -3,9 +3,9 @@ import { ShoppingBag } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
-import type { AppUser } from '@/integrations/pocketbase/auth';
-import { getCurrentUser, onAuthChange } from '@/integrations/pocketbase/auth';
-import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
+import type { User } from '@supabase/supabase-js';
+import { getCurrentUser, onAuthChange } from '@/integrations/supabase/auth';
+import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
@@ -16,11 +16,12 @@ const Navbar = () => {
   const linksRef = useRef<HTMLDivElement>(null);
   const cartRef = useRef<HTMLAnchorElement>(null);
   const badgeRef = useRef<HTMLSpanElement>(null);
-  const [user, setUser] = useState<AppUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
-  const initials = (value: AppUser | null) => {
-    const source = value?.name || value?.email || '';
+  const initials = (value: User | null) => {
+    const metadataName = (value?.user_metadata?.full_name as string | undefined) || (value?.user_metadata?.name as string | undefined);
+    const source = metadataName || value?.email || '';
     if (!source) return 'BD';
     return source
       .split(' ')
@@ -37,7 +38,7 @@ const Navbar = () => {
   ];
 
   useEffect(() => {
-    if (!isPocketBaseConfigured) return;
+    if (!isSupabaseConfigured) return;
 
     let mounted = true;
     getCurrentUser()
@@ -248,7 +249,7 @@ const Navbar = () => {
                 data-cursor="Profile"
               >
                 <Avatar className="h-8 w-8 border border-border/70">
-                  <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name ?? user.email ?? 'Account avatar'} />
+                  <AvatarImage src={user.user_metadata?.avatar_url as string | undefined} alt={user.email ?? 'Account avatar'} />
                   <AvatarFallback className="text-[10px] font-sans">{initials(user)}</AvatarFallback>
                 </Avatar>
               </Link>
@@ -288,7 +289,7 @@ const Navbar = () => {
             {user && (
               <Link to="/account" aria-label="Account profile" data-cursor="Profile">
                 <Avatar className="h-7 w-7 border border-border/70">
-                  <AvatarImage src={user.avatarUrl ?? undefined} alt={user.name ?? user.email ?? 'Account avatar'} />
+                  <AvatarImage src={user.user_metadata?.avatar_url as string | undefined} alt={user.email ?? 'Account avatar'} />
                   <AvatarFallback className="text-[9px] font-sans">{initials(user)}</AvatarFallback>
                 </Avatar>
               </Link>

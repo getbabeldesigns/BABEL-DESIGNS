@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import AnimatedSection from '@/components/AnimatedSection';
-import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrations/pocketbase/catalog';
+import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrations/supabase/catalog';
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 

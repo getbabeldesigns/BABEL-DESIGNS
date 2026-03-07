@@ -25,7 +25,6 @@ export default defineConfig(({ mode }) => ({
           react: ["react", "react-dom", "react-router-dom"],
           query: ["@tanstack/react-query"],
           motion: ["framer-motion", "gsap"],
-          pocketbase: ["pocketbase"],
           supabase: ["@supabase/supabase-js"],
         },
       },

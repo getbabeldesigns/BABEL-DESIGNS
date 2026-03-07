@@ -1,34 +1,18 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import type { AppUser, OAuthProvider } from "@/integrations/pocketbase/auth";
+import type { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import {
-  isPocketBaseConfigured,
-  isPocketBaseLocalhostInHostedRuntime,
-  isUsingPocketBaseHostedFallback,
-  resolvedPocketBaseUrl,
-} from "@/integrations/pocketbase/client";
-import {
-  getCurrentUser,
-  getOAuthProviders,
-  isLocalPocketBaseUrl,
-  onAuthChange,
-  signOutUser,
-  startOAuthSignIn,
-} from "@/integrations/pocketbase/auth";
+import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn, type OAuthProvider } from "@/integrations/supabase/auth";
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState<AppUser | null>(null);
+  const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | null>(null);
-  const [providers, setProviders] = useState<OAuthProvider[]>([]);
-  const [providersLoadFailed, setProvidersLoadFailed] = useState(false);
-  const isOAuthBlockedByPocketBaseUrl = !isPocketBaseConfigured || isPocketBaseLocalhostInHostedRuntime;
-  const displayedProviders: OAuthProvider[] = providers.length ? providers : ["google", "github"];
 
   useEffect(() => {
-    if (!isPocketBaseConfigured || isPocketBaseLocalhostInHostedRuntime) {
+    if (!isSupabaseConfigured) {
       setIsLoading(false);
       return;
     }
@@ -44,17 +28,6 @@ const Auth = () => {
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
-      });
-
-    getOAuthProviders()
-      .then((availableProviders) => {
-        if (mounted) {
-          setProviders(availableProviders);
-          setProvidersLoadFailed(false);
-        }
-      })
-      .catch(() => {
-        if (mounted) setProvidersLoadFailed(true);
       });
 
     const subscription = onAuthChange((nextUser) => {
@@ -104,85 +77,42 @@ const Auth = () => {
               <p className="mb-4 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Member Access</p>
               <h1 className="mb-4 font-serif text-4xl font-light md:text-5xl">Studio Access</h1>
               <p className="max-w-md font-sans leading-relaxed text-muted-foreground">
-                Sign in to sync your cart, saved pieces, and preferences across devices.
+                Sign in to continue with your saved account and order workflow.
               </p>
-
-              <div className="mt-10 space-y-3 border border-border/60 bg-background/60 p-5">
-                <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">With account</p>
-                <p className="font-sans text-sm text-foreground/90">Persistent cart across sessions</p>
-                <p className="font-sans text-sm text-foreground/90">Faster checkout details</p>
-                <p className="font-sans text-sm text-foreground/90">Saved selections for later</p>
-              </div>
             </div>
 
             <div className="p-8 md:p-12">
-              {!isPocketBaseConfigured && (
+              {!isSupabaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background p-4">
                   <p className="font-sans text-sm text-destructive">
-                    PocketBase is not configured. Add `VITE_POCKETBASE_URL`.
+                    Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY`.
                   </p>
-                </div>
-              )}
-              {isPocketBaseLocalhostInHostedRuntime && (
-                <div className="mb-6 border border-destructive/40 bg-background p-4">
-                  <p className="font-sans text-sm text-destructive">
-                    PocketBase URL is set to localhost in a hosted deployment. Set `VITE_POCKETBASE_URL` to your
-                    public PocketBase domain in Vercel env vars (or set `VITE_POCKETBASE_PUBLIC_URL` as hosted-only fallback).
-                  </p>
-                  <p className="mt-2 font-mono text-xs text-muted-foreground">Current value: {resolvedPocketBaseUrl}</p>
-                </div>
-              )}
-              {isUsingPocketBaseHostedFallback && (
-                <div className="mb-6 border border-emerald-600/40 bg-background p-4">
-                  <p className="font-sans text-sm text-emerald-700">
-                    Hosted runtime detected. Using `VITE_POCKETBASE_PUBLIC_URL` because `VITE_POCKETBASE_URL` points to localhost.
-                  </p>
-                  <p className="mt-2 font-mono text-xs text-muted-foreground">Resolved URL: {resolvedPocketBaseUrl}</p>
                 </div>
               )}
 
-              {isPocketBaseConfigured && isLoading && (
+              {isSupabaseConfigured && isLoading && (
                 <div className="space-y-3">
                   <div className="h-10 w-full animate-pulse bg-muted" />
                   <div className="h-10 w-full animate-pulse bg-muted" />
                 </div>
               )}
 
-              {!isOAuthBlockedByPocketBaseUrl && !isLoading && !user && (
+              {isSupabaseConfigured && !isLoading && !user && (
                 <div className="space-y-4">
-                  {displayedProviders.includes("google") && (
-                    <button
-                      onClick={() => handleOAuth("google")}
-                      disabled={isSubmitting !== null}
-                      className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
-                    >
-                      {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
-                    </button>
-                  )}
-                  {displayedProviders.includes("github") && (
-                    <button
-                      onClick={() => handleOAuth("github")}
-                      disabled={isSubmitting !== null}
-                      className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
-                    >
-                      {isSubmitting === "github" ? "Connecting to GitHub..." : "Continue with GitHub"}
-                    </button>
-                  )}
-                  {providersLoadFailed && (
-                    <p className="border border-border/60 bg-background p-4 text-sm text-muted-foreground">
-                      Couldn&apos;t read provider list from PocketBase, so both OAuth options are shown. If sign-in fails, verify provider setup in PocketBase.
-                    </p>
-                  )}
-                  {!providersLoadFailed && providers.length === 0 && (
-                    <p className="border border-border/60 bg-background p-4 text-sm text-muted-foreground">
-                      No OAuth providers enabled yet. Enable Google or GitHub in PocketBase `users` auth settings.
-                    </p>
-                  )}
-                  {isLocalPocketBaseUrl() && !isPocketBaseLocalhostInHostedRuntime && (
-                    <p className="border border-amber-500/40 bg-background p-4 text-xs text-amber-700">
-                      Mobile note: `127.0.0.1` points to the phone itself. Use your computer&apos;s LAN IP in `VITE_POCKETBASE_URL` for mobile OAuth.
-                    </p>
-                  )}
+                  <button
+                    onClick={() => handleOAuth("google")}
+                    disabled={isSubmitting !== null}
+                    className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+                  >
+                    {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
+                  </button>
+                  <button
+                    onClick={() => handleOAuth("github")}
+                    disabled={isSubmitting !== null}
+                    className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+                  >
+                    {isSubmitting === "github" ? "Connecting to GitHub..." : "Continue with GitHub"}
+                  </button>
                   <button
                     onClick={handleContinueAsGuest}
                     className="w-full border border-foreground/20 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
@@ -192,7 +122,7 @@ const Auth = () => {
                 </div>
               )}
 
-              {isPocketBaseConfigured && !isLoading && user && (
+              {isSupabaseConfigured && !isLoading && user && (
                 <div className="border border-border bg-background p-6">
                   <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Signed in as</p>
                   <p className="mt-2 font-serif text-2xl">{user.email}</p>

@@ -25,7 +25,6 @@ const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const Admin = lazy(() => import("./pages/Admin"));
-const CRM = lazy(() => import("./pages/CRM"));
 const Policies = lazy(() => import("./pages/Policies"));
 const Blogs = lazy(() => import("./pages/CaseStudies"));
 const NotFound = lazy(() => import("./pages/NotFound"));
@@ -146,15 +145,6 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Admin Dashboard | Babel Designs",
       description: "Overview of orders, consultancy requests, and subscribers.",
-      canonicalPath: pathname,
-      noIndex: true,
-    };
-  }
-
-  if (pathname === "/crm") {
-    return {
-      title: "Lead CRM | Babel Designs",
-      description: "Internal lead management dashboard.",
       canonicalPath: pathname,
       noIndex: true,
     };
@@ -304,7 +294,6 @@ const AppContent = () => {
                 <Route path="/account" element={<Account />} />
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />
                 <Route path="/admin" element={<Admin />} />
-                <Route path="/crm" element={<CRM />} />
                 <Route path="/policies" element={<Policies />} />
                 <Route path="/blogs" element={<Blogs />} />
                 <Route path="/case-studies" element={<Blogs />} />

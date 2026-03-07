@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/context/CartContext';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
-import { fetchProductById, fetchProducts } from '@/integrations/pocketbase/catalog';
+import { fetchProductById, fetchProducts } from '@/integrations/supabase/catalog';
 import { trackEvent } from '@/lib/analytics';
 
 const recentKey = 'babel_recent_products';

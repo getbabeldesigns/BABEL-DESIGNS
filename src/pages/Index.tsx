@@ -17,9 +17,9 @@ import heroBg from '@/assets/bench-viola-hero.webp';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
-import { fetchCollections } from '@/integrations/pocketbase/catalog';
-import { createStudioDispatchSubscription } from '@/integrations/pocketbase/studio_dispatch';
-import { isPocketBaseConfigured } from '@/integrations/pocketbase/client';
+import { fetchCollections } from '@/integrations/supabase/catalog';
+import { createStudioDispatchSubscription } from '@/integrations/supabase/studio_dispatch';
+import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 
 const Index = () => {
@@ -50,8 +50,8 @@ const Index = () => {
       return;
     }
 
-    if (!isPocketBaseConfigured) {
-      toast.error('PocketBase is not configured yet. Add VITE_POCKETBASE_URL.');
+    if (!isSupabaseConfigured) {
+      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.');
       return;
     }
 
