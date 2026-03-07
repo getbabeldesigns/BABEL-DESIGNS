@@ -8,16 +8,33 @@ const isSessionMissingError = (error: { message?: string } | null) =>
 export const completeOAuthSignInFromUrl = async () => {
   if (!isSupabaseConfigured || typeof window === "undefined") return;
 
+  const client = getSupabaseClient();
   const url = new URL(window.location.href);
   const code = url.searchParams.get("code");
-  if (!code) return;
 
-  const { error } = await getSupabaseClient().auth.exchangeCodeForSession(code);
-  if (error) throw error;
+  if (code) {
+    const { error } = await client.auth.exchangeCodeForSession(code);
+    if (error) throw error;
 
-  url.searchParams.delete("code");
-  url.searchParams.delete("state");
-  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    url.searchParams.delete("code");
+    url.searchParams.delete("state");
+    window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+    return;
+  }
+
+  if (url.hash.startsWith("#")) {
+    const hash = new URLSearchParams(url.hash.slice(1));
+    const accessToken = hash.get("access_token");
+    const refreshToken = hash.get("refresh_token");
+    if (accessToken && refreshToken) {
+      const { error } = await client.auth.setSession({
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      });
+      if (error) throw error;
+      window.history.replaceState({}, "", `${url.pathname}${url.search}`);
+    }
+  }
 };
 
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
