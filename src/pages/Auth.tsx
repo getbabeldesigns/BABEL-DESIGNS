@@ -2,7 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
 import { toast } from "sonner";
-import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn, type OAuthProvider } from "@/integrations/supabase/auth";
+import {
+  completeOAuthSignInFromUrl,
+  getCurrentUser,
+  onAuthChange,
+  signOutUser,
+  startOAuthSignIn,
+  type OAuthProvider,
+} from "@/integrations/supabase/auth";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
 
 const Auth = () => {
@@ -19,7 +26,8 @@ const Auth = () => {
 
     let mounted = true;
 
-    getCurrentUser()
+    completeOAuthSignInFromUrl()
+      .then(() => getCurrentUser())
       .then((currentUser) => {
         if (mounted) setUser(currentUser);
       })

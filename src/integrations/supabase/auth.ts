@@ -5,6 +5,21 @@ export type OAuthProvider = "google";
 const isSessionMissingError = (error: { message?: string } | null) =>
   error?.message?.toLowerCase().includes("auth session missing") === true;
 
+export const completeOAuthSignInFromUrl = async () => {
+  if (!isSupabaseConfigured || typeof window === "undefined") return;
+
+  const url = new URL(window.location.href);
+  const code = url.searchParams.get("code");
+  if (!code) return;
+
+  const { error } = await getSupabaseClient().auth.exchangeCodeForSession(code);
+  if (error) throw error;
+
+  url.searchParams.delete("code");
+  url.searchParams.delete("state");
+  window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
+};
+
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");
@@ -30,14 +45,7 @@ export const getCurrentUser = async (): Promise<User | null> => {
   const client = getSupabaseClient();
   const { data: sessionData, error: sessionError } = await client.auth.getSession();
   if (sessionError && !isSessionMissingError(sessionError)) throw sessionError;
-  if (!sessionData.session) return null;
-
-  const { data, error } = await client.auth.getUser();
-  if (error) {
-    if (isSessionMissingError(error)) return null;
-    throw error;
-  }
-  return data.user;
+  return sessionData.session?.user ?? null;
 };
 
 export const onAuthChange = (callback: (user: User | null) => void) => {
