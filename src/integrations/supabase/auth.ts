@@ -4,6 +4,8 @@ import { getSupabaseClient, isSupabaseConfigured } from "./client";
 export type OAuthProvider = "google";
 const isSessionMissingError = (error: { message?: string } | null) =>
   error?.message?.toLowerCase().includes("auth session missing") === true;
+const isMissingPkceVerifierError = (error: { message?: string } | null) =>
+  error?.message?.toLowerCase().includes("code verifier not found") === true;
 
 export const completeOAuthSignInFromUrl = async () => {
   if (!isSupabaseConfigured || typeof window === "undefined") return;
@@ -14,12 +16,12 @@ export const completeOAuthSignInFromUrl = async () => {
 
   if (code) {
     const { error } = await client.auth.exchangeCodeForSession(code);
-    if (error) throw error;
+    if (error && !isMissingPkceVerifierError(error)) throw error;
 
     url.searchParams.delete("code");
     url.searchParams.delete("state");
     window.history.replaceState({}, "", `${url.pathname}${url.search}${url.hash}`);
-    return;
+    if (!error) return;
   }
 
   if (url.hash.startsWith("#")) {
