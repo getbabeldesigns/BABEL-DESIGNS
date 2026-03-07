@@ -10,13 +10,14 @@ import {
   startOAuthSignIn,
   type OAuthProvider,
 } from "@/integrations/supabase/auth";
-import { isSupabaseConfigured } from "@/integrations/supabase/client";
+import { isSupabaseConfigured, supabaseDiagnostics } from "@/integrations/supabase/client";
 
 const Auth = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | null>(null);
+  const [authDebugMessage, setAuthDebugMessage] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -32,7 +33,9 @@ const Auth = () => {
         if (mounted) setUser(currentUser);
       })
       .catch((error) => {
-        toast.error(error instanceof Error ? error.message : "Failed to load account");
+        const message = error instanceof Error ? error.message : "Failed to load account";
+        setAuthDebugMessage(message);
+        toast.error(message);
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
@@ -53,6 +56,7 @@ const Auth = () => {
     startOAuthSignIn(provider)
       .catch((error) => {
         const message = error instanceof Error ? error.message : "Failed to start sign in";
+        setAuthDebugMessage(message);
         toast.error(message);
       })
       .finally(() => {
@@ -95,6 +99,16 @@ const Auth = () => {
                   <p className="font-sans text-sm text-destructive">
                     Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`).
                   </p>
+                </div>
+              )}
+              {authDebugMessage && (
+                <div className="mb-6 border border-amber-500/40 bg-background p-4 text-xs text-amber-700">
+                  <p className="font-sans text-sm">Auth debug: {authDebugMessage}</p>
+                  <p className="mt-2 font-mono">Supabase URL ref: {supabaseDiagnostics.urlRef ?? "unknown"}</p>
+                  <p className="font-mono">JWT key ref: {supabaseDiagnostics.keyRef ?? "n/a"}</p>
+                  {supabaseDiagnostics.keyUrlRefMismatch && (
+                    <p className="mt-1 font-sans">Mismatch detected: URL and key point to different Supabase projects.</p>
+                  )}
                 </div>
               )}
 
