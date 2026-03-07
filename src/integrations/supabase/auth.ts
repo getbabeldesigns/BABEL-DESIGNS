@@ -2,6 +2,8 @@ import type { User } from "@supabase/supabase-js";
 import { getSupabaseClient, isSupabaseConfigured } from "./client";
 
 export type OAuthProvider = "google" | "github";
+const isSessionMissingError = (error: { message?: string } | null) =>
+  error?.message?.toLowerCase().includes("auth session missing") === true;
 
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
   if (!isSupabaseConfigured) {
@@ -25,8 +27,16 @@ export const startOAuthSignIn = async (provider: OAuthProvider) => {
 export const getCurrentUser = async (): Promise<User | null> => {
   if (!isSupabaseConfigured) return null;
 
-  const { data, error } = await getSupabaseClient().auth.getUser();
-  if (error) throw error;
+  const client = getSupabaseClient();
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError && !isSessionMissingError(sessionError)) throw sessionError;
+  if (!sessionData.session) return null;
+
+  const { data, error } = await client.auth.getUser();
+  if (error) {
+    if (isSessionMissingError(error)) return null;
+    throw error;
+  }
   return data.user;
 };
 
@@ -48,5 +58,5 @@ export const signOutUser = async () => {
   if (!isSupabaseConfigured) return;
 
   const { error } = await getSupabaseClient().auth.signOut();
-  if (error) throw error;
+  if (error && !isSessionMissingError(error)) throw error;
 };
