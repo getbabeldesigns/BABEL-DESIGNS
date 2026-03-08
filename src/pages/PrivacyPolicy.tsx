@@ -1,4 +1,4 @@
-const PrivacyPolicy = () => {
+﻿const PrivacyPolicy = () => {
   const sections = [
     {
       title: "Information We Collect",
@@ -35,17 +35,17 @@ const PrivacyPolicy = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f8f1e8] via-[#f2e8d9] to-[#eadac3] pt-32 md:pt-40">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-32 md:pt-40">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-8 top-16 h-52 w-52 rounded-full bg-[#8b5f3d]/20 blur-3xl" />
-        <div className="absolute right-0 top-56 h-64 w-64 rounded-full bg-[#c89f76]/20 blur-3xl" />
+        <div className="absolute -left-8 top-16 h-52 w-52 rounded-full bg-secondary/45 blur-3xl" />
+        <div className="absolute right-0 top-56 h-64 w-64 rounded-full bg-accent/35 blur-3xl" />
       </div>
 
       <section className="section-padding pt-0">
         <div className="container-editorial relative z-10 max-w-5xl">
-          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-[#775139]">Legal</p>
-          <h1 className="mb-5 font-serif text-4xl font-light text-[#3c2617] md:text-6xl">Privacy Policy</h1>
-          <p className="max-w-3xl font-sans text-sm leading-relaxed text-[#65472f] md:text-base">
+          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-muted-foreground">Legal</p>
+          <h1 className="mb-5 font-serif text-4xl font-light text-foreground md:text-6xl">Privacy Policy</h1>
+          <p className="max-w-3xl font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
             This page explains how Babel Designs collects, uses, stores, and protects your personal information when
             you browse, create an account, or place an order.
           </p>
@@ -54,10 +54,10 @@ const PrivacyPolicy = () => {
             {sections.map((section) => (
               <article
                 key={section.title}
-                className="rounded-sm border border-[#c7a482]/55 bg-[#fff8ee]/75 p-6 backdrop-blur-sm md:p-8"
+                className="rounded-sm border border-border/70 bg-card/80 p-6 backdrop-blur-sm md:p-8"
               >
-                <h2 className="font-serif text-2xl text-[#4a301f]">{section.title}</h2>
-                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-[#63442d] md:text-base">
+                <h2 className="font-serif text-2xl text-foreground">{section.title}</h2>
+                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
                   {section.points.map((point) => (
                     <li key={point}>{point}</li>
                   ))}

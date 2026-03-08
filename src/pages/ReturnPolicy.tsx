@@ -1,4 +1,4 @@
-const ReturnPolicy = () => {
+﻿const ReturnPolicy = () => {
   const sections = [
     {
       title: "Eligibility for Returns",
@@ -27,17 +27,17 @@ const ReturnPolicy = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f8f1e8] via-[#f4ebdd] to-[#efe4d2] pt-32 md:pt-40">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-32 md:pt-40">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -left-10 top-24 h-52 w-52 rounded-full bg-[#8d5d39]/20 blur-3xl" />
-        <div className="absolute right-0 top-64 h-60 w-60 rounded-full bg-[#b48961]/20 blur-3xl" />
+        <div className="absolute -left-10 top-24 h-52 w-52 rounded-full bg-secondary/45 blur-3xl" />
+        <div className="absolute right-0 top-64 h-60 w-60 rounded-full bg-accent/35 blur-3xl" />
       </div>
 
       <section className="section-padding pt-0">
         <div className="container-editorial relative z-10 max-w-5xl">
-          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-[#7a5538]">Legal</p>
-          <h1 className="mb-5 font-serif text-4xl font-light text-[#3e2716] md:text-6xl">Return Policy</h1>
-          <p className="max-w-2xl font-sans text-sm leading-relaxed text-[#6a4b33] md:text-base">
+          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-muted-foreground">Legal</p>
+          <h1 className="mb-5 font-serif text-4xl font-light text-foreground md:text-6xl">Return Policy</h1>
+          <p className="max-w-2xl font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
             This policy defines when and how returns are accepted for Babel Designs purchases. By placing an order,
             you acknowledge and agree to the terms below.
           </p>
@@ -46,10 +46,10 @@ const ReturnPolicy = () => {
             {sections.map((section) => (
               <article
                 key={section.title}
-                className="rounded-sm border border-[#caa985]/55 bg-[#fff9f0]/75 p-6 backdrop-blur-sm md:p-8"
+                className="rounded-sm border border-border/70 bg-card/80 p-6 backdrop-blur-sm md:p-8"
               >
-                <h2 className="font-serif text-2xl text-[#4b2f1c]">{section.title}</h2>
-                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-[#66462e] md:text-base">
+                <h2 className="font-serif text-2xl text-foreground">{section.title}</h2>
+                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
                   {section.points.map((point) => (
                     <li key={point}>{point}</li>
                   ))}

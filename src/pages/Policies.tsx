@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 
 const Policies = () => {
   const policyCards = [
@@ -25,12 +25,17 @@ const Policies = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-[#f8f2e8] via-[#f4eadc] to-[#eee0ca] pt-32 md:pt-40">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-32 md:pt-40">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -left-10 top-16 h-56 w-56 rounded-full bg-secondary/40 blur-3xl" />
+        <div className="absolute right-0 top-64 h-64 w-64 rounded-full bg-accent/35 blur-3xl" />
+      </div>
+
       <section className="section-padding pt-0">
-        <div className="container-editorial max-w-4xl">
-          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-[#775238]">Policies</p>
-          <h1 className="mb-4 font-serif text-4xl font-light text-[#3f2818] md:text-5xl">Legal center</h1>
-          <p className="max-w-2xl font-sans text-sm text-[#6a4b34] md:text-base">
+        <div className="container-editorial relative z-10 max-w-4xl">
+          <p className="mb-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">Policies</p>
+          <h1 className="mb-4 font-serif text-4xl font-light text-foreground md:text-5xl">Legal center</h1>
+          <p className="max-w-2xl font-sans text-sm text-muted-foreground md:text-base">
             Access all legal policies required for order placement and payment processing.
           </p>
 
@@ -39,11 +44,11 @@ const Policies = () => {
               <Link
                 key={card.link}
                 to={card.link}
-                className="group rounded-sm border border-[#c7a583]/55 bg-[#fff8ee]/80 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-[#a8774f]"
+                className="group rounded-sm border border-border/70 bg-card/75 p-6 transition-all duration-300 hover:-translate-y-1 hover:border-foreground/30"
               >
-                <h2 className="font-serif text-2xl text-[#462d1d]">{card.title}</h2>
-                <p className="mt-3 font-sans text-sm leading-relaxed text-[#65462e]">{card.copy}</p>
-                <p className="mt-4 font-sans text-xs uppercase tracking-[0.24em] text-[#815b3f]">Read policy</p>
+                <h2 className="font-serif text-2xl text-foreground">{card.title}</h2>
+                <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">{card.copy}</p>
+                <p className="mt-4 font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground">Read policy</p>
               </Link>
             ))}
           </div>

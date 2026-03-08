@@ -1,4 +1,4 @@
-const RefundPolicy = () => {
+﻿const RefundPolicy = () => {
   const sections = [
     {
       title: "When Refunds Are Issued",
@@ -27,17 +27,17 @@ const RefundPolicy = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-b from-[#f9f3ea] via-[#f3eadc] to-[#eadcc9] pt-32 md:pt-40">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-32 md:pt-40">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -right-8 top-20 h-56 w-56 rounded-full bg-[#a97046]/20 blur-3xl" />
-        <div className="absolute left-0 top-72 h-60 w-60 rounded-full bg-[#6e4428]/15 blur-3xl" />
+        <div className="absolute -right-8 top-20 h-56 w-56 rounded-full bg-secondary/45 blur-3xl" />
+        <div className="absolute left-0 top-72 h-60 w-60 rounded-full bg-accent/30 blur-3xl" />
       </div>
 
       <section className="section-padding pt-0">
         <div className="container-editorial relative z-10 max-w-5xl">
-          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-[#77543b]">Legal</p>
-          <h1 className="mb-5 font-serif text-4xl font-light text-[#3f2818] md:text-6xl">Refund Policy</h1>
-          <p className="max-w-2xl font-sans text-sm leading-relaxed text-[#694b34] md:text-base">
+          <p className="mb-4 text-xs uppercase tracking-[0.32em] text-muted-foreground">Legal</p>
+          <h1 className="mb-5 font-serif text-4xl font-light text-foreground md:text-6xl">Refund Policy</h1>
+          <p className="max-w-2xl font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
             This policy explains the conditions, processing timelines, and exclusions for refunds on Babel Designs
             orders.
           </p>
@@ -46,10 +46,10 @@ const RefundPolicy = () => {
             {sections.map((section) => (
               <article
                 key={section.title}
-                className="rounded-sm border border-[#c8a684]/55 bg-[#fff7ed]/75 p-6 backdrop-blur-sm md:p-8"
+                className="rounded-sm border border-border/70 bg-card/80 p-6 backdrop-blur-sm md:p-8"
               >
-                <h2 className="font-serif text-2xl text-[#4b311f]">{section.title}</h2>
-                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-[#64452e] md:text-base">
+                <h2 className="font-serif text-2xl text-foreground">{section.title}</h2>
+                <ul className="mt-4 list-disc space-y-2 pl-5 font-sans text-sm leading-relaxed text-muted-foreground md:text-base">
                   {section.points.map((point) => (
                     <li key={point}>{point}</li>
                   ))}
