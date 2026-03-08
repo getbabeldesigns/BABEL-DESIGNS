@@ -10,8 +10,11 @@ import { fetchProductById, fetchProducts } from '@/integrations/supabase/catalog
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
 import { handleImageError } from '@/lib/image';
-
-const recentKey = 'babel_recent_products';
+import {
+  getRecentlyViewedProducts,
+  getYouMayAlsoLikeProducts,
+  trackRecentlyViewedProduct,
+} from '@/lib/recommendations';
 
 const ProductDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -30,28 +33,17 @@ const ProductDetail = () => {
 
   useEffect(() => {
     if (!product) return;
-    const recentRaw = localStorage.getItem(recentKey);
-    const recent = recentRaw ? (JSON.parse(recentRaw) as string[]) : [];
-    const updated = [product.id, ...recent.filter((entry) => entry !== product.id)].slice(0, 6);
-    localStorage.setItem(recentKey, JSON.stringify(updated));
+    trackRecentlyViewedProduct(product.id);
   }, [product]);
 
   const relatedProducts = useMemo(() => {
     if (!product) return [];
-    return allProducts
-      .filter((candidate) => candidate.id !== product.id && candidate.collectionSlug === product.collectionSlug)
-      .slice(0, 3);
+    return getYouMayAlsoLikeProducts(product, allProducts, 4);
   }, [allProducts, product]);
 
   const recentlyViewed = useMemo(() => {
     if (!product) return [];
-    const recentRaw = localStorage.getItem(recentKey);
-    const recent = recentRaw ? (JSON.parse(recentRaw) as string[]) : [];
-    return recent
-      .filter((entry) => entry !== product.id)
-      .map((entry) => allProducts.find((candidate) => candidate.id === entry))
-      .filter((item): item is NonNullable<typeof item> => Boolean(item))
-      .slice(0, 3);
+    return getRecentlyViewedProducts(product.id, allProducts, 4);
   }, [allProducts, product]);
 
   if (isLoading) {
@@ -178,8 +170,8 @@ const ProductDetail = () => {
           <div className="container-editorial">
             {relatedProducts.length > 0 && (
               <div className="mb-12">
-                <h2 className="mb-6 font-serif text-3xl font-light">Related Products</h2>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <h2 className="mb-6 font-serif text-3xl font-light">You May Also Like</h2>
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                   {relatedProducts.map((item) => (
                     <Link key={item.id} to={`/product/${item.id}`} className="border border-border bg-background p-4">
                       <div className="mb-3 aspect-square overflow-hidden">
@@ -187,6 +179,7 @@ const ProductDetail = () => {
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
                       <p className="text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
+                      <p className="mt-2 text-xs uppercase tracking-[0.2em]">{formatINR(item.price)}</p>
                     </Link>
                   ))}
                 </div>
@@ -196,7 +189,7 @@ const ProductDetail = () => {
             {recentlyViewed.length > 0 && (
               <div>
                 <h2 className="mb-6 font-serif text-3xl font-light">Recently Viewed</h2>
-                <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
                   {recentlyViewed.map((item) => (
                     <Link key={item.id} to={`/product/${item.id}`} className="border border-border bg-background p-4">
                       <div className="mb-3 aspect-square overflow-hidden">
@@ -204,6 +197,7 @@ const ProductDetail = () => {
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
                       <p className="text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
+                      <p className="mt-2 text-xs uppercase tracking-[0.2em]">{formatINR(item.price)}</p>
                     </Link>
                   ))}
                 </div>

@@ -1,4 +1,5 @@
-﻿import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
@@ -6,10 +7,62 @@ import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 import { formatINR } from '@/lib/currency';
 import { handleImageError } from '@/lib/image';
+import {
+  SHIPPING_ESTIMATE_STORAGE_KEY,
+  calculateShippingEstimate,
+  isValidIndianPincode,
+  normalizePincode,
+  type ShippingEstimate,
+} from '@/lib/shipping';
 
 const Cart = () => {
   const { items, removeItem, updateQuantity, totalPrice } = useCart();
   const navigate = useNavigate();
+  const [pincode, setPincode] = useState('');
+  const [estimate, setEstimate] = useState<ShippingEstimate | null>(null);
+  const hasEstimate = estimate !== null;
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    try {
+      const raw = window.sessionStorage.getItem(SHIPPING_ESTIMATE_STORAGE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw) as ShippingEstimate;
+      if (parsed?.pincode && typeof parsed.shippingFee === 'number') {
+        setPincode(parsed.pincode);
+        setEstimate(parsed);
+      }
+    } catch {
+      // Ignore invalid storage payloads.
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!hasEstimate || !isValidIndianPincode(pincode)) return;
+    const refreshed = calculateShippingEstimate(pincode, totalPrice);
+    if (!refreshed) return;
+    setEstimate(refreshed);
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(SHIPPING_ESTIMATE_STORAGE_KEY, JSON.stringify(refreshed));
+    }
+  }, [hasEstimate, pincode, totalPrice]);
+
+  const estimateError = useMemo(() => {
+    if (!pincode.trim()) return '';
+    if (!isValidIndianPincode(pincode)) return 'Enter a valid 6-digit Indian pincode.';
+    return '';
+  }, [pincode]);
+
+  const estimatedTotal = totalPrice + (estimate?.shippingFee ?? 0);
+
+  const handleEstimate = () => {
+    const next = calculateShippingEstimate(pincode, totalPrice);
+    if (!next) return;
+    setEstimate(next);
+    if (typeof window !== 'undefined') {
+      window.sessionStorage.setItem(SHIPPING_ESTIMATE_STORAGE_KEY, JSON.stringify(next));
+    }
+  };
 
   if (items.length === 0) {
     return (
@@ -166,20 +219,55 @@ const Cart = () => {
                   <span className="text-foreground">{formatINR(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between font-sans text-sm">
-                  <span className="text-muted-foreground">Shipping</span>
-                  <span className="text-foreground">Calculated at checkout</span>
+                  <span className="text-muted-foreground">Estimated Shipping</span>
+                  <span className="text-foreground">{estimate ? formatINR(estimate.shippingFee) : 'Add pincode'}</span>
                 </div>
               </div>
 
+              <div className="mb-8 space-y-3 rounded-xl border border-border/60 bg-background/70 p-4">
+                <p className="text-xs uppercase tracking-[0.22em] text-muted-foreground">Delivery Estimator</p>
+                <div className="flex gap-2">
+                  <input
+                    value={pincode}
+                    onChange={(event) => setPincode(normalizePincode(event.target.value))}
+                    placeholder="Enter 6-digit pincode"
+                    className="w-full border border-border bg-background px-3 py-2 text-sm"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleEstimate}
+                    disabled={!isValidIndianPincode(pincode)}
+                    className="border border-foreground/40 px-3 py-2 text-[11px] uppercase tracking-[0.2em] disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    Check
+                  </button>
+                </div>
+                {!!estimateError && <p className="text-xs text-destructive">{estimateError}</p>}
+                {estimate && (
+                  <div className="text-xs text-muted-foreground">
+                    <p>Zone: {estimate.zone}</p>
+                    <p>
+                      ETA: {estimate.productionMinWeeks}-{estimate.productionMaxWeeks} weeks production +{' '}
+                      {estimate.transitMinDays}-{estimate.transitMaxDays} days transit
+                    </p>
+                    {estimate.freeShippingApplied && <p>Free shipping unlocked for orders above {formatINR(30000)}.</p>}
+                  </div>
+                )}
+              </div>
+
               <div className="mb-8 border-t border-border pt-4">
-                <div className="flex justify-between font-sans">
-                  <span className="text-foreground">Total</span>
+                <div className="mb-2 flex justify-between font-sans">
+                  <span className="text-foreground">Checkout Total</span>
                   <span className="text-lg text-foreground">{formatINR(totalPrice)}</span>
+                </div>
+                <div className="flex justify-between font-sans text-xs text-muted-foreground">
+                  <span>Estimated landed total</span>
+                  <span>{formatINR(estimatedTotal)}</span>
                 </div>
               </div>
 
               <motion.button
-                onClick={() => navigate('/checkout')}
+                onClick={() => navigate('/checkout', { state: { shippingEstimate: estimate } })}
                 className="mb-4 w-full bg-foreground py-4 font-sans text-sm uppercase tracking-widest text-background transition-colors hover:bg-foreground/90"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -188,7 +276,7 @@ const Cart = () => {
               </motion.button>
 
               <p className="text-center font-sans text-xs text-muted-foreground">
-                Made to order - 8-12 weeks delivery
+                Made to order. Final delivery timeline confirmed after order review.
               </p>
             </motion.div>
           </div>

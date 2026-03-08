@@ -1,15 +1,24 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 import { toast } from 'sonner';
 import { createConsultancyRequest } from '@/integrations/supabase/consultancy';
 import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { trackEvent } from '@/lib/analytics';
+import { useCart } from '@/context/CartContext';
+import { formatINR } from '@/lib/currency';
 
 const Consultancy = () => {
+  const CONSULTANCY_DEPOSIT = 1999;
+  const consultationSlots = ['10:00 AM', '12:00 PM', '03:00 PM', '05:00 PM'];
+  const navigate = useNavigate();
+  const { addItem } = useCart();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [selectedSlot, setSelectedSlot] = useState('');
+  const [bookingDate, setBookingDate] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -42,6 +51,53 @@ const Consultancy = () => {
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to submit inquiry';
       trackEvent({ event: 'consultancy_submit_failed' });
+      toast.error(message);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReserveWithDeposit = async () => {
+    if (!formData.name.trim() || !formData.email.trim()) {
+      toast.error('Add your name and email to reserve a slot.');
+      return;
+    }
+    if (!bookingDate || !selectedSlot) {
+      toast.error('Select a consultation date and slot first.');
+      return;
+    }
+    if (!isSupabaseConfigured) {
+      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const bookingMessage = [
+        formData.message,
+        `Requested slot: ${bookingDate} at ${selectedSlot}`,
+        `Deposit mode: Razorpay checkout`,
+      ]
+        .filter(Boolean)
+        .join(' | ');
+
+      await createConsultancyRequest({
+        ...formData,
+        message: bookingMessage,
+      });
+
+      addItem({
+        id: `consultancy-deposit-${bookingDate}-${selectedSlot}`,
+        name: `Consultancy Deposit (${bookingDate} ${selectedSlot})`,
+        price: CONSULTANCY_DEPOSIT,
+        image: '/placeholder.svg',
+        material: 'Consultancy Service',
+      });
+      trackEvent({ event: 'consultancy_deposit_started', slot: selectedSlot, booking_date: bookingDate });
+      toast.success('Slot noted. Complete payment to confirm your booking.');
+      navigate('/checkout');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to reserve slot';
       toast.error(message);
     } finally {
       setIsSubmitting(false);
@@ -284,6 +340,21 @@ const Consultancy = () => {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                  >
+                    <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
+                      Preferred Date
+                    </label>
+                    <input
+                      type="date"
+                      value={bookingDate}
+                      onChange={(event) => setBookingDate(event.target.value)}
+                      className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
+                    />
+                  </motion.div>
                   {[
                     { 
                       label: 'Timeline', 
@@ -324,6 +395,32 @@ const Consultancy = () => {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
+                  transition={{ delay: 0.15 }}
+                >
+                  <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-3">
+                    Preferred Slot
+                  </label>
+                  <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    {consultationSlots.map((slot) => {
+                      const active = selectedSlot === slot;
+                      return (
+                        <button
+                          key={slot}
+                          type="button"
+                          onClick={() => setSelectedSlot(slot)}
+                          className={`border px-3 py-2 text-xs uppercase tracking-[0.18em] transition-colors ${active ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/50'}`}
+                        >
+                          {slot}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ delay: 0.2 }}
                 >
                   <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
@@ -350,6 +447,15 @@ const Consultancy = () => {
                 >
                   {isSubmitting ? 'Submitting...' : 'Begin Your Design Journey'}
                 </motion.button>
+
+                <button
+                  type="button"
+                  disabled={isSubmitting}
+                  onClick={handleReserveWithDeposit}
+                  className="w-full border border-foreground/40 bg-background py-4 font-sans text-sm uppercase tracking-widest text-foreground transition-colors hover:bg-secondary/50"
+                >
+                  Reserve Slot with Deposit ({formatINR(CONSULTANCY_DEPOSIT)})
+                </button>
             </motion.form>
           </div>
         </div>

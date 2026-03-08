@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
@@ -12,21 +13,40 @@ import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
 import { handleImageError } from '@/lib/image';
+import {
+  buildSearchSuggestions,
+  inferProductCategory,
+  matchesSmartSearch,
+  type SearchSuggestion,
+} from '@/lib/smartSearch';
 
 const Collections = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [materialFilter, setMaterialFilter] = useState('all');
+  const [collectionFilter, setCollectionFilter] = useState('all');
+  const [categoryFilter, setCategoryFilter] = useState('all');
   const [priceBand, setPriceBand] = useState<'all' | '0-3000' | '3001-7000' | '7001+'>('all');
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const [searchParams] = useSearchParams();
   const { addItem } = useCart();
 
   const { data: collections = [], isLoading, isError } = useQuery({ queryKey: ['collections'], queryFn: fetchCollections });
   const { data: products = [] } = useQuery({ queryKey: ['products'], queryFn: fetchProducts });
 
-  const filteredCollections = useMemo(() => {
-    const query = searchTerm.trim().toLowerCase();
-    if (!query) return collections;
-    return collections.filter((collection) => [collection.name, collection.tagline, collection.description].some((field) => field.toLowerCase().includes(query)));
-  }, [collections, searchTerm]);
+  useEffect(() => {
+    const q = (searchParams.get('q') || '').trim();
+    const material = (searchParams.get('material') || '').trim();
+    const price = (searchParams.get('price') || '').trim() as 'all' | '0-3000' | '3001-7000' | '7001+';
+    const collection = (searchParams.get('collection') || '').trim();
+    const category = (searchParams.get('category') || '').trim();
+
+    if (q) setSearchTerm(q);
+    if (material) setMaterialFilter(material);
+    if (price && ['all', '0-3000', '3001-7000', '7001+'].includes(price)) setPriceBand(price);
+    if (collection) setCollectionFilter(collection);
+    if (category) setCategoryFilter(category);
+  }, [searchParams]);
 
   const materials = useMemo(() => {
     const set = new Set<string>();
@@ -34,21 +54,78 @@ const Collections = () => {
     return Array.from(set).sort();
   }, [products]);
 
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    products.forEach((product) => set.add(inferProductCategory(product.name)));
+    return Array.from(set).sort();
+  }, [products]);
+
+  const suggestions = useMemo(
+    () =>
+      buildSearchSuggestions({
+        query: searchTerm,
+        products,
+        collections,
+        materials,
+        categories,
+      }),
+    [searchTerm, products, collections, materials, categories],
+  );
+
+  const filteredCollections = useMemo(() => {
+    const query = searchTerm.trim();
+    return collections.filter((collection) => {
+      const matchesSearch =
+        !query || matchesSmartSearch(query, `${collection.name} ${collection.tagline} ${collection.description}`);
+      const matchesCollection = collectionFilter === 'all' || collection.slug === collectionFilter;
+      return matchesSearch && matchesCollection;
+    });
+  }, [collections, searchTerm, collectionFilter]);
+
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
-      const query = searchTerm.trim().toLowerCase();
-      const matchesSearch = !query || [product.name, product.description, ...product.materials].join(' ').toLowerCase().includes(query);
+      const query = searchTerm.trim();
+      const category = inferProductCategory(product.name);
+      const matchesSearch =
+        !query ||
+        matchesSmartSearch(
+          query,
+          `${product.name} ${product.description} ${product.materials.join(' ')} ${category} ${product.collection}`,
+        );
       const matchesMaterial = materialFilter === 'all' || product.materials.includes(materialFilter);
+      const matchesCollection = collectionFilter === 'all' || product.collectionSlug === collectionFilter;
+      const matchesCategory = categoryFilter === 'all' || category === categoryFilter;
       const matchesPrice =
         priceBand === 'all' ||
         (priceBand === '0-3000' && product.price <= 3000) ||
         (priceBand === '3001-7000' && product.price >= 3001 && product.price <= 7000) ||
         (priceBand === '7001+' && product.price >= 7001);
-      return matchesSearch && matchesMaterial && matchesPrice;
+      return matchesSearch && matchesMaterial && matchesCollection && matchesCategory && matchesPrice;
     });
-  }, [products, searchTerm, materialFilter, priceBand]);
+  }, [products, searchTerm, materialFilter, collectionFilter, categoryFilter, priceBand]);
 
-  const isFilterActive = searchTerm.trim().length > 0 || materialFilter !== 'all' || priceBand !== 'all';
+  const isFilterActive =
+    searchTerm.trim().length > 0 ||
+    materialFilter !== 'all' ||
+    collectionFilter !== 'all' ||
+    categoryFilter !== 'all' ||
+    priceBand !== 'all';
+
+  const selectSuggestion = (suggestion: SearchSuggestion) => {
+    if (suggestion.kind === 'material') {
+      setMaterialFilter(suggestion.value);
+      setSearchTerm(suggestion.label);
+    } else if (suggestion.kind === 'collection') {
+      setCollectionFilter(suggestion.value);
+      setSearchTerm(suggestion.label);
+    } else if (suggestion.kind === 'category') {
+      setCategoryFilter(suggestion.value);
+      setSearchTerm(suggestion.label);
+    } else {
+      setSearchTerm(suggestion.label);
+    }
+    setShowSuggestions(false);
+  };
 
   if (isLoading) {
     return (
@@ -90,17 +167,80 @@ const Collections = () => {
             <p className="font-sans text-muted-foreground max-w-2xl mx-auto leading-relaxed">Each collection represents a distinct philosophy - a meditation on material, form, and the spaces we inhabit. Not products, but ideas made tangible.</p>
           </motion.div>
 
-          <div className="mb-8 grid grid-cols-1 gap-4 border border-border/60 bg-card/50 p-5 md:grid-cols-4">
-            <input value={searchTerm} onChange={(event) => setSearchTerm(event.target.value)} placeholder="Search collections or products" className="md:col-span-2 border border-border bg-background px-3 py-2 text-sm" />
+          <div className="mb-8 grid grid-cols-1 gap-4 border border-border/60 bg-card/50 p-5 md:grid-cols-6">
+            <div className="relative md:col-span-2">
+              <input
+                value={searchTerm}
+                onChange={(event) => {
+                  setSearchTerm(event.target.value);
+                  setShowSuggestions(true);
+                  setActiveSuggestionIndex(0);
+                }}
+                onFocus={() => setShowSuggestions(true)}
+                onBlur={() => window.setTimeout(() => setShowSuggestions(false), 120)}
+                onKeyDown={(event) => {
+                  if (!suggestions.length || !showSuggestions) return;
+                  if (event.key === 'ArrowDown') {
+                    event.preventDefault();
+                    setActiveSuggestionIndex((prev) => Math.min(prev + 1, suggestions.length - 1));
+                  } else if (event.key === 'ArrowUp') {
+                    event.preventDefault();
+                    setActiveSuggestionIndex((prev) => Math.max(prev - 1, 0));
+                  } else if (event.key === 'Enter') {
+                    event.preventDefault();
+                    const current = suggestions[activeSuggestionIndex];
+                    if (current) selectSuggestion(current);
+                  } else if (event.key === 'Escape') {
+                    setShowSuggestions(false);
+                  }
+                }}
+                placeholder="Smart search products, materials, categories"
+                className="w-full border border-border bg-background px-3 py-2 text-sm"
+              />
+
+              {showSuggestions && searchTerm.trim() && suggestions.length > 0 && (
+                <div className="absolute z-20 mt-1 max-h-72 w-full overflow-y-auto border border-border bg-background shadow-lg">
+                  {suggestions.map((suggestion, index) => (
+                    <button
+                      key={`${suggestion.kind}-${suggestion.value}`}
+                      type="button"
+                      onMouseDown={(event) => event.preventDefault()}
+                      onClick={() => selectSuggestion(suggestion)}
+                      className={`flex w-full items-center justify-between px-3 py-2 text-left text-sm ${index === activeSuggestionIndex ? 'bg-secondary/70' : 'hover:bg-secondary/50'}`}
+                    >
+                      <span className="truncate">{suggestion.label}</span>
+                      <span className="ml-3 text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{suggestion.kind}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <select value={collectionFilter} onChange={(event) => setCollectionFilter(event.target.value)} title="Filter by collection" className="border border-border bg-background px-3 py-2 text-sm">
+              <option value="all">All collections</option>
+              {collections.map((collection) => (
+                <option key={collection.slug} value={collection.slug}>
+                  {collection.name}
+                </option>
+              ))}
+            </select>
             <select value={materialFilter} onChange={(event) => setMaterialFilter(event.target.value)} title="Filter by material" className="border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All materials</option>
               {materials.map((material) => (<option key={material} value={material}>{material}</option>))}
             </select>
+            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} title="Filter by category" className="border border-border bg-background px-3 py-2 text-sm">
+              <option value="all">All categories</option>
+              {categories.map((category) => (
+                <option key={category} value={category}>
+                  {category}
+                </option>
+              ))}
+            </select>
             <select value={priceBand} onChange={(event) => setPriceBand(event.target.value as 'all' | '0-3000' | '3001-7000' | '7001+')} title="Filter by price" className="border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All prices</option>
-              <option value="0-3000">Up to ₹3,000</option>
-              <option value="3001-7000">₹3,001 - ₹7,000</option>
-              <option value="7001+">₹7,001+</option>
+              <option value="0-3000">Up to INR 3,000</option>
+              <option value="3001-7000">INR 3,001 - 7,000</option>
+              <option value="7001+">INR 7,001+</option>
             </select>
           </div>
 
@@ -115,7 +255,8 @@ const Collections = () => {
                   <div key={product.id} className="border border-border bg-card/50 p-4">
                     <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={product.image} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div></Link>
                     <p className="font-serif text-xl">{product.name}</p>
-                    <p className="mb-4 text-sm text-muted-foreground">{product.materials.join(' / ')}</p>
+                    <p className="mb-2 text-sm text-muted-foreground">{product.materials.join(' / ')}</p>
+                    <p className="mb-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">{inferProductCategory(product.name)}</p>
                     <div className="flex items-center justify-between">
                       <p className="text-sm uppercase tracking-[0.2em]">{formatINR(product.price)}</p>
                       <button onClick={() => { addItem({ id: product.id, name: product.name, price: product.price, image: product.image, material: product.materials[0] }); trackEvent({ event: 'add_to_cart', source: 'collections_discovery', product_id: product.id }); }} className="border border-foreground/30 px-3 py-2 text-xs uppercase tracking-[0.2em]">Add</button>
@@ -167,3 +308,4 @@ const Collections = () => {
 };
 
 export default Collections;
+

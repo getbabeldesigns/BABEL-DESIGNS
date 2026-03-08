@@ -41,6 +41,9 @@ const Footer = () => {
             <motion.ul className="space-y-3" variants={staggerContainerVariants}>
               {[
                 { path: '/collections', label: 'Collections' },
+                { path: '/lookbook', label: 'Lookbook' },
+                { path: '/materials', label: 'Material Explorer' },
+                { path: '/style-quiz', label: 'Style Quiz' },
                 { path: '/blogs', label: 'Blogs' },
                 { path: '/philosophy', label: 'Philosophy' },
                 { path: '/consultancy', label: 'Consultancy' },

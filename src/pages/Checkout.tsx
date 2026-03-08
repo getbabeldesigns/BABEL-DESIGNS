@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "sonner";
@@ -11,10 +11,12 @@ import { openRazorpayCheckout } from "@/integrations/razorpay/checkout";
 import { trackEvent } from "@/lib/analytics";
 import { formatINR } from "@/lib/currency";
 import { handleImageError } from "@/lib/image";
+import { SHIPPING_ESTIMATE_STORAGE_KEY, type ShippingEstimate } from "@/lib/shipping";
 
 const Checkout = () => {
   const { items, totalPrice, clearCart } = useCart();
   const navigate = useNavigate();
+  const location = useLocation();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     fullName: "",
@@ -40,6 +42,19 @@ const Checkout = () => {
       formData.pincode.trim()
     );
   }, [formData]);
+
+  const shippingEstimate = useMemo(() => {
+    const fromState = (location.state as { shippingEstimate?: ShippingEstimate } | null)?.shippingEstimate;
+    if (fromState) return fromState;
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = window.sessionStorage.getItem(SHIPPING_ESTIMATE_STORAGE_KEY);
+      if (!raw) return null;
+      return JSON.parse(raw) as ShippingEstimate;
+    } catch {
+      return null;
+    }
+  }, [location.state]);
 
   const handleFieldChange = (name: keyof typeof formData, value: string) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -130,6 +145,9 @@ const Checkout = () => {
         `State: ${formData.state.trim()}`,
         `Pincode: ${formData.pincode.trim()}`,
         `Country: ${formData.country.trim() || "India"}`,
+        shippingEstimate
+          ? `Shipping Estimate: ${shippingEstimate.zone}, ${formatINR(shippingEstimate.shippingFee)}, ETA ${shippingEstimate.productionMinWeeks}-${shippingEstimate.productionMaxWeeks} weeks + ${shippingEstimate.transitMinDays}-${shippingEstimate.transitMaxDays} days`
+          : "Shipping Estimate: not calculated pre-checkout",
         formData.notes.trim() ? `Customer Note: ${formData.notes.trim()}` : "",
       ]
         .filter(Boolean)
@@ -254,8 +272,14 @@ const Checkout = () => {
                 </div>
                 <div className="mb-4 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Shipping</span>
-                  <span>Calculated at checkout</span>
+                  <span>{shippingEstimate ? formatINR(shippingEstimate.shippingFee) : "Estimated after pincode check"}</span>
                 </div>
+                {shippingEstimate && (
+                  <p className="mb-4 text-xs text-muted-foreground">
+                    ETA: {shippingEstimate.productionMinWeeks}-{shippingEstimate.productionMaxWeeks} weeks production +{" "}
+                    {shippingEstimate.transitMinDays}-{shippingEstimate.transitMaxDays} transit days ({shippingEstimate.zone})
+                  </p>
+                )}
                 <div className="mb-5 flex items-center justify-between font-serif text-xl">
                   <span>Total</span>
                   <span>{formatINR(totalPrice)}</span>
