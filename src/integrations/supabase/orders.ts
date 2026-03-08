@@ -20,10 +20,12 @@ export const createOrder = async (input: CreateOrderInput): Promise<CreatedOrder
 
   const totalAmount = input.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const currency = input.currency ?? "INR";
+  const orderId = crypto.randomUUID();
 
-  const { data: orderRow, error: orderError } = await supabase
+  const { error: orderError } = await supabase
     .from("orders")
     .insert({
+      id: orderId,
       full_name: input.fullName ?? null,
       email: input.email ?? null,
       notes: input.notes ?? null,
@@ -32,14 +34,12 @@ export const createOrder = async (input: CreateOrderInput): Promise<CreatedOrder
       status: "created",
       payment_provider: "razorpay",
       payment_status: "created",
-    })
-    .select("id")
-    .single();
+    });
 
   if (orderError) throw orderError;
 
   const orderItems = input.items.map((item) => ({
-    order_id: orderRow.id,
+    order_id: orderId,
     product_id: item.id,
     product_name: item.name,
     unit_price: item.price,
@@ -52,7 +52,7 @@ export const createOrder = async (input: CreateOrderInput): Promise<CreatedOrder
   if (itemsError) throw itemsError;
 
   return {
-    id: orderRow.id,
+    id: orderId,
     totalAmount,
     currency,
   };

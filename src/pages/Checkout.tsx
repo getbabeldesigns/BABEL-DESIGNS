@@ -144,7 +144,12 @@ const Checkout = () => {
       });
       await startPaymentForOrder(localOrder.id);
     } catch (error) {
-      const message = error instanceof Error ? error.message : "Failed to process checkout";
+      const message =
+        error instanceof Error
+          ? error.message
+          : typeof error === "object" && error !== null && "message" in error
+            ? String((error as { message: unknown }).message)
+            : "Failed to process checkout";
       toast.error(message);
     } finally {
       setIsSubmitting(false);
