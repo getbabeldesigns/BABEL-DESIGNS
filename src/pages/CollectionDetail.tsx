@@ -5,6 +5,8 @@ import AnimatedSection from '@/components/AnimatedSection';
 import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrations/supabase/catalog';
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
+import { formatINR } from '@/lib/currency';
+import { handleImageError } from '@/lib/image';
 
 const CollectionDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -21,14 +23,6 @@ const CollectionDetail = () => {
     queryFn: () => fetchProductsByCollectionSlug(slug || ''),
     enabled: Boolean(slug),
   });
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
 
   if (isCollectionLoading || isProductsLoading) {
     return (
@@ -71,7 +65,7 @@ const CollectionDetail = () => {
                 <p className="font-sans text-muted-foreground leading-relaxed max-w-lg">{collection.description}</p>
               </div>
               <div className="aspect-[4/3] overflow-hidden">
-                <img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                <img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} />
               </div>
             </div>
           </motion.div>
@@ -96,6 +90,7 @@ const CollectionDetail = () => {
                         className="w-full h-full object-cover"
                         loading="lazy"
                         decoding="async"
+                        onError={handleImageError}
                       />
                     </div>
                   </Link>
@@ -109,7 +104,7 @@ const CollectionDetail = () => {
                       </Link>
                       <p className="font-sans text-sm text-muted-foreground mt-1">{product.materials.join(' · ')}</p>
                     </div>
-                    <p className="font-sans text-sm text-foreground">{formatPrice(product.price)}</p>
+                    <p className="font-sans text-sm text-foreground">{formatINR(product.price)}</p>
                   </div>
 
                   <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-6">{product.description}</p>

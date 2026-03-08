@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+﻿import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft } from 'lucide-react';
@@ -8,6 +8,8 @@ import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 import { fetchProductById, fetchProducts } from '@/integrations/supabase/catalog';
 import { trackEvent } from '@/lib/analytics';
+import { formatINR } from '@/lib/currency';
+import { handleImageError } from '@/lib/image';
 
 const recentKey = 'babel_recent_products';
 
@@ -51,14 +53,6 @@ const ProductDetail = () => {
       .filter((item): item is NonNullable<typeof item> => Boolean(item))
       .slice(0, 3);
   }, [allProducts, product]);
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
 
   if (isLoading) {
     return (
@@ -108,7 +102,7 @@ const ProductDetail = () => {
               <motion.div
                 className="aspect-square bg-secondary/30 mb-4 overflow-hidden"
               >
-                <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
+                <img src={product.image} alt={product.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} />
               </motion.div>
               <motion.div className="grid grid-cols-3 gap-4" variants={staggerContainerVariants} initial="hidden" animate="visible">
                 {galleryImages.slice(0, 3).map((image, i) => (
@@ -123,6 +117,7 @@ const ProductDetail = () => {
                       className="w-full h-full object-cover opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
                       loading="lazy"
                       decoding="async"
+                      onError={handleImageError}
                     />
                   </motion.div>
                 ))}
@@ -137,13 +132,13 @@ const ProductDetail = () => {
             >
               <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">{product.collection}</p>
               <h1 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-4">{product.name}</h1>
-              <p className="font-sans text-xl text-foreground mb-8">{formatPrice(product.price)}</p>
+              <p className="font-sans text-xl text-foreground mb-8">{formatINR(product.price)}</p>
 
               <p className="font-sans text-muted-foreground leading-relaxed mb-8">{product.description}</p>
 
               <div className="border-t border-border pt-6 mb-6">
                 <h3 className="font-sans text-xs tracking-widest uppercase text-muted-foreground mb-3">Materials</h3>
-                <p className="font-sans text-foreground">{product.materials.join(' � ')}</p>
+                <p className="font-sans text-foreground">{product.materials.join(' / ')}</p>
               </div>
 
               <div className="border-t border-border pt-6 mb-6">
@@ -172,7 +167,7 @@ const ProductDetail = () => {
                 Add to Cart
               </button>
 
-              <p className="font-sans text-xs text-muted-foreground text-center mt-4">Made to order � 8-12 weeks delivery</p>
+              <p className="font-sans text-xs text-muted-foreground text-center mt-4">Made to order - 8-12 weeks delivery</p>
             </motion.div>
           </div>
         </div>
@@ -188,10 +183,10 @@ const ProductDetail = () => {
                   {relatedProducts.map((item) => (
                     <Link key={item.id} to={`/product/${item.id}`} className="border border-border bg-background p-4">
                       <div className="mb-3 aspect-square overflow-hidden">
-                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} />
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.materials.join(' � ')}</p>
+                      <p className="text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
                     </Link>
                   ))}
                 </div>
@@ -205,10 +200,10 @@ const ProductDetail = () => {
                   {recentlyViewed.map((item) => (
                     <Link key={item.id} to={`/product/${item.id}`} className="border border-border bg-background p-4">
                       <div className="mb-3 aspect-square overflow-hidden">
-                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" />
+                        <img src={item.image} alt={item.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} />
                       </div>
                       <p className="font-serif text-xl">{item.name}</p>
-                      <p className="text-sm text-muted-foreground">{item.materials.join(' � ')}</p>
+                      <p className="text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
                     </Link>
                   ))}
                 </div>
@@ -233,4 +228,3 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
-

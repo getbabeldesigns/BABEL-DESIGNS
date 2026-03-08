@@ -7,7 +7,7 @@
   type Collection,
   type Product,
 } from "@/data/products";
-import { getCollectionImage } from "@/lib/catalogAssets";
+import { getCollectionImage, resolveProductImage } from "@/lib/catalogAssets";
 import { getSupabaseClient, isSupabaseConfigured } from "./client";
 
 type SupabaseErrorLike = {
@@ -63,8 +63,11 @@ const toProduct = (row: ProductQueryRow): Product => {
   const linkedCollection = Array.isArray(row.collections) ? row.collections[0] : row.collections;
   const collectionSlug = linkedCollection?.slug ?? "";
   const collectionName = linkedCollection?.name ?? "";
-  const primaryImage = getCollectionImage(collectionSlug, row.image_url);
-  const gallery = row.gallery?.length ? row.gallery : [primaryImage, primaryImage, primaryImage];
+  const primaryImage = resolveProductImage(row.image_url, collectionSlug);
+  const gallery = (row.gallery ?? [])
+    .map((image) => resolveProductImage(image, collectionSlug))
+    .filter(Boolean);
+  const safeGallery = gallery.length ? gallery : [primaryImage, primaryImage, primaryImage];
 
   return {
     id: row.id,
@@ -77,7 +80,7 @@ const toProduct = (row: ProductQueryRow): Product => {
     materials: row.materials ?? [],
     dimensions: row.dimensions,
     image: primaryImage,
-    images: gallery,
+    images: safeGallery,
   };
 };
 

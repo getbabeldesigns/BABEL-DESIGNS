@@ -21,6 +21,7 @@ const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Philosophy = lazy(() => import("./pages/Philosophy"));
 const Consultancy = lazy(() => import("./pages/Consultancy"));
 const Cart = lazy(() => import("./pages/Cart"));
+const Checkout = lazy(() => import("./pages/Checkout"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
@@ -108,6 +109,14 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Cart | Babel Designs",
       description: "Review your cart and proceed to secure checkout.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/checkout") {
+    return {
+      title: "Checkout | Babel Designs",
+      description: "Enter shipping and contact details before secure Razorpay payment.",
       canonicalPath: pathname,
     };
   }
@@ -336,6 +345,7 @@ const AppContent = () => {
                 <Route path="/philosophy" element={<Philosophy />} />
                 <Route path="/consultancy" element={<Consultancy />} />
                 <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />

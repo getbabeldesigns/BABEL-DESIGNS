@@ -1,117 +1,15 @@
 ﻿import { Link, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Minus, Plus, X, ArrowRight } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
-import { toast } from 'sonner';
-import { createOrder } from '@/integrations/supabase/orders';
-import { isSupabaseConfigured } from '@/integrations/supabase/client';
-import { createRazorpayOrder, markPaymentFailed, verifyRazorpayPayment } from '@/integrations/supabase/payments';
-import { openRazorpayCheckout } from '@/integrations/razorpay/checkout';
-import { trackEvent } from '@/lib/analytics';
+import { formatINR } from '@/lib/currency';
+import { handleImageError } from '@/lib/image';
 
 const Cart = () => {
-  const { items, removeItem, updateQuantity, totalPrice, clearCart } = useCart();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [pendingOrderId, setPendingOrderId] = useState<string | null>(null);
+  const { items, removeItem, updateQuantity, totalPrice } = useCart();
   const navigate = useNavigate();
-
-  const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-    }).format(price);
-  };
-
-  const startPaymentForOrder = async (localOrderId: string) => {
-    const razorpayOrder = await createRazorpayOrder({ localOrderId });
-
-    await new Promise<void>((resolve, reject) => {
-      openRazorpayCheckout({
-        key: import.meta.env.VITE_RAZORPAY_KEY_ID!,
-        amount: razorpayOrder.amount,
-        currency: razorpayOrder.currency,
-        name: 'Babel Designs',
-        description: 'Furniture order payment',
-        order_id: razorpayOrder.razorpayOrderId,
-        notes: {
-          local_order_id: localOrderId,
-        },
-        theme: {
-          color: '#2f2922',
-        },
-        handler: async (response) => {
-          try {
-            await verifyRazorpayPayment({
-              localOrderId,
-              razorpayOrderId: response.razorpay_order_id,
-              razorpayPaymentId: response.razorpay_payment_id,
-              razorpaySignature: response.razorpay_signature,
-            });
-            clearCart();
-            setPendingOrderId(null);
-            trackEvent({ event: 'checkout_success', order_id: localOrderId });
-            toast.success(`Payment successful. Reference: ${localOrderId.slice(0, 8).toUpperCase()}`);
-            navigate(`/order/success/${localOrderId}`);
-            resolve();
-          } catch (error) {
-            await markPaymentFailed({ localOrderId, reason: 'verify_failed' }).catch(() => undefined);
-            setPendingOrderId(localOrderId);
-            reject(error);
-          }
-        },
-        modal: {
-          ondismiss: async () => {
-            await markPaymentFailed({ localOrderId, reason: 'cancelled' }).catch(() => undefined);
-            setPendingOrderId(localOrderId);
-            trackEvent({ event: 'checkout_cancelled', order_id: localOrderId });
-            reject(new Error('Payment cancelled'));
-          },
-        },
-      }).catch(reject);
-    });
-  };
-
-  const handleCheckout = async () => {
-    if (!isSupabaseConfigured) {
-      toast.error('Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).');
-      return;
-    }
-    if (!import.meta.env.VITE_RAZORPAY_KEY_ID) {
-      toast.error('Razorpay is not configured yet. Add VITE_RAZORPAY_KEY_ID.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      trackEvent({ event: 'checkout_started', cart_items: items.length, total_amount: totalPrice });
-      const localOrder = await createOrder({ items, currency: 'INR' });
-      await startPaymentForOrder(localOrder.id);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to submit order request';
-      toast.error(message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleRetryPayment = async () => {
-    if (!pendingOrderId) return;
-
-    setIsSubmitting(true);
-    try {
-      trackEvent({ event: 'checkout_retry', order_id: pendingOrderId });
-      await startPaymentForOrder(pendingOrderId);
-    } catch (error) {
-      const message = error instanceof Error ? error.message : 'Failed to retry payment';
-      toast.error(message);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
 
   if (items.length === 0) {
     return (
@@ -178,7 +76,7 @@ const Cart = () => {
             >
               {items.map((item) => (
                 <motion.div
-                  key={item.id}
+                  key={`${item.id}-${item.material ?? ''}`}
                   variants={staggerItemVariants}
                   layout
                 >
@@ -194,6 +92,7 @@ const Cart = () => {
                         className="h-full w-full object-cover"
                         loading="lazy"
                         decoding="async"
+                        onError={handleImageError}
                       />
                     </motion.div>
 
@@ -242,7 +141,7 @@ const Cart = () => {
                         </div>
 
                         <span className="font-sans text-lg text-foreground">
-                          {formatPrice(item.price * item.quantity)}
+                          {formatINR(item.price * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -264,7 +163,7 @@ const Cart = () => {
               <div className="mb-8 space-y-4">
                 <div className="flex justify-between font-sans text-sm">
                   <span className="text-muted-foreground">Subtotal</span>
-                  <span className="text-foreground">{formatPrice(totalPrice)}</span>
+                  <span className="text-foreground">{formatINR(totalPrice)}</span>
                 </div>
                 <div className="flex justify-between font-sans text-sm">
                   <span className="text-muted-foreground">Shipping</span>
@@ -275,29 +174,18 @@ const Cart = () => {
               <div className="mb-8 border-t border-border pt-4">
                 <div className="flex justify-between font-sans">
                   <span className="text-foreground">Total</span>
-                  <span className="text-lg text-foreground">{formatPrice(totalPrice)}</span>
+                  <span className="text-lg text-foreground">{formatINR(totalPrice)}</span>
                 </div>
               </div>
 
               <motion.button
-                onClick={handleCheckout}
-                disabled={isSubmitting}
+                onClick={() => navigate('/checkout')}
                 className="mb-4 w-full bg-foreground py-4 font-sans text-sm uppercase tracking-widest text-background transition-colors hover:bg-foreground/90"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                {isSubmitting ? 'Submitting...' : 'Proceed to Checkout'}
+                Proceed to Checkout
               </motion.button>
-
-              {pendingOrderId && (
-                <button
-                  onClick={handleRetryPayment}
-                  disabled={isSubmitting}
-                  className="mb-4 w-full border border-foreground/30 bg-background py-3 text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:bg-foreground hover:text-background"
-                >
-                  Retry Last Payment
-                </button>
-              )}
 
               <p className="text-center font-sans text-xs text-muted-foreground">
                 Made to order - 8-12 weeks delivery

@@ -10,6 +10,8 @@ import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
+import { formatINR } from '@/lib/currency';
+import { handleImageError } from '@/lib/image';
 
 const Collections = () => {
   const [searchTerm, setSearchTerm] = useState('');
@@ -96,9 +98,9 @@ const Collections = () => {
             </select>
             <select value={priceBand} onChange={(event) => setPriceBand(event.target.value as 'all' | '0-3000' | '3001-7000' | '7001+')} title="Filter by price" className="border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All prices</option>
-              <option value="0-3000">Up to $3,000</option>
-              <option value="3001-7000">$3,001 - $7,000</option>
-              <option value="7001+">$7,001+</option>
+              <option value="0-3000">Up to ₹3,000</option>
+              <option value="3001-7000">₹3,001 - ₹7,000</option>
+              <option value="7001+">₹7,001+</option>
             </select>
           </div>
 
@@ -111,11 +113,11 @@ const Collections = () => {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {filteredProducts.slice(0, 9).map((product) => (
                   <div key={product.id} className="border border-border bg-card/50 p-4">
-                    <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={product.image} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" /></div></Link>
+                    <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={product.image} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div></Link>
                     <p className="font-serif text-xl">{product.name}</p>
                     <p className="mb-4 text-sm text-muted-foreground">{product.materials.join(' / ')}</p>
                     <div className="flex items-center justify-between">
-                      <p className="text-sm uppercase tracking-[0.2em]">${product.price}</p>
+                      <p className="text-sm uppercase tracking-[0.2em]">{formatINR(product.price)}</p>
                       <button onClick={() => { addItem({ id: product.id, name: product.name, price: product.price, image: product.image, material: product.materials[0] }); trackEvent({ event: 'add_to_cart', source: 'collections_discovery', product_id: product.id }); }} className="border border-foreground/30 px-3 py-2 text-xs uppercase tracking-[0.2em]">Add</button>
                     </div>
                   </div>
@@ -128,7 +130,7 @@ const Collections = () => {
             {filteredCollections.map((collection, index) => (
               <motion.div key={collection.slug} variants={staggerItemVariants}>
                 <Link to={`/collections/${collection.slug}`} data-cursor="View" className={`group grid grid-cols-1 lg:grid-cols-2 gap-12 items-center card-hover-lift ${index % 2 === 1 ? 'lg:flex-row-reverse' : ''}`}>
-                  <motion.div className={`${index % 2 === 1 ? 'lg:order-2' : ''}`}><motion.div className="aspect-[4/3] overflow-hidden relative border border-border/40"><img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" /><div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" /></motion.div></motion.div>
+                  <motion.div className={`${index % 2 === 1 ? 'lg:order-2' : ''}`}><motion.div className="aspect-[4/3] overflow-hidden relative border border-border/40"><img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /><div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" /></motion.div></motion.div>
                   <motion.div className={`${index % 2 === 1 ? 'lg:order-1 lg:text-right' : ''}`} whileInView={{ opacity: 1, x: 0 }} initial={{ opacity: 0, x: index % 2 === 1 ? 40 : -40 }} viewport={{ once: true }} transition={{ duration: 0.8 }}>
                     <motion.p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4" whileHover={{ y: -2, opacity: 0.85 }} transition={{ duration: 0.4 }}>{collection.tagline}</motion.p>
                     <motion.h2 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-6 group-hover:text-muted-foreground transition-colors" whileHover={{ scale: 1.02 }}>{collection.name}</motion.h2>
@@ -148,9 +150,9 @@ const Collections = () => {
               <p className="font-sans text-muted-foreground max-w-2xl mx-auto leading-relaxed">Behind each collection is a quiet study of texture and proportion. These notes reflect the ongoing dialogue between raw material and refined form.</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={monolithImg} alt="Stone study" className="w-full h-full object-cover" loading="lazy" decoding="async" /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Stone Study</p><p className="font-sans text-muted-foreground leading-relaxed">Dense, grounded forms that anchor a room. A material that holds memory in its surface.</p></div></div>
-              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={stillnessImg} alt="Soft light" className="w-full h-full object-cover" loading="lazy" decoding="async" /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Soft Light</p><p className="font-sans text-muted-foreground leading-relaxed">Linen, oak, and rounded edges invite the eye to linger. A calm rhythm for daily rituals.</p></div></div>
-              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={originImg} alt="Raw materials" className="w-full h-full object-cover" loading="lazy" decoding="async" /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Raw Origin</p><p className="font-sans text-muted-foreground leading-relaxed">Unfinished textures, honest joinery, and the beauty of a material left to speak.</p></div></div>
+              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={monolithImg} alt="Stone study" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Stone Study</p><p className="font-sans text-muted-foreground leading-relaxed">Dense, grounded forms that anchor a room. A material that holds memory in its surface.</p></div></div>
+              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={stillnessImg} alt="Soft light" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Soft Light</p><p className="font-sans text-muted-foreground leading-relaxed">Linen, oak, and rounded edges invite the eye to linger. A calm rhythm for daily rituals.</p></div></div>
+              <div className="bg-secondary/40 border border-border/60 rounded-2xl overflow-hidden card-hover-lift"><div className="aspect-[4/3] overflow-hidden"><img src={originImg} alt="Raw materials" className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div><div className="p-6"><p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-3">Raw Origin</p><p className="font-sans text-muted-foreground leading-relaxed">Unfinished textures, honest joinery, and the beauty of a material left to speak.</p></div></div>
             </div>
           </div>
         </div>

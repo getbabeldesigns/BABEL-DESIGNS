@@ -19,7 +19,7 @@
     {
       title: "How to Request a Return",
       points: [
-        "Email studio@babeldesigns.com with order ID and product photos.",
+        "Email getbabeldesigns@gmail.com with order ID and product photos.",
         "Our team reviews eligibility in 2 to 4 business days.",
         "If approved, pickup instructions and quality-check guidelines are shared.",
       ],

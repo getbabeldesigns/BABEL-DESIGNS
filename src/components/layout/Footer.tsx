@@ -93,12 +93,12 @@ const Footer = () => {
               ))}
               <motion.li variants={staggerItemVariants}>
                 <a
-                  href="mailto:studio@babeldesigns.com"
+                  href="mailto:getbabeldesigns@gmail.com"
                   data-cursor="Email"
                   className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
                 >
                   <motion.span whileHover={{ x: 4 }} transition={{ duration: 0.2 }} className="inline-block">
-                    studio@babeldesigns.com
+                    getbabeldesigns@gmail.com
                   </motion.span>
                 </a>
               </motion.li>
