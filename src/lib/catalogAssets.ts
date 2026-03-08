@@ -23,6 +23,30 @@ const isAbsoluteOrBrowserPath = (value: string) => {
   return /^(https?:\/\/|data:|blob:)/i.test(value) || value.startsWith("/");
 };
 
+const looksLikePublicAssetPath = (value: string) => {
+  return /^(\.?\/)?(assets|images|img)\//i.test(value) || /^[^/]+\.[a-z0-9]{2,5}(\?.*)?$/i.test(value);
+};
+
+const normalizeImageUrl = (value: string) => {
+  if (isAbsoluteOrBrowserPath(value)) return value;
+
+  const normalized = value.replace(/^\/+/, "");
+  if (normalized.startsWith("storage/v1/object/public/")) {
+    return toPublicStorageUrl(normalized);
+  }
+
+  if (looksLikePublicAssetPath(normalized)) {
+    return `/${normalized}`;
+  }
+
+  // Treat bucket-like paths as Supabase Storage public paths.
+  if (normalized.includes("/")) {
+    return toPublicStorageUrl(normalized);
+  }
+
+  return value;
+};
+
 const fallbackBySlug = (slug?: string) => {
   if (!slug) return "/placeholder.svg";
   return collectionImages[slug] ?? "/placeholder.svg";
@@ -31,15 +55,13 @@ const fallbackBySlug = (slug?: string) => {
 export const getCollectionImage = (slug?: string, imageUrl?: string | null) => {
   const value = imageUrl?.trim();
   if (!value) return fallbackBySlug(slug);
-  if (isAbsoluteOrBrowserPath(value)) return value;
-  return toPublicStorageUrl(value);
+  return normalizeImageUrl(value);
 };
 
 export const resolveProductImage = (imageUrl?: string | null, slug?: string) => {
   const value = imageUrl?.trim();
   if (!value) return fallbackBySlug(slug);
-  if (isAbsoluteOrBrowserPath(value)) return value;
-  return toPublicStorageUrl(value);
+  return normalizeImageUrl(value);
 };
 
 export const collectionImageMap = collectionImages;
