@@ -26,6 +26,10 @@ const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Policies = lazy(() => import("./pages/Policies"));
+const ReturnPolicy = lazy(() => import("./pages/ReturnPolicy"));
+const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const DisclaimerPage = lazy(() => import("./pages/DisclaimerPage"));
 const Blogs = lazy(() => import("./pages/CaseStudies"));
 const NotFound = lazy(() => import("./pages/NotFound"));
 const LaunchCountdown = lazy(() => import("./pages/LaunchCountdown"));
@@ -130,6 +134,38 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Policies | Babel Designs",
       description: "Read delivery, return, and warranty policies for Babel Designs orders.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/return-policy") {
+    return {
+      title: "Return Policy | Babel Designs",
+      description: "Review the return eligibility, exclusions, and process for Babel Designs orders.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/refund-policy") {
+    return {
+      title: "Refund Policy | Babel Designs",
+      description: "Understand refund conditions, processing timelines, and exclusions at Babel Designs.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/privacy-policy") {
+    return {
+      title: "Privacy Policy | Babel Designs",
+      description: "Learn how Babel Designs collects, uses, and protects customer data.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/disclaimer") {
+    return {
+      title: "Disclaimer | Babel Designs",
+      description: "Read usage, liability, and informational disclaimer terms for Babel Designs.",
       canonicalPath: pathname,
     };
   }
@@ -305,6 +341,10 @@ const AppContent = () => {
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/policies" element={<Policies />} />
+                <Route path="/return-policy" element={<ReturnPolicy />} />
+                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/disclaimer" element={<DisclaimerPage />} />
                 <Route path="/blogs" element={<Blogs />} />
                 <Route path="/case-studies" element={<Blogs />} />
                 <Route path="*" element={<NotFound />} />

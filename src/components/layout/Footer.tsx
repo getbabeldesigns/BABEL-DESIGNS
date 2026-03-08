@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+﻿import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 
@@ -44,7 +44,6 @@ const Footer = () => {
                 { path: '/blogs', label: 'Blogs' },
                 { path: '/philosophy', label: 'Philosophy' },
                 { path: '/consultancy', label: 'Consultancy' },
-                { path: '/policies', label: 'Policies' },
               ].map((link) => (
                 <motion.li key={link.path} variants={staggerItemVariants}>
                   <Link
@@ -67,26 +66,41 @@ const Footer = () => {
 
           <motion.div variants={staggerItemVariants}>
             <h4 className="font-sans text-xs tracking-widest uppercase text-muted-foreground mb-6">
-              Connect
+              Legal
             </h4>
             <motion.ul className="space-y-3" variants={staggerContainerVariants}>
+              {[
+                { path: '/return-policy', label: 'Return Policy' },
+                { path: '/refund-policy', label: 'Refund Policy' },
+                { path: '/privacy-policy', label: 'Privacy Policy' },
+                { path: '/disclaimer', label: 'Disclaimer' },
+              ].map((link) => (
+                <motion.li key={link.path} variants={staggerItemVariants}>
+                  <Link
+                    to={link.path}
+                    data-cursor="Open"
+                    className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
+                  >
+                    <motion.span
+                      whileHover={{ x: 4 }}
+                      transition={{ duration: 0.2 }}
+                      className="inline-block"
+                    >
+                      {link.label}
+                    </motion.span>
+                  </Link>
+                </motion.li>
+              ))}
               <motion.li variants={staggerItemVariants}>
                 <a
                   href="mailto:studio@babeldesigns.com"
                   data-cursor="Email"
                   className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
                 >
-                  <motion.span
-                    whileHover={{ x: 4 }}
-                    transition={{ duration: 0.2 }}
-                    className="inline-block"
-                  >
+                  <motion.span whileHover={{ x: 4 }} transition={{ duration: 0.2 }} className="inline-block">
                     studio@babeldesigns.com
                   </motion.span>
                 </a>
-              </motion.li>
-              <motion.li variants={staggerItemVariants}>
-                <span className="font-sans text-sm text-muted-foreground">By appointment only</span>
               </motion.li>
             </motion.ul>
           </motion.div>
@@ -100,7 +114,7 @@ const Footer = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <p className="font-sans text-xs text-muted-foreground tracking-wide">
-            � {new Date().getFullYear()} Babel Designs. All rights reserved.
+            © {new Date().getFullYear()} Babel Designs. All rights reserved.
           </p>
           <p className="font-serif text-sm text-muted-foreground">Crafted forms. Deliberate materials.</p>
         </motion.div>
