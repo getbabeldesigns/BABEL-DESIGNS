@@ -319,12 +319,12 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="md:hidden border-t border-border px-4 py-3">
-          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+          <div className="flex flex-nowrap items-center justify-center gap-x-4 overflow-x-auto no-scrollbar">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`font-sans text-xs tracking-widest uppercase ${
+                className={`whitespace-nowrap font-sans text-xs tracking-widest uppercase ${
                   isActive(link.path)
                     ? 'text-foreground'
                     : 'text-muted-foreground'

@@ -65,6 +65,31 @@ Notes:
 - `STUDIO_DISPATCH_REPLY_TO` is optional. Set this to your Gmail if you want user replies in Gmail.
 - For Gmail deliverability, keep `STUDIO_DISPATCH_FROM_EMAIL` on a verified custom domain (not `@gmail.com`).
 
+### Admin email notifications (consultancy + orders)
+
+Deploy the notification function and set secrets:
+
+```sh
+supabase functions deploy notify-admin-on-new-record
+supabase secrets set RESEND_API_KEY=your_resend_api_key
+supabase secrets set ADMIN_NOTIFICATION_EMAIL=your_business_email@domain.com
+supabase secrets set ADMIN_NOTIFICATION_FROM_EMAIL="Babel Designs <hello@yourdomain.com>"
+supabase secrets set ADMIN_NOTIFICATION_REPLY_TO="yourgmail@gmail.com"
+supabase secrets set SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+supabase secrets set ADMIN_WEBHOOK_SECRET=your_webhook_secret
+```
+
+Notes:
+- `ADMIN_NOTIFICATION_EMAIL` is the address that receives the alerts.
+- `ADMIN_NOTIFICATION_FROM_EMAIL` and `ADMIN_NOTIFICATION_REPLY_TO` are optional.
+- `SUPABASE_SERVICE_ROLE_KEY` is required to load order items inside the edge function.
+
+Then run the SQL trigger setup:
+
+1. Open `supabase/notifications.sql` in the Supabase SQL Editor.
+2. Replace `YOUR_PROJECT_REF` with your Supabase project ref.
+3. Run the script.
+
 Checkout requires Supabase configuration until payment endpoints are migrated.
 
 ## Razorpay Setup

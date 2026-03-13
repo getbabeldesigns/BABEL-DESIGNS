@@ -264,6 +264,15 @@ li.font-sans:not(.uppercase) {
   .lookbook-item {
     scroll-snap-align: center;
   }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .site-grain::after {
