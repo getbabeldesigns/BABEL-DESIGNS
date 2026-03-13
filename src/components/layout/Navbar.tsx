@@ -32,7 +32,6 @@ const Navbar = () => {
 
   const navLinks = [
     { path: '/collections', label: 'Collections' },
-    { path: '/lookbook', label: 'Lookbook' },
     { path: '/philosophy', label: 'Philosophy' },
     { path: '/consultancy', label: 'Consultancy' },
   ];
@@ -319,12 +318,12 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="md:hidden border-t border-border px-2 py-2">
-          <div className="flex w-full flex-nowrap items-center gap-x-2 overflow-x-auto no-scrollbar">
+          <div className="flex w-full flex-nowrap items-center justify-between gap-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex-none whitespace-nowrap font-sans text-[9px] tracking-[0.1em] uppercase ${
+                className={`flex-1 min-w-0 whitespace-nowrap text-center font-sans text-[8px] leading-none tracking-[0.06em] uppercase ${
                   isActive(link.path)
                     ? 'text-foreground'
                     : 'text-muted-foreground'
