@@ -152,12 +152,12 @@ const Account = () => {
                 <p className="mb-6 font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground">Identity Ledger</p>
                 <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2">
                   <div>
-                    <label className="mb-2 block font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">Name</label>
-                    <input value={accountName} disabled className="w-full border border-border bg-background/70 px-4 py-3 text-sm text-foreground" />
+                    <label htmlFor="account-name" className="mb-2 block font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">Name</label>
+                    <input id="account-name" value={accountName} disabled className="w-full border border-border bg-background/70 px-4 py-3 text-sm text-foreground" />
                   </div>
                   <div>
-                    <label className="mb-2 block font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">Email</label>
-                    <input value={user.email ?? ""} disabled className="w-full border border-border bg-background/70 px-4 py-3 text-sm text-foreground" />
+                    <label htmlFor="account-email" className="mb-2 block font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">Email</label>
+                    <input id="account-email" value={user.email ?? ""} disabled className="w-full border border-border bg-background/70 px-4 py-3 text-sm text-foreground" />
                   </div>
                 </div>
 
