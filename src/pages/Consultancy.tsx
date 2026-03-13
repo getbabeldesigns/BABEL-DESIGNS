@@ -345,10 +345,14 @@ const Consultancy = () => {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                   >
-                    <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
+                    <label
+                      htmlFor="consultancy-preferred-date"
+                      className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2"
+                    >
                       Preferred Date
                     </label>
                     <input
+                      id="consultancy-preferred-date"
                       type="date"
                       value={bookingDate}
                       onChange={(event) => setBookingDate(event.target.value)}
