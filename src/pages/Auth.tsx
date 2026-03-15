@@ -87,14 +87,14 @@ const Auth = () => {
           decoding="async"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/45 to-foreground/70" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.12),transparent_55%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/85 via-foreground/55 to-foreground/85" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
         <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-l from-background/85 via-background/35 to-transparent md:w-[48%]" />
 
         <div className="relative z-10 section-padding">
           <div className="container-editorial max-w-6xl">
             <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-              <div className="text-primary-foreground">
+              <div className="text-primary-foreground [text-shadow:0_2px_18px_rgba(0,0,0,0.55)]">
                 <p className="mb-4 font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/75">
                   Studio Access
                 </p>
@@ -132,7 +132,7 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="text-foreground">
+              <div className="text-foreground [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
               {!isSupabaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background/80 p-4">
                   <p className="font-sans text-sm text-destructive">
