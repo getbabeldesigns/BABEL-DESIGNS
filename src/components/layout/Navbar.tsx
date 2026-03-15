@@ -204,7 +204,7 @@ const Navbar = () => {
           <Link
             ref={logoRef}
             to="/"
-            className="group ml-0 md:-ml-6 lg:-ml-12 flex-none min-w-0"
+            className="group ml-0 flex-none min-w-0"
             onMouseEnter={handleLogoHover}
             onMouseLeave={handleLogoHoverEnd}
             data-cursor="Home"
