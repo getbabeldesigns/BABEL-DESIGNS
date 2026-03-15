@@ -18,6 +18,7 @@ const Navbar = () => {
   const [user, setUser] = useState<User | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
+  const isAuthPage = location.pathname === '/auth';
   const initials = (value: User | null) => {
     const metadataName = (value?.user_metadata?.full_name as string | undefined) || (value?.user_metadata?.name as string | undefined);
     const source = metadataName || value?.email || '';
@@ -199,7 +200,11 @@ const Navbar = () => {
       className="fixed top-0 left-0 right-0 z-50 bg-background/90 navbar-backdrop"
     >
       <div className="container-editorial max-w-none">
-        <div className="flex items-center justify-between px-4 py-4 sm:px-6 md:px-8 md:py-6 lg:px-12">
+        <div
+          className={`flex items-center justify-between px-4 sm:px-6 ${
+            isAuthPage ? 'py-3 md:py-4 md:px-7 lg:px-10' : 'py-4 md:px-8 md:py-6 lg:px-12'
+          }`}
+        >
           {/* Logo */}
           <Link
             ref={logoRef}

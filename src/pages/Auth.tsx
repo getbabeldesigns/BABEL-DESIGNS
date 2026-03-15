@@ -87,14 +87,19 @@ const Auth = () => {
           decoding="async"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-foreground/85 via-foreground/55 to-foreground/85" />
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.08),transparent_55%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/45 to-foreground/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.12),transparent_55%)]" />
         <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-l from-background/85 via-background/35 to-transparent md:w-[48%]" />
+        <div className="pointer-events-none absolute inset-0">
+          <div className="absolute left-[8%] top-[18%] h-56 w-56 rounded-full bg-background/35 blur-3xl" />
+          <div className="absolute left-[18%] bottom-[12%] h-64 w-64 rounded-full bg-background/25 blur-3xl" />
+          <div className="absolute right-[10%] top-[22%] h-72 w-72 rounded-full bg-background/40 blur-[64px]" />
+        </div>
 
         <div className="relative z-10 section-padding">
           <div className="container-editorial max-w-6xl">
             <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-              <div className="text-primary-foreground [text-shadow:0_2px_18px_rgba(0,0,0,0.55)]">
+              <div className="text-primary-foreground">
                 <p className="mb-4 font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/75">
                   Studio Access
                 </p>
@@ -132,7 +137,7 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="text-foreground [text-shadow:0_2px_14px_rgba(0,0,0,0.45)]">
+              <div className="text-foreground">
               {!isSupabaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background/80 p-4">
                   <p className="font-sans text-sm text-destructive">
