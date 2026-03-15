@@ -1,16 +1,28 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
 import { imageZoomInVariants, heroHeadingVariants } from '@/lib/animations';
 import philosophyHero from '@/assets/philosophy-hero.jpg';
+import { useEffect, useState } from 'react';
 
 
 
 
 const Philosophy = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const { scrollY } = useScroll();
-  const heroOffset = useTransform(scrollY, [0, 500], [0, 70]);
+  const enableHeroMotion = !prefersReducedMotion && !isCoarsePointer;
+  const heroOffset = useTransform(scrollY, [0, 500], enableHeroMotion ? [0, 70] : [0, 0]);
+
+  useEffect(() => {
+    const query = window.matchMedia('(pointer: coarse)');
+    const sync = () => setIsCoarsePointer(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
 
   const materialPalette = [
     { name: 'Linen Stone', tone: 'bg-[hsl(var(--linen))]' },
@@ -24,9 +36,9 @@ const Philosophy = () => {
       {/* Hero */}
       <section className="relative h-[70vh] flex items-center justify-center overflow-hidden mb-20 section-transition">
         <motion.div
-          variants={imageZoomInVariants}
-          initial="hidden"
-          animate="visible"
+          variants={enableHeroMotion ? imageZoomInVariants : undefined}
+          initial={enableHeroMotion ? "hidden" : false}
+          animate={enableHeroMotion ? "visible" : false}
           className="absolute inset-0"
           style={{ y: heroOffset }}
         >

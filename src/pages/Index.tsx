@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import AnimatedSection from '@/components/AnimatedSection';
@@ -23,8 +23,11 @@ import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { trackEvent } from '@/lib/analytics';
 
 const Index = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const { scrollY } = useScroll();
-  const heroOffset = useTransform(scrollY, [0, 600], [0, 90]);
+  const enableHeroMotion = !prefersReducedMotion && !isCoarsePointer;
+  const heroOffset = useTransform(scrollY, [0, 600], enableHeroMotion ? [0, 90] : [0, 0]);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const { data: collections = [] } = useQuery({
@@ -39,6 +42,14 @@ const Index = () => {
   ];
 
   const previewCollections = collections.length > 0 ? collections : fallbackCollections;
+
+  useEffect(() => {
+    const query = window.matchMedia('(pointer: coarse)');
+    const sync = () => setIsCoarsePointer(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
 
   const handleSubscribe = async (event: React.FormEvent) => {
     event.preventDefault();
@@ -74,7 +85,13 @@ const Index = () => {
   return (
     <div className="min-h-screen">
       <section className="relative h-screen flex items-center justify-center overflow-hidden section-transition">
-        <motion.div variants={imageZoomInVariants} initial="hidden" animate="visible" className="absolute inset-0" style={{ y: heroOffset }}>
+        <motion.div
+          variants={enableHeroMotion ? imageZoomInVariants : undefined}
+          initial={enableHeroMotion ? "hidden" : false}
+          animate={enableHeroMotion ? "visible" : false}
+          className="absolute inset-0"
+          style={{ y: heroOffset }}
+        >
           <img
             src={heroBg}
             alt="Babel Designs architectural interior"
@@ -86,28 +103,33 @@ const Index = () => {
           <div className="absolute inset-0 bg-foreground/65" />
         </motion.div>
 
-        <motion.div className="relative z-10 mx-auto w-full max-w-4xl px-4 text-center sm:px-6" variants={staggerContainerVariants} initial="hidden" animate="visible">
-          <motion.h1 variants={heroHeadingVariants} className="logo-title mb-3 text-3xl font-light tracking-[0.14em] text-primary-foreground sm:text-5xl sm:tracking-wide md:text-7xl lg:text-7xl">
+        <motion.div
+          className="relative z-10 mx-auto w-full max-w-4xl px-4 text-center sm:px-6"
+          variants={enableHeroMotion ? staggerContainerVariants : undefined}
+          initial={enableHeroMotion ? "hidden" : false}
+          animate={enableHeroMotion ? "visible" : false}
+        >
+          <motion.h1 variants={enableHeroMotion ? heroHeadingVariants : undefined} className="logo-title mb-3 text-3xl font-light tracking-[0.14em] text-primary-foreground sm:text-5xl sm:tracking-wide md:text-7xl lg:text-7xl">
             BABEL DESIGNS
           </motion.h1>
 
-          <motion.p variants={heroSubheadingVariants} className="mx-auto mb-8 max-w-2xl font-sans text-xs uppercase leading-relaxed tracking-[0.22em] text-primary-foreground/80 sm:text-sm sm:tracking-[0.3em] md:text-base md:tracking-[0.35em]">
+          <motion.p variants={enableHeroMotion ? heroSubheadingVariants : undefined} className="mx-auto mb-8 max-w-2xl font-sans text-xs uppercase leading-relaxed tracking-[0.22em] text-primary-foreground/80 sm:text-sm sm:tracking-[0.3em] md:text-base md:tracking-[0.35em]">
             Crafted for all, Owned by few.
           </motion.p>
 
-          <motion.div variants={heroCTAVariants} className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
-            <motion.div whileHover={{ scale: 0.9 }} whileTap={{ scale: 0.78 }} className="w-full sm:w-auto">
+          <motion.div variants={enableHeroMotion ? heroCTAVariants : undefined} className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
+            <motion.div whileHover={isCoarsePointer ? undefined : { scale: 0.9 }} whileTap={{ scale: 0.78 }} className="w-full sm:w-auto">
               <Link to="/collections" data-cursor="Explore" className="group flex w-full items-center justify-center gap-3 border border-primary-foreground/40 px-6 py-3 font-sans text-xs uppercase tracking-[0.2em] text-primary-foreground transition-all duration-500 hover:bg-primary-foreground hover:text-foreground sm:w-auto sm:px-8 sm:py-4 sm:text-sm sm:tracking-widest">
                 Explore Collections
-                <motion.span initial={{ x: 0 }} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                <motion.span initial={{ x: 0 }} whileHover={isCoarsePointer ? undefined : { x: 4 }} transition={{ duration: 0.2 }}>
                   <ArrowRight size={16} />
                 </motion.span>
               </Link>
             </motion.div>
-            <motion.div whileHover={{ scale: 0.9 }} whileTap={{ scale: 0.78 }} className="w-full sm:w-auto">
+            <motion.div whileHover={isCoarsePointer ? undefined : { scale: 0.9 }} whileTap={{ scale: 0.78 }} className="w-full sm:w-auto">
               <Link to="/consultancy" data-cursor="Book" className="group flex w-full items-center justify-center gap-3 border border-primary-foreground/40 px-6 py-3 font-sans text-xs uppercase tracking-[0.2em] text-primary-foreground transition-all duration-500 hover:bg-primary-foreground hover:text-foreground sm:w-auto sm:px-8 sm:py-4 sm:text-sm sm:tracking-widest">
                 Book Consultancy
-                <motion.span initial={{ x: 0 }} whileHover={{ x: 4 }} transition={{ duration: 0.2 }}>
+                <motion.span initial={{ x: 0 }} whileHover={isCoarsePointer ? undefined : { x: 4 }} transition={{ duration: 0.2 }}>
                   <ArrowRight size={16} />
                 </motion.span>
               </Link>
@@ -115,9 +137,11 @@ const Index = () => {
           </motion.div>
         </motion.div>
 
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1.5 }} className="absolute bottom-12 left-1/2 -translate-x-1/2">
-          <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} className="w-px h-16 bg-gradient-to-b from-primary-foreground/50 to-transparent" />
-        </motion.div>
+        {enableHeroMotion && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8, delay: 1.5 }} className="absolute bottom-12 left-1/2 -translate-x-1/2">
+            <motion.div animate={{ y: [0, 10, 0] }} transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }} className="w-px h-16 bg-gradient-to-b from-primary-foreground/50 to-transparent" />
+          </motion.div>
+        )}
       </section>
 
       <section className="section-padding section-transition">

@@ -218,6 +218,16 @@
   }
 }
 
+.navbar-backdrop {
+  backdrop-filter: blur(6px);
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .navbar-backdrop {
+    backdrop-filter: none;
+  }
+}
+
 /* Subheading treatment: uppercase sans text across the site */
 .font-sans.uppercase {
   font-weight: 500 !important;

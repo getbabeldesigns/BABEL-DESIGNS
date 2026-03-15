@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { ReactNode, useEffect, useRef, useState } from 'react';
 import { fadeInUpVariants, fadeInDownVariants, fadeInLeftVariants, fadeInRightVariants, scaleInVariants, blurVariants, easing } from '@/lib/animations';
 
@@ -17,12 +17,26 @@ const AnimatedSection = ({
   direction = 'up',
   variant = 'default'
 }: AnimatedSectionProps) => {
+  const prefersReducedMotion = useReducedMotion();
+  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
   const [skipReveal, setSkipReveal] = useState(false);
   const lastScrollY = useRef(0);
   const lastTimestamp = useRef(0);
   const resetTimer = useRef<number | null>(null);
 
   useEffect(() => {
+    const query = window.matchMedia('(pointer: coarse)');
+    const sync = () => setIsCoarsePointer(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
+
+  const disableMotion = prefersReducedMotion || isCoarsePointer;
+
+  useEffect(() => {
+    if (disableMotion) return;
+
     const handleScroll = () => {
       const now = performance.now();
       const currentY = window.scrollY;
@@ -49,7 +63,7 @@ const AnimatedSection = ({
       window.removeEventListener('scroll', handleScroll);
       if (resetTimer.current) window.clearTimeout(resetTimer.current);
     };
-  }, []);
+  }, [disableMotion]);
 
   // Select the appropriate variants based on direction and variant
   const selectVariants = () => {
@@ -71,6 +85,10 @@ const AnimatedSection = ({
   };
 
   const variants = selectVariants();
+
+  if (disableMotion) {
+    return <div className={className}>{children}</div>;
+  }
 
   return (
     <motion.div
