@@ -204,23 +204,23 @@ const Navbar = () => {
           <Link
             ref={logoRef}
             to="/"
-            className="group ml-0 md:-ml-8 lg:-ml-12 flex-1 min-w-0"
+            className="group ml-0 md:-ml-6 lg:-ml-12 flex-none min-w-0"
             onMouseEnter={handleLogoHover}
             onMouseLeave={handleLogoHoverEnd}
             data-cursor="Home"
           >
-            <h1 className="logo-title text-base sm:text-xl md:text-2xl font-light tracking-[0.16em] sm:tracking-widest text-foreground leading-tight">
+            <h1 className="logo-title text-base sm:text-xl md:text-xl lg:text-2xl font-light tracking-[0.12em] sm:tracking-[0.16em] lg:tracking-widest text-foreground leading-tight">
               BABEL DESIGNS
             </h1>
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-8" ref={linksRef}>
+          <div className="hidden md:flex items-center gap-5 lg:gap-8" ref={linksRef}>
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`font-sans text-sm tracking-widest uppercase ${
+                className={`font-sans text-[11px] lg:text-sm tracking-[0.2em] lg:tracking-widest uppercase ${
                   isActive(link.path)
                     ? 'text-foreground'
                     : 'text-muted-foreground'
@@ -235,7 +235,7 @@ const Navbar = () => {
 
             <Link
               to={user ? "/account" : "/auth"}
-              className={`font-sans text-sm tracking-widest uppercase ${
+              className={`font-sans text-[11px] lg:text-sm tracking-[0.2em] lg:tracking-widest uppercase ${
                 isActive('/auth') || isActive('/account') ? 'text-foreground' : 'text-muted-foreground'
               }`}
               onMouseEnter={handleNavLinkHover}
