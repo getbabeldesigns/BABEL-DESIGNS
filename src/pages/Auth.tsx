@@ -169,7 +169,7 @@ const Auth = () => {
                     Continue as guest
                   </button>
                   <p className="pt-2 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                    Your choices help us curate a more precise collection.
+                    We recommend using Google for the best experience, but you can continue as a guest if you prefer not to sign in.
                   </p>
                 </div>
               )}
