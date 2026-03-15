@@ -98,8 +98,9 @@ const Auth = () => {
 
         <div className="relative z-10 section-padding">
           <div className="container-editorial max-w-6xl">
-            <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-              <div className="text-primary-foreground">
+            <div className="border border-border/30 bg-background/70 p-8 backdrop-blur-sm sm:p-10 md:p-12">
+              <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+                <div className="text-primary-foreground">
                 <p className="mb-4 font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/75">
                   Studio Access
                 </p>
@@ -137,7 +138,7 @@ const Auth = () => {
                 </div>
               </div>
 
-              <div className="text-foreground">
+                <div className="text-foreground">
               {!isSupabaseConfigured && (
                 <div className="mb-6 border border-destructive/40 bg-background/80 p-4">
                   <p className="font-sans text-sm text-destructive">
@@ -194,6 +195,8 @@ const Auth = () => {
                   </div>
                 </div>
               )}
+                </div>
+              </div>
             </div>
           </div>
         </div>
