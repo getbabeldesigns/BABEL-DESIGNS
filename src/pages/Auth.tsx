@@ -11,9 +11,6 @@ import {
   type OAuthProvider,
 } from "@/integrations/supabase/auth";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
-import philosophyHero from "@/assets/philosophy-hero.jpg";
-import heroBg from "@/assets/hero-bg.jpg";
-import monolithImg from "@/assets/monolith-collection.jpg";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -80,67 +77,64 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background via-background to-muted/20 pt-32 md:pt-40">
-      <section className="section-padding pt-0">
-        <div className="container-editorial max-w-5xl">
-          <div className="grid overflow-hidden border border-border/70 bg-card/70 backdrop-blur-sm md:grid-cols-[1.2fr_1fr]">
-            <div className="relative border-b border-border/60 p-8 md:border-b-0 md:border-r md:p-12">
-              <div className="absolute -left-12 -top-12 h-36 w-36 rounded-full border border-border/50" />
-              <p className="mb-4 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Studio Access</p>
-              <h1 className="mb-4 font-serif text-4xl font-light md:text-5xl">A Bridge of Form</h1>
-              <p className="max-w-md font-sans leading-relaxed text-muted-foreground">
-                Babel Designs connects the human and the eternal through material, proportion, and quiet intention.
-                Continue to your curated space.
-              </p>
+    <div className="min-h-screen pt-24 md:pt-28">
+      <section className="relative min-h-screen overflow-hidden">
+        <img
+          src="/loginpage_bg.png"
+          alt="Babel tower bridging human and divine"
+          className="absolute inset-0 h-full w-full object-cover"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-foreground/70 via-foreground/45 to-foreground/70" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.12),transparent_55%)]" />
+        <div className="absolute right-0 top-0 h-full w-full bg-gradient-to-l from-background/85 via-background/35 to-transparent md:w-[48%]" />
 
-              <div className="mt-8 grid gap-4 sm:grid-cols-2">
-                <div className="group relative overflow-hidden border border-border/70 bg-background">
-                  <img
-                    src={philosophyHero}
-                    alt="A contemplative architectural space"
-                    className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/70 via-foreground/20 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-primary-foreground/80">
-                      Human / Divine
-                    </p>
-                    <p className="font-serif text-lg text-primary-foreground">The shared language of form</p>
-                  </div>
+        <div className="relative z-10 section-padding">
+          <div className="container-editorial max-w-6xl">
+            <div className="grid gap-12 md:grid-cols-[1.2fr_0.8fr] md:items-center">
+              <div className="text-primary-foreground">
+                <p className="mb-4 font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/75">
+                  Studio Access
+                </p>
+                <h1 className="mb-6 font-serif text-4xl font-light leading-tight sm:text-5xl md:text-6xl">
+                  The bridge between human intention and the eternal.
+                </h1>
+                <p className="max-w-xl font-sans text-base leading-relaxed text-primary-foreground/85">
+                  Babel Designs curates objects that reconcile the earthly and the divine - the hand, the
+                  material, the ritual. Step into a space where form becomes prayer, and design becomes
+                  a mediator.
+                </p>
+
+                <div className="mt-8 grid gap-4 sm:grid-cols-3">
+                  {[
+                    { title: "Origins", copy: "A shared language of form and light." },
+                    { title: "Ascent", copy: "Objects that elevate daily ritual." },
+                    { title: "Union", copy: "Spaces that bring us closer to meaning." },
+                  ].map((item) => (
+                    <div key={item.title} className="border border-primary-foreground/20 bg-background/10 p-4 backdrop-blur-[2px]">
+                      <p className="font-sans text-[11px] uppercase tracking-[0.26em] text-primary-foreground/70">
+                        {item.title}
+                      </p>
+                      <p className="mt-2 font-serif text-base text-primary-foreground">{item.copy}</p>
+                    </div>
+                  ))}
                 </div>
-                <div className="group relative overflow-hidden border border-border/70 bg-background">
-                  <img
-                    src={heroBg}
-                    alt="Light filtering through architectural surfaces"
-                    className="h-40 w-full object-cover transition-transform duration-700 group-hover:scale-[1.03]"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-foreground/60 via-foreground/10 to-transparent" />
-                  <div className="absolute bottom-4 left-4 right-4">
-                    <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-primary-foreground/80">
-                      Babel Designs
-                    </p>
-                    <p className="font-serif text-lg text-primary-foreground">A mediator of spaces</p>
-                  </div>
+
+                <div className="mt-8 border-l border-primary-foreground/40 pl-5">
+                  <p className="font-serif text-lg text-primary-foreground/90">
+                    “Design that unites all diversities.”
+                  </p>
+                  <p className="mt-2 font-sans text-xs uppercase tracking-[0.22em] text-primary-foreground/60">
+                    The Babel Philosophy
+                  </p>
                 </div>
               </div>
 
-              <div className="mt-6 border border-border/60 bg-background/70 p-4">
-                <p className="font-serif text-lg text-foreground/90">
-                  “Design that unites all diversities.”
-                </p>
-                <p className="mt-2 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
-                  The Babel Philosophy
-                </p>
-              </div>
-            </div>
-
-            <div className="p-8 md:p-12">
+              <div className="text-foreground">
               {!isSupabaseConfigured && (
-                <div className="mb-6 border border-destructive/40 bg-background p-4">
+                <div className="mb-6 border border-destructive/40 bg-background/80 p-4">
                   <p className="font-sans text-sm text-destructive">
                     Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`).
                   </p>
@@ -149,8 +143,8 @@ const Auth = () => {
 
               {isSupabaseConfigured && isLoading && (
                 <div className="space-y-3">
-                  <div className="h-10 w-full animate-pulse bg-muted" />
-                  <div className="h-10 w-full animate-pulse bg-muted" />
+                  <div className="h-12 w-full animate-pulse bg-muted/70" />
+                  <div className="h-12 w-full animate-pulse bg-muted/70" />
                 </div>
               )}
 
@@ -159,13 +153,13 @@ const Auth = () => {
                   <button
                     onClick={() => handleOAuth("google")}
                     disabled={isSubmitting !== null}
-                    className="group w-full border border-foreground/35 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
+                    className="group w-full border border-foreground/35 bg-background/70 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
                   >
                     {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
                   </button>
                   <button
                     onClick={handleContinueAsGuest}
-                    className="w-full border border-foreground/20 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                    className="w-full border border-foreground/20 bg-background/40 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
                   >
                     Continue as guest
                   </button>
@@ -176,7 +170,7 @@ const Auth = () => {
               )}
 
               {isSupabaseConfigured && !isLoading && user && (
-                <div className="border border-border bg-background p-6">
+                <div className="border border-border bg-background/80 p-6">
                   <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Signed in as</p>
                   <p className="mt-2 font-serif text-2xl">{user.email}</p>
                   <div className="mt-6 flex flex-wrap gap-3">
@@ -198,9 +192,11 @@ const Auth = () => {
             </div>
           </div>
         </div>
+        </div>
       </section>
     </div>
   );
 };
 
 export default Auth;
+
