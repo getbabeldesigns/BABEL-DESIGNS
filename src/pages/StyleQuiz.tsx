@@ -8,7 +8,17 @@ type Option = {
 };
 
 type QuizStep = {
-  id: 'mood' | 'material' | 'budget';
+  id:
+    | 'mood'
+    | 'material'
+    | 'budget'
+    | 'scale'
+    | 'palette'
+    | 'light'
+    | 'texture'
+    | 'silhouette'
+    | 'function'
+    | 'timeline';
   title: string;
   options: Option[];
 };
@@ -39,6 +49,69 @@ const quizSteps: QuizStep[] = [
       { label: 'Up to INR 3,000', value: '0-3000' },
       { label: 'INR 3,001 to 7,000', value: '3001-7000' },
       { label: 'INR 7,001+', value: '7001+' },
+    ],
+  },
+  {
+    id: 'scale',
+    title: 'Preferred scale of statement pieces',
+    options: [
+      { label: 'Sculptural focal points', value: 'hero' },
+      { label: 'Balanced, room-defining', value: 'balanced' },
+      { label: 'Subtle, supporting accents', value: 'accent' },
+    ],
+  },
+  {
+    id: 'palette',
+    title: 'Color direction that feels natural',
+    options: [
+      { label: 'Warm neutrals', value: 'warm-neutral' },
+      { label: 'Cool mineral tones', value: 'cool-mineral' },
+      { label: 'High-contrast monochrome', value: 'monochrome' },
+    ],
+  },
+  {
+    id: 'light',
+    title: 'Lighting mood you gravitate toward',
+    options: [
+      { label: 'Soft and diffused', value: 'soft' },
+      { label: 'Focused pools of light', value: 'focused' },
+      { label: 'Bright and airy', value: 'airy' },
+    ],
+  },
+  {
+    id: 'texture',
+    title: 'Texture preference',
+    options: [
+      { label: 'Smooth and refined', value: 'refined' },
+      { label: 'Tactile and hand-finished', value: 'tactile' },
+      { label: 'Raw and expressive', value: 'raw' },
+    ],
+  },
+  {
+    id: 'silhouette',
+    title: 'Silhouette language',
+    options: [
+      { label: 'Clean geometric lines', value: 'geometric' },
+      { label: 'Soft organic forms', value: 'organic' },
+      { label: 'Architectural volumes', value: 'architectural' },
+    ],
+  },
+  {
+    id: 'function',
+    title: 'Primary use for your space',
+    options: [
+      { label: 'Entertaining and hosting', value: 'hosting' },
+      { label: 'Everyday living', value: 'living' },
+      { label: 'Quiet retreat', value: 'retreat' },
+    ],
+  },
+  {
+    id: 'timeline',
+    title: 'Ideal timeline to begin',
+    options: [
+      { label: 'Immediately', value: 'now' },
+      { label: 'Within 1–3 months', value: 'soon' },
+      { label: 'Exploring for later', value: 'later' },
     ],
   },
 ];
@@ -112,4 +185,3 @@ const StyleQuiz = () => {
 };
 
 export default StyleQuiz;
-
