@@ -199,7 +199,7 @@ const Navbar = () => {
       className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-sm"
     >
       <div className="container-editorial">
-        <div className="flex items-center justify-between px-4 py-4 sm:px-6 md:px-6 md:py-6 lg:px-10">
+        <div className="flex items-center justify-between px-4 py-4 sm:px-6 md:px-8 md:py-6 lg:px-12">
           {/* Logo */}
           <Link
             ref={logoRef}
