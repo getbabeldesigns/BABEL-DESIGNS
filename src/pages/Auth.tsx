@@ -78,147 +78,223 @@ const Auth = () => {
 
   return (
     <div className="min-h-screen pt-20 md:pt-24">
-      <section className="min-h-screen bg-background">
-        <div className="grid min-h-screen md:grid-cols-[1.1fr_0.9fr]">
-          <div className="relative hidden overflow-hidden md:block">
-            <img
-              src="/loginpage_bg.png"
-              alt="Babel tower bridging human and divine"
-              className="absolute inset-0 h-full w-full object-cover"
-              loading="eager"
-              decoding="async"
-              fetchPriority="high"
-            />
-            <div className="absolute inset-0 bg-gradient-to-b from-foreground/65 via-foreground/40 to-foreground/75" />
-            <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_30%,rgba(255,255,255,0.12),transparent_55%)]" />
-            <div className="absolute inset-0 flex flex-col justify-end p-12">
-              <p className="mb-3 font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/80">
-                Studio Access
-              </p>
-              <h1 className="mb-4 font-serif text-4xl font-light leading-tight text-primary-foreground lg:text-5xl">
-                The bridge between human intention and the eternal.
+      <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-background">
+        <img
+          src="/loginpage_bg.png"
+          alt=""
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55 blur-[1px] saturate-90"
+          loading="eager"
+          decoding="async"
+          fetchPriority="high"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,hsl(var(--background))_0%,hsl(var(--background)/0.72)_38%,hsl(var(--foreground)/0.72)_100%)]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-16 top-24 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_30%_30%,hsl(var(--sand)/0.55),transparent_65%)] blur-2xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -bottom-24 right-0 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle_at_40%_40%,hsl(var(--clay)/0.45),transparent_62%)] blur-3xl"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/25 to-transparent"
+        />
+
+        <div className="container-editorial relative mx-auto grid min-h-[calc(100vh-5rem)] grid-cols-1 items-stretch gap-10 px-4 py-12 sm:px-6 md:px-12 lg:grid-cols-12 lg:gap-12 lg:px-20 lg:py-16">
+          <div className="lg:col-span-6 lg:pr-4">
+            <div className="max-w-2xl">
+              <p className="section-overline">Studio access</p>
+              <h1 className="display-title mt-4 text-balance">
+                Where material becomes ritual, and design becomes a mediator.
               </h1>
-              <p className="max-w-xl font-sans text-sm leading-relaxed text-primary-foreground/85 lg:text-base">
-                Babel Designs curates objects that reconcile the earthly and the divine - the hand, the
-                material, the ritual. Step into a space where form becomes prayer, and design becomes
-                a mediator.
+              <p className="section-copy mt-5 max-w-xl text-balance">
+                Enter Babel’s private studio space: a calmer way to collect, save, and return to pieces
+                that speak to you. Sign in to refine your experience, or continue as guest.
               </p>
-              <div className="mt-6 border-l border-primary-foreground/40 pl-5">
-                <p className="font-serif text-lg text-primary-foreground/90">
-                  "Design that unites all diversities."
-                </p>
-                <p className="mt-2 font-sans text-xs uppercase tracking-[0.22em] text-primary-foreground/60">
-                  The Babel Philosophy
-                </p>
-              </div>
+            </div>
+
+            <div className="mt-10 grid gap-4 sm:grid-cols-2">
+              {[
+                {
+                  title: "Curate",
+                  copy: "Shortlist objects with intention, not noise.",
+                  index: "01",
+                },
+                {
+                  title: "Return",
+                  copy: "Pick up where you left off across devices.",
+                  index: "02",
+                },
+                {
+                  title: "Private",
+                  copy: "Account tools that stay discreet and minimal.",
+                  index: "03",
+                },
+                {
+                  title: "Guest",
+                  copy: "Browse freely—sign in only when you’re ready.",
+                  index: "04",
+                },
+              ].map((item) => (
+                <div
+                  key={item.title}
+                  className="group relative overflow-hidden border border-foreground/15 bg-background/60 p-5 shadow-[0_18px_48px_-42px_hsl(var(--foreground)/0.55)] backdrop-blur-sm"
+                >
+                  <div
+                    aria-hidden="true"
+                    className="pointer-events-none absolute -right-10 -top-10 h-28 w-28 rounded-full bg-[radial-gradient(circle_at_30%_30%,hsl(var(--foreground)/0.12),transparent_60%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100"
+                  />
+                  <p className="font-sans text-[10px] uppercase tracking-[0.34em] text-muted-foreground">
+                    {item.index}
+                  </p>
+                  <p className="mt-3 font-serif text-xl font-light tracking-tight">{item.title}</p>
+                  <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
+                    {item.copy}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-10 hidden max-w-2xl border-l border-foreground/25 pl-6 lg:block">
+              <p className="font-serif text-2xl font-light text-foreground/90">
+                “Design that unites all diversities.”
+              </p>
+              <p className="mt-2 font-sans text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+                The Babel Philosophy
+              </p>
             </div>
           </div>
 
-          <div className="flex flex-col">
-            <div className="relative h-[40vh] overflow-hidden md:hidden">
-              <img
-                src="/loginpage_bg.png"
-                alt="Babel tower bridging human and divine"
-                className="absolute inset-0 h-full w-full object-cover"
-                loading="eager"
-                decoding="async"
-                fetchPriority="high"
+          <div className="lg:col-span-6 lg:pl-2">
+            <div className="relative mx-auto w-full max-w-lg lg:ml-auto lg:mr-0">
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -left-7 -top-7 h-24 w-24 border border-foreground/20"
               />
-              <div className="absolute inset-0 bg-gradient-to-b from-foreground/65 via-foreground/40 to-foreground/80" />
-              <div className="absolute inset-0 flex items-end p-6">
-                <div>
-                  <p className="mb-2 font-sans text-[10px] uppercase tracking-[0.32em] text-primary-foreground/80">
-                    Studio Access
-                  </p>
-                  <h1 className="font-serif text-3xl font-light text-primary-foreground">
-                    The bridge between human intention and the eternal.
-                  </h1>
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute -bottom-10 -right-10 h-32 w-32 rounded-full border border-foreground/20"
+              />
+
+              <div className="relative overflow-hidden border border-foreground/20 bg-background/70 shadow-[0_34px_90px_-70px_hsl(var(--foreground)/0.65)] backdrop-blur-md">
+                <div
+                  aria-hidden="true"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_30%,hsl(var(--sand)/0.22),transparent_55%),radial-gradient(circle_at_80%_70%,hsl(var(--wood)/0.16),transparent_58%)]"
+                />
+
+                <div className="relative p-7 sm:p-8">
+                  <div className="flex items-start justify-between gap-6">
+                    <div>
+                      <p className="font-sans text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+                        Sign in
+                      </p>
+                      <p className="mt-3 font-serif text-2xl font-light tracking-tight">
+                        Enter the studio.
+                      </p>
+                      <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
+                        Secure OAuth, no passwords.
+                      </p>
+                    </div>
+                    <div className="hidden sm:block">
+                      <div className="grid h-12 w-12 place-items-center border border-foreground/20 bg-background/60">
+                        <span className="logo-title text-lg tracking-[0.14em]">B</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {!isSupabaseConfigured && (
+                    <div className="mt-6 border border-destructive/40 bg-background/70 p-4">
+                      <p className="font-sans text-sm text-destructive">
+                        Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`).
+                      </p>
+                    </div>
+                  )}
+
+                  {isSupabaseConfigured && isLoading && (
+                    <div className="mt-7 space-y-3">
+                      <div className="h-12 w-full animate-pulse bg-muted/70" />
+                      <div className="h-12 w-full animate-pulse bg-muted/70" />
+                    </div>
+                  )}
+
+                  {isSupabaseConfigured && !isLoading && !user && (
+                    <div className="mt-7 space-y-4">
+                      <button
+                        onClick={() => handleOAuth("google")}
+                        disabled={isSubmitting !== null}
+                        className="group w-full border border-foreground/35 bg-background/70 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] transition-[transform,background-color,color,border-color] duration-300 hover:-translate-y-0.5 hover:border-foreground/60 hover:bg-foreground hover:text-background disabled:transform-none disabled:opacity-60"
+                      >
+                        <span className="flex items-center justify-between gap-4">
+                          <span>{isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}</span>
+                          <span aria-hidden="true" className="text-[10px] tracking-[0.34em] opacity-70 group-hover:opacity-90">
+                            ↗
+                          </span>
+                        </span>
+                      </button>
+                      <button
+                        onClick={handleContinueAsGuest}
+                        className="w-full border border-foreground/20 bg-background/55 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground transition-[transform,color,border-color] duration-300 hover:-translate-y-0.5 hover:border-foreground/45 hover:text-foreground"
+                      >
+                        <span className="flex items-center justify-between gap-4">
+                          <span>Continue as guest</span>
+                          <span aria-hidden="true" className="text-[10px] tracking-[0.34em] opacity-70">
+                            →
+                          </span>
+                        </span>
+                      </button>
+                      <div className="pt-2">
+                        <p className="font-sans text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
+                          Your choices help us curate a more precise collection.
+                        </p>
+                        <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
+                          We’ll never clutter your inbox. Sign in simply keeps your space intact.
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {isSupabaseConfigured && !isLoading && user && (
+                    <div className="mt-7 border border-foreground/15 bg-background/55 p-6">
+                      <p className="font-sans text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+                        Signed in as
+                      </p>
+                      <p className="mt-2 break-words font-serif text-2xl font-light tracking-tight">
+                        {user.email}
+                      </p>
+                      <div className="mt-6 flex flex-wrap gap-3">
+                        <button
+                          onClick={handleSignOut}
+                          className="border border-foreground/40 bg-background/60 px-5 py-2 font-sans text-xs uppercase tracking-[0.22em] transition-colors hover:bg-foreground hover:text-background"
+                        >
+                          Sign out
+                        </button>
+                        <Link
+                          to="/account"
+                          className="border border-foreground/20 bg-background/40 px-5 py-2 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground/45 hover:text-foreground"
+                        >
+                          Manage account
+                        </Link>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
 
-            <div className="flex flex-1 items-center">
-              <div className="mx-auto w-full max-w-lg px-6 py-12 sm:px-10 md:px-12">
-                <p className="mb-3 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground md:hidden">
-                  Studio Access
+              <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-muted-foreground">
+                <p className="font-sans text-[10px] uppercase tracking-[0.34em]">
+                  Babel Designs · Muted luxury
                 </p>
-                <p className="mb-6 font-sans text-sm text-muted-foreground md:hidden">
-                  Babel Designs curates objects that reconcile the earthly and the divine - the hand, the
-                  material, the ritual. Step into a space where form becomes prayer, and design becomes
-                  a mediator.
-                </p>
-
-                <div className="mb-8 grid gap-4 sm:grid-cols-3 md:hidden">
-                  {[
-                    { title: "Origins", copy: "A shared language of form and light." },
-                    { title: "Ascent", copy: "Objects that elevate daily ritual." },
-                    { title: "Union", copy: "Spaces that bring us closer to meaning." },
-                  ].map((item) => (
-                    <div key={item.title} className="border border-border/60 bg-card/70 p-4">
-                      <p className="font-sans text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
-                        {item.title}
-                      </p>
-                      <p className="mt-2 font-serif text-base text-foreground">{item.copy}</p>
-                    </div>
-                  ))}
-                </div>
-
-                {!isSupabaseConfigured && (
-                  <div className="mb-6 border border-destructive/40 bg-background p-4">
-                    <p className="font-sans text-sm text-destructive">
-                      Supabase is not configured. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` (or `VITE_SUPABASE_PUBLISHABLE_KEY`).
-                    </p>
-                  </div>
-                )}
-
-                {isSupabaseConfigured && isLoading && (
-                  <div className="space-y-3">
-                    <div className="h-12 w-full animate-pulse bg-muted/70" />
-                    <div className="h-12 w-full animate-pulse bg-muted/70" />
-                  </div>
-                )}
-
-                {isSupabaseConfigured && !isLoading && !user && (
-                  <div className="space-y-4">
-                    <button
-                      onClick={() => handleOAuth("google")}
-                      disabled={isSubmitting !== null}
-                      className="group w-full border border-foreground/35 bg-background px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] transition-colors hover:bg-foreground hover:text-background disabled:opacity-60"
-                    >
-                      {isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}
-                    </button>
-                    <button
-                      onClick={handleContinueAsGuest}
-                      className="w-full border border-foreground/20 bg-background px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
-                    >
-                      Continue as guest
-                    </button>
-                    <p className="pt-2 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
-                      Your choices help us curate a more precise collection.
-                    </p>
-                  </div>
-                )}
-
-                {isSupabaseConfigured && !isLoading && user && (
-                  <div className="border border-border bg-background p-6">
-                    <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Signed in as</p>
-                    <p className="mt-2 font-serif text-2xl">{user.email}</p>
-                    <div className="mt-6 flex flex-wrap gap-3">
-                      <button
-                        onClick={handleSignOut}
-                        className="border border-foreground/40 px-5 py-2 font-sans text-xs uppercase tracking-[0.22em] transition-colors hover:bg-foreground hover:text-background"
-                      >
-                        Sign out
-                      </button>
-                      <Link
-                        to="/account"
-                        className="border border-foreground/20 px-5 py-2 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
-                      >
-                        Manage account
-                      </Link>
-                    </div>
-                  </div>
-                )}
+                <Link
+                  to="/collections"
+                  className="font-sans text-[10px] uppercase tracking-[0.34em] transition-colors hover:text-foreground"
+                >
+                  Browse collections
+                </Link>
               </div>
             </div>
           </div>
