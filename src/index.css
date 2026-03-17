@@ -300,33 +300,37 @@ li.font-sans:not(.uppercase) {
 
 .custom-cursor-dot {
   position: absolute;
-  width: 7px;
-  height: 7px;
-  margin-left: -3.5px;
-  margin-top: -3.5px;
+  width: 6px;
+  height: 6px;
+  margin-left: -3px;
+  margin-top: -3px;
   border-radius: 9999px;
-  background: hsl(var(--foreground));
+  background: hsl(var(--foreground) / 0.9);
+  box-shadow: 0 0 0 1px hsl(var(--background) / 0.55);
+  will-change: transform;
 }
 
 .custom-cursor-ring {
   position: absolute;
-  width: 44px;
-  height: 44px;
-  margin-left: -22px;
-  margin-top: -22px;
+  width: 42px;
+  height: 42px;
+  margin-left: -21px;
+  margin-top: -21px;
   border-radius: 9999px;
-  border: 1px solid hsl(var(--foreground) / 0.45);
-  background: hsl(var(--background) / 0.75);
+  border: 1px solid hsl(var(--foreground) / 0.32);
+  background: transparent;
   display: grid;
   place-items: center;
   transform-origin: center;
-  transition: transform 220ms ease, border-color 220ms ease, background-color 220ms ease;
+  transition: transform 160ms ease, border-color 160ms ease, opacity 160ms ease;
+  opacity: 0.9;
+  will-change: transform;
 }
 
 .custom-cursor-ring[data-state="active"] {
-  transform: scale(1.35);
-  border-color: hsl(var(--foreground) / 0.7);
-  background: hsl(var(--background) / 0.55);
+  transform: scale(1.18);
+  border-color: hsl(var(--foreground) / 0.6);
+  opacity: 1;
 }
 
 .custom-cursor-label {
@@ -334,15 +338,19 @@ li.font-sans:not(.uppercase) {
   font-size: 9px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: hsl(var(--foreground) / 0.8);
+  color: hsl(var(--foreground) / 0.82);
   white-space: nowrap;
+  padding: 5px 8px;
+  border: 1px solid hsl(var(--foreground) / 0.18);
+  background: hsl(var(--background) / 0.8);
+  box-shadow: 0 16px 36px -26px hsl(var(--foreground) / 0.55);
 }
 
 @supports ((-webkit-backdrop-filter: blur(2px)) or (backdrop-filter: blur(2px))) {
-  .custom-cursor-ring {
-    background: hsl(var(--background) / 0.2);
-    -webkit-backdrop-filter: blur(2px);
-    backdrop-filter: blur(2px);
+  .custom-cursor-label {
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    background: hsl(var(--background) / 0.6);
   }
 }
 
