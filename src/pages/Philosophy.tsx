@@ -62,14 +62,14 @@ const Philosophy = () => {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-background pt-24 md:pt-32">
+    <div className="relative min-h-screen bg-background">
       <div
         aria-hidden="true"
         className="pointer-events-none fixed inset-0 z-40 opacity-[0.03]"
         style={{ backgroundImage: grainBackground }}
       />
 
-      <section className="relative min-h-[88vh] overflow-hidden border-y border-border/50">
+      <section className="relative min-h-[88vh] overflow-hidden border-y border-border/50 pt-24 md:pt-32">
         <div
           className="absolute inset-0 flex items-center justify-center"
           style={parallaxStyle}
@@ -84,7 +84,7 @@ const Philosophy = () => {
 
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,hsl(var(--foreground)/0.08),hsl(var(--background)/0.9)_62%,hsl(var(--background))_100%)]" />
 
-        <div className="relative z-10 mx-auto flex min-h-[88vh] w-full max-w-7xl items-center px-8 md:px-16">
+        <div className="relative z-10 mx-auto flex min-h-[calc(88vh-6rem)] w-full max-w-7xl items-center px-8 md:min-h-[calc(88vh-8rem)] md:px-16">
           <div className="max-w-md">
             <p className="mb-6 font-sans text-xs uppercase tracking-[0.32em] text-muted-foreground">Babel Designs</p>
             <h1 className="mb-6 font-serif text-4xl font-light leading-tight text-foreground md:text-6xl">
