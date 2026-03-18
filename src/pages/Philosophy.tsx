@@ -1,7 +1,7 @@
-import { motion } from 'framer-motion';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
-import AnimatedSection from '@/components/AnimatedSection';
+import { useRef } from 'react';
 import philosophyHero from '@/assets/philosophy-hero.jpg';
 import monolithCollectionImg from '@/assets/monolith-collection.jpg';
 import stillnessCollectionImg from '@/assets/stillness-collection.jpg';
@@ -11,153 +11,190 @@ import homepageBgImg from '@/assets/homepagebg.jpeg';
 
 const timeline = [
   {
-    year: 'c. 3100 BCE',
-    title: 'Origins Of Built Ritual',
-    text: 'From river-valley settlements to early courts, furniture began as architecture in miniature: raised platforms, carved stools, and ceremonial tables.',
+    era: 'c. 3000 BCE',
+    title: 'First Monuments, First Memory',
+    copy: 'In early cities, stone and timber became cultural memory. Furniture was not decoration but structure, ritual, and shared civic life.',
   },
   {
-    year: 'c. 1600 BCE',
-    title: 'Craft As Civic Language',
-    text: 'Material and form became social symbols. Joinery, stone carving, and bronze casting carried both function and cultural memory.',
+    era: 'c. 1700 BCE',
+    title: 'Babel As Mythic Turning Point',
+    copy: 'The tower story speaks of broken language and fragmented understanding. Babel Designs takes this fracture as a design challenge for our age.',
   },
   {
-    year: 'c. 600 BCE',
-    title: 'Proportion As Philosophy',
-    text: 'Classical builders translated geometry into daily objects. Balance, rhythm, and measured proportion became ethical as well as aesthetic choices.',
+    era: 'Classical Eras',
+    title: 'Proportion Becomes Ethics',
+    copy: 'Geometry, rhythm, and material restraint formed an ethical grammar. What is balanced looks calm, and what is calm invites human presence.',
   },
   {
-    year: 'Now',
-    title: 'Babel Reframed',
-    text: 'We inherit this long tradition and distill it into contemporary forms that remain timeless in posture, texture, and use.',
+    era: 'Industrial To Modern',
+    title: 'Speed Versus Craft',
+    copy: 'As production accelerated, many objects lost intimacy. Our position is a return to deliberate making where time is visible in the result.',
+  },
+  {
+    era: 'Babel Today',
+    title: 'A Shared Design Language',
+    copy: 'We shape contemporary objects that carry historic discipline while remaining deeply livable in modern homes.',
   },
 ];
 
 const chapters = [
   {
-    title: 'The Tower Reimagined',
-    image: philosophyHero,
-    copy: 'The historic Babel story is often told as a story of separation. We reinterpret it as a call to rebuild shared language through design: tangible, calm, and human.',
-  },
-  {
-    title: 'Stone And Permanence',
     image: monolithCollectionImg,
-    copy: 'Ancient monuments taught us that mass can communicate dignity. Our stone vocabulary keeps that lesson, translating permanence into contemporary interiors.',
+    heading: 'Stone: The Language Of Permanence',
+    text: 'Ancient builders trusted mass to communicate dignity. We continue that lineage through grounded silhouettes, mineral textures, and structural calm.',
   },
   {
-    title: 'Timber And Domestic Warmth',
     image: stillnessCollectionImg,
-    copy: 'Across eras, wood has carried domestic life: shelter, continuity, and touch. We use timber for warmth, softness, and visual stillness.',
+    heading: 'Timber: The Language Of Warmth',
+    text: 'Across centuries, wood has carried domestic ritual. It softens hard architecture and turns rooms into places people inhabit, not just pass through.',
   },
   {
-    title: 'Raw Geometry',
     image: originCollectionImg,
-    copy: 'Historic craft left traces of hand and tool. We preserve that honesty with clear silhouettes, visible material behavior, and disciplined detailing.',
+    heading: 'Raw Form: The Language Of Truth',
+    text: 'Historic craft left visible traces of process. We preserve that honesty: clear joints, disciplined geometry, and materials that are never over-styled.',
   },
 ];
 
 const Philosophy = () => {
+  const prefersReducedMotion = useReducedMotion();
+  const heroRef = useRef<HTMLElement | null>(null);
+  const manifestoRef = useRef<HTMLElement | null>(null);
+
+  const { scrollYProgress: heroProgress } = useScroll({
+    target: heroRef,
+    offset: ['start start', 'end start'],
+  });
+
+  const { scrollYProgress: manifestoProgress } = useScroll({
+    target: manifestoRef,
+    offset: ['start end', 'end start'],
+  });
+
+  const heroImageY = useTransform(heroProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, 120]);
+  const heroTextY = useTransform(heroProgress, [0, 1], prefersReducedMotion ? [0, 0] : [0, -60]);
+  const manifestoImageY = useTransform(manifestoProgress, [0, 1], prefersReducedMotion ? [0, 0] : [60, -60]);
+
   return (
-    <div className="min-h-screen pt-28 md:pt-36">
-      <section className="section-padding pt-0">
+    <div className="min-h-screen bg-background pt-24 md:pt-32">
+      <section ref={heroRef} className="relative min-h-[85vh] overflow-hidden border-y border-border/60">
+        <motion.img
+          src={philosophyHero}
+          alt="Historic Babel mood"
+          className="absolute inset-0 h-full w-full object-cover"
+          style={{ y: heroImageY }}
+        />
+        <div className="absolute inset-0 bg-[linear-gradient(115deg,hsl(var(--foreground)/0.76)_10%,hsl(var(--foreground)/0.42)_55%,hsl(var(--foreground)/0.74)_100%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_18%,hsl(var(--sand)/0.22),transparent_38%),radial-gradient(circle_at_82%_80%,hsl(var(--clay)/0.2),transparent_44%)]" />
+
+        <motion.div
+          className="relative z-10 mx-auto flex min-h-[85vh] w-full max-w-6xl flex-col justify-end px-6 pb-12 md:px-10 md:pb-16"
+          style={{ y: heroTextY }}
+        >
+          <p className="font-sans text-xs uppercase tracking-[0.34em] text-primary-foreground/80">Historic Philosophy</p>
+          <h1 className="mt-4 max-w-4xl font-serif text-4xl font-light leading-tight text-primary-foreground md:text-6xl lg:text-7xl">
+            The history of Babel,
+            <br />
+            retold through design.
+          </h1>
+          <p className="mt-5 max-w-2xl font-sans text-sm leading-relaxed text-primary-foreground/82">
+            Not a trend story. A civilizational one. From ancient monuments to contemporary interiors,
+            this is the long arc behind our forms.
+          </p>
+        </motion.div>
+      </section>
+
+      <section className="section-padding">
         <div className="container-editorial">
-          <motion.div
-            initial={{ opacity: 0, y: 24 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="relative overflow-hidden border border-border/70 bg-background"
-          >
-            <img src={philosophyHero} alt="Historic philosophy" className="h-[72vh] w-full object-cover" />
-            <div className="absolute inset-0 bg-[linear-gradient(115deg,hsl(var(--foreground)/0.72)_8%,hsl(var(--foreground)/0.38)_52%,hsl(var(--foreground)/0.62)_100%)]" />
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,hsl(var(--sand)/0.2),transparent_35%),radial-gradient(circle_at_80%_80%,hsl(var(--clay)/0.18),transparent_42%)]" />
-            <div className="absolute inset-x-0 bottom-0 p-8 md:p-12">
-              <p className="font-sans text-xs uppercase tracking-[0.34em] text-primary-foreground/85">Historic Philosophy</p>
-              <h1 className="mt-4 max-w-4xl font-serif text-4xl font-light leading-tight text-primary-foreground md:text-6xl lg:text-7xl">
-                A living archive of craft, memory, and material truth.
-              </h1>
-              <p className="mt-5 max-w-2xl font-sans text-sm leading-relaxed text-primary-foreground/80">
-                Our philosophy begins in ancient craft traditions and moves into contemporary life without losing depth, restraint, or human scale.
-              </p>
-            </div>
-          </motion.div>
+          <div className="mx-auto max-w-4xl border-l border-foreground/30 pl-6 md:pl-10">
+            <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Prologue</p>
+            <p className="mt-6 font-serif text-3xl font-light leading-relaxed text-foreground md:text-5xl">
+              The tower narrative was never only about height.
+              It was about language, belonging, and the desire to build together.
+            </p>
+            <p className="mt-6 font-sans text-sm leading-relaxed text-muted-foreground">
+              Babel Designs reclaims that story by asking a simple question: what if objects could restore
+              shared understanding? We believe furniture can do exactly that when proportion is clear,
+              materials are honest, and craft remains visible.
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="section-padding bg-card/80">
+      <section className="section-padding bg-card/70">
         <div className="container-editorial">
-          <AnimatedSection>
-            <div className="mb-10 border-b border-border/70 pb-6">
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Chronicle</p>
-              <h2 className="mt-3 font-serif text-3xl font-light text-foreground md:text-5xl">The long history behind our forms</h2>
+          <p className="mb-8 font-sans text-xs uppercase tracking-[0.32em] text-muted-foreground">Chronology</p>
+          <div className="relative mx-auto max-w-5xl">
+            <div className="absolute left-0 top-0 h-full w-px bg-border/80 md:left-[170px]" />
+            <div className="space-y-10">
+              {timeline.map((item, index) => (
+                <motion.div
+                  key={item.era}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, margin: '-80px' }}
+                  transition={{ duration: 0.55, delay: index * 0.05 }}
+                  className="grid grid-cols-1 gap-4 md:grid-cols-[150px_1fr] md:gap-8"
+                >
+                  <p className="font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground md:pt-1">{item.era}</p>
+                  <div className="relative pb-4 md:pl-8">
+                    <span className="absolute -left-[6px] top-2 h-2.5 w-2.5 rounded-full bg-foreground md:left-[-33px]" />
+                    <h3 className="font-serif text-2xl font-light text-foreground md:text-3xl">{item.title}</h3>
+                    <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">{item.copy}</p>
+                  </div>
+                </motion.div>
+              ))}
             </div>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
-            {timeline.map((item, index) => (
-              <AnimatedSection key={item.year} delay={index * 0.08}>
-                <article className="relative overflow-hidden border border-border/70 bg-background p-6">
-                  <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[radial-gradient(circle_at_30%_30%,hsl(var(--foreground)/0.08),transparent_70%)]" />
-                  <p className="font-sans text-[10px] uppercase tracking-[0.28em] text-muted-foreground">{item.year}</p>
-                  <h3 className="mt-3 font-serif text-2xl font-light text-foreground">{item.title}</h3>
-                  <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">{item.text}</p>
-                </article>
-              </AnimatedSection>
-            ))}
           </div>
         </div>
       </section>
 
       <section className="section-padding">
-        <div className="container-editorial">
-          <AnimatedSection>
-            <div className="mb-10 text-center">
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Historic Gallery</p>
-              <h2 className="mt-4 font-serif text-3xl font-light text-foreground md:text-5xl">Image chapters and design arts</h2>
-            </div>
-          </AnimatedSection>
-
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-            {chapters.map((chapter, index) => (
-              <AnimatedSection key={chapter.title} delay={index * 0.1}>
-                <article className="group overflow-hidden border border-border/70 bg-card/70">
-                  <div className="relative aspect-[5/4] overflow-hidden">
-                    <img
-                      src={chapter.image}
-                      alt={chapter.title}
-                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/45 via-transparent to-transparent" />
-                  </div>
-                  <div className="p-6">
-                    <h3 className="font-serif text-3xl font-light text-foreground">{chapter.title}</h3>
-                    <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">{chapter.copy}</p>
-                  </div>
-                </article>
-              </AnimatedSection>
-            ))}
-          </div>
+        <div className="container-editorial space-y-14">
+          {chapters.map((chapter, index) => (
+            <motion.div
+              key={chapter.heading}
+              initial={{ opacity: 0, y: 26 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-100px' }}
+              transition={{ duration: 0.65 }}
+              className="grid grid-cols-1 gap-6 border-y border-border/60 py-10 md:grid-cols-12 md:gap-8"
+            >
+              <div className={`md:col-span-7 ${index % 2 === 1 ? 'md:order-2' : ''}`}>
+                <img src={chapter.image} alt={chapter.heading} className="h-full min-h-[280px] w-full object-cover" />
+              </div>
+              <div className={`flex items-center md:col-span-5 ${index % 2 === 1 ? 'md:order-1' : ''}`}>
+                <div>
+                  <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Material Chapter</p>
+                  <h3 className="mt-3 font-serif text-3xl font-light leading-tight text-foreground md:text-4xl">{chapter.heading}</h3>
+                  <p className="mt-4 font-sans text-sm leading-relaxed text-muted-foreground">{chapter.text}</p>
+                </div>
+              </div>
+            </motion.div>
+          ))}
         </div>
       </section>
 
-      <section className="section-padding bg-foreground text-primary-foreground">
-        <div className="container-editorial">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:items-center">
-            <AnimatedSection className="lg:col-span-7">
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-primary-foreground/70">Declaration</p>
-              <h2 className="mt-4 font-serif text-3xl font-light leading-tight md:text-5xl">
-                What history divided,
-                <br />
-                design can reunite.
-              </h2>
-              <p className="mt-6 max-w-2xl font-sans text-sm leading-relaxed text-primary-foreground/80">
-                We believe furniture is not only utility. It is continuity. It carries inherited wisdom from stone halls,
-                old workshops, and lived domestic rituals into present-day homes.
-              </p>
-            </AnimatedSection>
-            <AnimatedSection delay={0.15} className="lg:col-span-5">
-              <div className="overflow-hidden border border-primary-foreground/30">
-                <img src={heroBgImg} alt="Historic interior" className="h-full w-full object-cover" />
-              </div>
-            </AnimatedSection>
+      <section ref={manifestoRef} className="relative overflow-hidden border-y border-border/60 bg-foreground py-20 text-primary-foreground md:py-28">
+        <motion.img
+          src={heroBgImg}
+          alt="Historic interior view"
+          className="absolute inset-0 h-full w-full object-cover opacity-25"
+          style={{ y: manifestoImageY }}
+        />
+        <div className="absolute inset-0 bg-foreground/75" />
+
+        <div className="container-editorial relative z-10">
+          <div className="mx-auto max-w-4xl text-center">
+            <p className="font-sans text-xs uppercase tracking-[0.32em] text-primary-foreground/70">Manifesto</p>
+            <p className="mt-6 font-serif text-3xl font-light leading-tight md:text-5xl">
+              What was once a story of division
+              <br />
+              becomes a practice of unity.
+            </p>
+            <p className="mx-auto mt-6 max-w-3xl font-sans text-sm leading-relaxed text-primary-foreground/82">
+              We design for cultural translation without dilution. We keep form legible, texture truthful,
+              and detail disciplined so each object can belong in different places while retaining its core integrity.
+            </p>
           </div>
         </div>
       </section>
@@ -165,16 +202,13 @@ const Philosophy = () => {
       <section className="section-padding">
         <div className="container-editorial">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.2fr_1fr] lg:items-center">
-            <AnimatedSection>
-              <div className="overflow-hidden border border-border/70">
-                <img src={homepageBgImg} alt="Babel historic art" className="h-full w-full object-cover" />
-              </div>
-            </AnimatedSection>
-            <AnimatedSection delay={0.1}>
-              <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Continue</p>
-              <h2 className="mt-3 font-serif text-3xl font-light text-foreground md:text-4xl">Explore the collection archive</h2>
+            <img src={homepageBgImg} alt="Babel visual narrative" className="h-full min-h-[300px] w-full object-cover" />
+            <div>
+              <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Epilogue</p>
+              <h2 className="mt-3 font-serif text-3xl font-light text-foreground md:text-4xl">Continue the historical journey</h2>
               <p className="mt-4 font-sans text-sm leading-relaxed text-muted-foreground">
-                Step from philosophy into objects. Each piece extends this historical dialogue through material, proportion, and use.
+                Explore collections that carry this philosophy into everyday living through material integrity,
+                long-term relevance, and quiet architectural presence.
               </p>
               <div className="mt-8 flex flex-col gap-4 sm:flex-row">
                 <Link
@@ -191,7 +225,7 @@ const Philosophy = () => {
                   Book Consultancy
                 </Link>
               </div>
-            </AnimatedSection>
+            </div>
           </div>
         </div>
       </section>
