@@ -31,7 +31,11 @@ const Consultancy = () => {
 
     setIsSubmitting(true);
     try {
-      await createConsultancyRequest(formData);
+      await createConsultancyRequest({
+        ...formData,
+        preferredDate: bookingDate || '',
+        preferredSlot: selectedSlot || '',
+      });
       trackEvent({ event: 'consultancy_submit_success', project_type: formData.projectType || 'unknown' });
       toast.success('Thank you for your inquiry. We will be in touch within 48 hours.');
       setFormData({
@@ -42,6 +46,8 @@ const Consultancy = () => {
         timeline: '',
         message: '',
       });
+      setBookingDate('');
+      setSelectedSlot('');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to submit inquiry';
       trackEvent({ event: 'consultancy_submit_failed' });
@@ -300,7 +306,7 @@ const Consultancy = () => {
                           >
                             <option value="">Select...</option>
                             {field.options?.map((opt) => (
-                              <option key={opt} value={opt.toLowerCase().replace(/\s+/g, '-')}>
+                              <option key={opt} value={opt}>
                                 {opt}
                               </option>
                             ))}
@@ -344,7 +350,7 @@ const Consultancy = () => {
                       >
                         <option value="">Select...</option>
                         {['Within 3 months', '3-6 months', '6-12 months', 'Planning phase'].map((opt) => (
-                          <option key={opt} value={opt.toLowerCase().replace(/[\s,+$]+/g, '-')}>
+                          <option key={opt} value={opt}>
                             {opt}
                           </option>
                         ))}

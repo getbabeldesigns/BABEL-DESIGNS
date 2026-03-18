@@ -6,6 +6,8 @@ export interface ConsultancyRequestInput {
   phone?: string;
   projectType?: string;
   timeline?: string;
+  preferredDate?: string;
+  preferredSlot?: string;
   message?: string;
 }
 
@@ -17,6 +19,8 @@ const sendConsultancyConfirmationEmail = async (input: ConsultancyRequestInput) 
       phone: input.phone ?? "",
       projectType: input.projectType ?? "",
       timeline: input.timeline ?? "",
+      preferredDate: input.preferredDate ?? "",
+      preferredSlot: input.preferredSlot ?? "",
       message: input.message ?? "",
     },
   });
@@ -49,6 +53,8 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
     phone: input.phone,
     projectType: input.projectType,
     timeline: input.timeline,
+    preferredDate: input.preferredDate,
+    preferredSlot: input.preferredSlot,
     message: input.message,
   });
 };

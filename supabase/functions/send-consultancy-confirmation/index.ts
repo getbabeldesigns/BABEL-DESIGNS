@@ -9,6 +9,8 @@ interface ConsultancyConfirmationBody {
   phone?: string;
   projectType?: string;
   timeline?: string;
+  preferredDate?: string;
+  preferredSlot?: string;
   message?: string;
 }
 
@@ -36,16 +38,13 @@ Deno.serve(async (request: Request) => {
   try {
     const body = (await request.json()) as ConsultancyConfirmationBody;
     const name = body.name?.trim() || "there";
-    const safeName = escapeHtml(name);
     const email = body.email?.trim();
-    const phone = body.phone?.trim() || "—";
-    const projectType = body.projectType?.trim() || "—";
-    const timeline = body.timeline?.trim() || "—";
-    const message = body.message?.trim() || "—";
-    const safePhone = escapeHtml(phone);
-    const safeProjectType = escapeHtml(projectType);
-    const safeTimeline = escapeHtml(timeline);
-    const safeMessage = escapeHtml(message);
+    const phone = body.phone?.trim() || "Not provided";
+    const projectType = body.projectType?.trim() || "Not provided";
+    const timeline = body.timeline?.trim() || "Not provided";
+    const preferredDate = body.preferredDate?.trim() || "Not provided";
+    const preferredSlot = body.preferredSlot?.trim() || "Not provided";
+    const message = body.message?.trim() || "Not provided";
 
     if (!email || !isValidEmail(email)) {
       return new Response(JSON.stringify({ error: "A valid email is required." }), {
@@ -53,6 +52,15 @@ Deno.serve(async (request: Request) => {
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const safeName = escapeHtml(name);
+    const safeEmail = escapeHtml(email);
+    const safePhone = escapeHtml(phone);
+    const safeProjectType = escapeHtml(projectType);
+    const safeTimeline = escapeHtml(timeline);
+    const safePreferredDate = escapeHtml(preferredDate);
+    const safePreferredSlot = escapeHtml(preferredSlot);
+    const safeMessage = escapeHtml(message);
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const fromEmail = Deno.env.get("CONSULTANCY_CONFIRMATION_FROM_EMAIL") ?? "Babel Designs <onboarding@resend.dev>";
@@ -83,7 +91,6 @@ Deno.serve(async (request: Request) => {
             <p style="font-size: 16px; margin-bottom: 16px;">Hello ${safeName},</p>
             <p style="font-size: 16px; margin-bottom: 16px;">Thank you for submitting your consultancy application.</p>
             <p style="font-size: 16px; margin-bottom: 16px;">Our team has received your request and will get back to you within 48 hours.</p>
-            <p style="font-size: 16px; margin-bottom: 24px;">We appreciate the opportunity to collaborate on your space.</p>
             <p style="font-size: 14px; color: #555;">Babel Designs<br />Design that unites all diversities.</p>
           </div>
         `,
@@ -120,10 +127,12 @@ Deno.serve(async (request: Request) => {
             <h2 style="margin: 0 0 16px;">New consultancy submission</h2>
             <table style="border-collapse: collapse; width: 100%;">
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Name</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeName}</td></tr>
-              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Email</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${escapeHtml(email)}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Email</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeEmail}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Phone</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePhone}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Project Type</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeProjectType}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Timeline</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeTimeline}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Preferred Date</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePreferredDate}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Preferred Slot</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePreferredSlot}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Message</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeMessage}</td></tr>
             </table>
           </div>
@@ -135,6 +144,8 @@ Deno.serve(async (request: Request) => {
           `Phone: ${phone}\n` +
           `Project Type: ${projectType}\n` +
           `Timeline: ${timeline}\n` +
+          `Preferred Date: ${preferredDate}\n` +
+          `Preferred Slot: ${preferredSlot}\n` +
           `Message: ${message}\n`,
       }),
     });
