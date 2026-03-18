@@ -7,6 +7,9 @@ import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
 import { getSafeImageSrc, handleImageError } from '@/lib/image';
+import monolithImg from '@/assets/monolith-collection.jpg';
+import stillnessImg from '@/assets/stillness-collection.jpg';
+import originImg from '@/assets/origin-collection.jpg';
 
 const CollectionDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -42,6 +45,12 @@ const CollectionDetail = () => {
       </div>
     );
   }
+
+  const localCollectionImageBySlug: Record<string, string> = {
+    monolith: monolithImg,
+    stillness: stillnessImg,
+    origin: originImg,
+  };
 
   return (
     <div className="min-h-screen pt-32 md:pt-40">
@@ -83,9 +92,11 @@ const CollectionDetail = () => {
               <AnimatedSection key={product.id} delay={index * 0.1}>
                 {(() => {
                   const productCardImage = getSafeImageSrc(
+                    localCollectionImageBySlug[product.collectionSlug],
+                    localCollectionImageBySlug[slug || ''],
+                    collection.image,
                     product.image,
                     ...(product.images ?? []),
-                    collection.image,
                     '/placeholder.svg',
                   );
                   return (
