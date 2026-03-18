@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Landmark, ScrollText, Sparkles } from 'lucide-react';
 import towerImage from '@/assets/babel-tower.png';
-import philosophyHero from '@/assets/philosophy-hero.jpg';
-import heroBg from '@/assets/hero-bg.jpg';
-import homepageBg from '@/assets/homepagebg.jpeg';
+import babelimage1 from '@/assets/babelimage1.png';
+import babelimage2 from '@/assets/babelimage2.jpeg';
+import babelimage3 from '@/assets/babelimage3.jpeg';
 
 const grainBackground =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
@@ -18,7 +18,7 @@ const Philosophy = () => {
       title: 'I. The First Stone',
       subtitle: 'Ancient Babel',
       icon: Landmark,
-      image: philosophyHero,
+      image: babelimage1,
       story:
         'In the old stories, Babel began as one voice reaching upward. Its ambition was grand, but its language grew louder than its listening. For us, this is the first lesson: architecture without humility becomes monument, not home.',
     },
@@ -27,7 +27,7 @@ const Philosophy = () => {
       title: 'II. The Fracture',
       subtitle: 'After the Fall',
       icon: ScrollText,
-      image: heroBg,
+      image: babelimage2,
       story:
         'When the tower fractured, people scattered with new tongues and new distances. Yet every fragment kept a memory of proportion, touch, and ritual. Babel Designs begins here, in those fragments, reassembled with patience.',
     },
@@ -36,7 +36,7 @@ const Philosophy = () => {
       title: 'III. The Renewal',
       subtitle: 'The Modern Atelier',
       icon: Sparkles,
-      image: homepageBg,
+      image: babelimage3,
       story:
         'Our contemporary Babel is not about height. It is about resonance: objects that hold stillness, spaces that invite belonging, and forms that speak quietly across cultures. This is our philosophy of making - beauty that translates.',
     },
