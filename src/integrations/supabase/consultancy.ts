@@ -9,6 +9,19 @@ export interface ConsultancyRequestInput {
   message?: string;
 }
 
+const sendConsultancyConfirmationEmail = async (input: { name: string; email: string }) => {
+  const { error } = await getSupabaseClient().functions.invoke("send-consultancy-confirmation", {
+    body: {
+      name: input.name,
+      email: input.email,
+    },
+  });
+
+  if (error) {
+    throw new Error("Request saved, but confirmation email could not be sent.");
+  }
+};
+
 export const createConsultancyRequest = async (input: ConsultancyRequestInput) => {
   const { error } = await getSupabaseClient().from("consultancy_requests").insert({
     name: input.name,
@@ -25,4 +38,9 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
     }
     throw error;
   }
+
+  await sendConsultancyConfirmationEmail({
+    name: input.name,
+    email: input.email,
+  });
 };
