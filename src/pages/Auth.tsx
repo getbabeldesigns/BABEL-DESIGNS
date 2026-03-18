@@ -77,35 +77,39 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen pt-20 md:pt-24">
-      <section className="relative min-h-[calc(100vh-5rem)] overflow-hidden bg-background">
+    <div className="min-h-screen pt-16 md:pt-20">
+      <section className="relative min-h-[calc(100vh-4.5rem)] overflow-hidden bg-background">
         <img
           src="/loginpage_bg.png"
           alt=""
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full object-cover opacity-55 blur-[1px] saturate-90"
+          className="pointer-events-none absolute inset-0 h-full w-full origin-top scale-[1.08] object-cover object-[center_20%] opacity-55 blur-[1px] saturate-90"
           loading="eager"
           decoding="async"
           fetchPriority="high"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,hsl(var(--background))_0%,hsl(var(--background)/0.72)_38%,hsl(var(--foreground)/0.72)_100%)]"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,hsl(var(--background))_0%,hsl(var(--background)/0.7)_40%,hsl(var(--foreground)/0.8)_100%)]"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -left-16 top-24 h-64 w-64 rounded-full bg-[radial-gradient(circle_at_30%_30%,hsl(var(--sand)/0.55),transparent_65%)] blur-2xl"
+          className="pointer-events-none absolute -left-20 top-8 h-72 w-72 rounded-full bg-[radial-gradient(circle_at_30%_30%,hsl(var(--sand)/0.6),transparent_62%)] blur-3xl"
         />
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute -bottom-24 right-0 h-[28rem] w-[28rem] rounded-full bg-[radial-gradient(circle_at_40%_40%,hsl(var(--clay)/0.45),transparent_62%)] blur-3xl"
+          className="pointer-events-none absolute -bottom-28 right-0 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle_at_40%_40%,hsl(var(--clay)/0.5),transparent_60%)] blur-3xl"
         />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-foreground/25 to-transparent"
         />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_15%,hsl(var(--foreground)/0.08),transparent_38%),radial-gradient(circle_at_85%_20%,hsl(var(--sand)/0.12),transparent_35%)] opacity-70"
+        />
 
-        <div className="container-editorial relative mx-auto grid min-h-[calc(100vh-5rem)] grid-cols-1 items-stretch gap-10 px-4 py-12 sm:px-6 md:px-12 lg:grid-cols-12 lg:gap-12 lg:px-20 lg:py-16">
+        <div className="container-editorial relative mx-auto grid min-h-[calc(100vh-4.5rem)] grid-cols-1 items-stretch gap-10 px-4 py-12 sm:px-6 md:px-12 lg:grid-cols-12 lg:gap-12 lg:px-20 lg:py-16">
           <div className="lg:col-span-6 lg:pr-4">
             <div className="max-w-2xl">
               <p className="section-overline">Studio access</p>
@@ -174,37 +178,30 @@ const Auth = () => {
             <div className="relative mx-auto w-full max-w-lg lg:ml-auto lg:mr-0">
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -left-7 -top-7 h-24 w-24 border border-foreground/20"
+                className="pointer-events-none absolute -left-8 -top-8 h-24 w-24 border border-foreground/20"
               />
               <div
                 aria-hidden="true"
-                className="pointer-events-none absolute -bottom-10 -right-10 h-32 w-32 rounded-full border border-foreground/20"
+                className="pointer-events-none absolute -bottom-12 -right-12 h-36 w-36 rounded-full border border-foreground/20"
               />
 
-              <div className="relative overflow-hidden border border-foreground/20 bg-background/70 shadow-[0_34px_90px_-70px_hsl(var(--foreground)/0.65)] backdrop-blur-md">
+              <div className="relative overflow-hidden rounded-2xl border border-foreground/20 bg-background/70 shadow-[0_40px_110px_-80px_hsl(var(--foreground)/0.7)] backdrop-blur-md">
                 <div
                   aria-hidden="true"
-                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_25%_30%,hsl(var(--sand)/0.22),transparent_55%),radial-gradient(circle_at_80%_70%,hsl(var(--wood)/0.16),transparent_58%)]"
+                  className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,hsl(var(--sand)/0.28),transparent_50%),radial-gradient(circle_at_80%_70%,hsl(var(--wood)/0.2),transparent_56%)]"
                 />
 
-                <div className="relative p-7 sm:p-8">
-                  <div className="flex items-start justify-between gap-6">
-                    <div>
-                      <p className="font-sans text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
-                        Sign in
-                      </p>
-                      <p className="mt-3 font-serif text-2xl font-light tracking-tight">
-                        Enter the studio.
-                      </p>
-                      <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
-                        Secure OAuth, no passwords.
-                      </p>
-                    </div>
-                    <div className="hidden sm:block">
-                      <div className="grid h-12 w-12 place-items-center border border-foreground/20 bg-background/60">
-                        <span className="logo-title text-lg tracking-[0.14em]">B</span>
-                      </div>
-                    </div>
+                <div className="relative p-7 sm:p-9">
+                  <div className="space-y-3 border-b border-foreground/15 pb-6">
+                    <p className="font-sans text-[11px] uppercase tracking-[0.34em] text-muted-foreground">
+                      Sign in
+                    </p>
+                    <p className="font-serif text-3xl font-light tracking-tight">
+                      Enter the studio.
+                    </p>
+                    <p className="max-w-sm font-sans text-sm leading-relaxed text-muted-foreground">
+                      Secure OAuth, no passwords. Keep your collections aligned wherever you return.
+                    </p>
                   </div>
 
                   {!isSupabaseConfigured && (
@@ -227,7 +224,7 @@ const Auth = () => {
                       <button
                         onClick={() => handleOAuth("google")}
                         disabled={isSubmitting !== null}
-                        className="group w-full border border-foreground/35 bg-background/70 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] transition-[transform,background-color,color,border-color] duration-300 hover:-translate-y-0.5 hover:border-foreground/60 hover:bg-foreground hover:text-background disabled:transform-none disabled:opacity-60"
+                        className="group w-full rounded-xl border border-foreground/35 bg-background/70 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] transition-[transform,background-color,color,border-color,box-shadow] duration-300 hover:-translate-y-0.5 hover:border-foreground/60 hover:bg-foreground hover:text-background hover:shadow-[0_12px_30px_-18px_hsl(var(--foreground)/0.8)] disabled:transform-none disabled:opacity-60"
                       >
                         <span className="flex items-center justify-between gap-4">
                           <span>{isSubmitting === "google" ? "Connecting to Google..." : "Continue with Google"}</span>
@@ -238,7 +235,7 @@ const Auth = () => {
                       </button>
                       <button
                         onClick={handleContinueAsGuest}
-                        className="w-full border border-foreground/20 bg-background/55 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground transition-[transform,color,border-color] duration-300 hover:-translate-y-0.5 hover:border-foreground/45 hover:text-foreground"
+                        className="w-full rounded-xl border border-foreground/20 bg-background/55 px-6 py-4 text-left font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground transition-[transform,color,border-color,background-color] duration-300 hover:-translate-y-0.5 hover:border-foreground/45 hover:bg-background/70 hover:text-foreground"
                       >
                         <span className="flex items-center justify-between gap-4">
                           <span>Continue as guest</span>
@@ -250,9 +247,6 @@ const Auth = () => {
                       <div className="pt-2">
                         <p className="font-sans text-[11px] uppercase tracking-[0.26em] text-muted-foreground">
                           Your choices help us curate a more precise collection.
-                        </p>
-                        <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">
-                          We’ll never clutter your inbox. Sign in simply keeps your space intact.
                         </p>
                       </div>
                     </div>
@@ -305,3 +299,4 @@ const Auth = () => {
 };
 
 export default Auth;
+
