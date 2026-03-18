@@ -6,6 +6,7 @@ import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrat
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
+import { getSafeImageSrc, handleImageError } from '@/lib/image';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
@@ -104,6 +105,18 @@ const CollectionDetail = () => {
               <AnimatedSection key={product.id} delay={index * 0.08}>
                 <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background p-6 shadow-[0_24px_56px_-48px_hsl(var(--foreground)/0.65)]">
                   <div className={`pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br ${collectionAccent} blur-2xl`} />
+                  <Link to={`/product/${product.id}`} className="relative mb-5 block overflow-hidden rounded-xl border border-border/60 bg-secondary/20">
+                    <div className="aspect-[4/3] overflow-hidden">
+                      <img
+                        src={getSafeImageSrc(product.image, ...(product.images ?? []), resolvedCollectionVisual)}
+                        alt={product.name}
+                        className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        loading="lazy"
+                        decoding="async"
+                        onError={handleImageError}
+                      />
+                    </div>
+                  </Link>
 
                   <div className="relative mb-4 flex items-start justify-between gap-6">
                     <div>
@@ -146,7 +159,7 @@ const CollectionDetail = () => {
                           id: product.id,
                           name: product.name,
                           price: product.price,
-                          image: resolvedCollectionVisual,
+                          image: getSafeImageSrc(product.image, ...(product.images ?? []), resolvedCollectionVisual),
                           material: product.materials[0],
                         });
                       }}

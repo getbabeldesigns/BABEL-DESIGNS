@@ -275,13 +275,13 @@ const Collections = () => {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                 {filteredProducts.slice(0, 9).map((product) => (
                   <div key={product.id} className="border border-border bg-card/50 p-4">
-                    <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={getSafeImageSrc(resolveCollectionVisual(product.collectionSlug, product.collection), collectionImageBySlug.get(product.collectionSlug), product.image, ...(product.images ?? []), '/placeholder.svg')} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div></Link>
+                    <Link to={`/product/${product.id}`}><div className="mb-4 aspect-square overflow-hidden bg-secondary/30"><img src={getSafeImageSrc(product.image, ...(product.images ?? []), resolveCollectionVisual(product.collectionSlug, product.collection), collectionImageBySlug.get(product.collectionSlug), '/placeholder.svg')} alt={product.name} className="h-full w-full object-cover" loading="lazy" decoding="async" onError={handleImageError} /></div></Link>
                     <p className="font-serif text-xl">{product.name}</p>
                     <p className="mb-2 text-sm text-muted-foreground">{product.materials.join(' / ')}</p>
                     <p className="mb-4 text-xs uppercase tracking-[0.18em] text-muted-foreground">{inferProductCategory(product.name)}</p>
                     <div className="flex items-center justify-between">
                       <p className="text-sm uppercase tracking-[0.2em]">{formatINR(product.price)}</p>
-                      <button onClick={() => { addItem({ id: product.id, name: product.name, price: product.price, image: getSafeImageSrc(resolveCollectionVisual(product.collectionSlug, product.collection), collectionImageBySlug.get(product.collectionSlug), product.image, ...(product.images ?? []), '/placeholder.svg'), material: product.materials[0] }); trackEvent({ event: 'add_to_cart', source: 'collections_discovery', product_id: product.id }); }} className="border border-foreground/30 px-3 py-2 text-xs uppercase tracking-[0.2em]">Add</button>
+                      <button onClick={() => { addItem({ id: product.id, name: product.name, price: product.price, image: getSafeImageSrc(product.image, ...(product.images ?? []), resolveCollectionVisual(product.collectionSlug, product.collection), collectionImageBySlug.get(product.collectionSlug), '/placeholder.svg'), material: product.materials[0] }); trackEvent({ event: 'add_to_cart', source: 'collections_discovery', product_id: product.id }); }} className="border border-foreground/30 px-3 py-2 text-xs uppercase tracking-[0.2em]">Add</button>
                     </div>
                   </div>
                 ))}
