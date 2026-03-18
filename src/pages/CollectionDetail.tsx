@@ -6,7 +6,7 @@ import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrat
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
-import { handleImageError } from '@/lib/image';
+import { getSafeImageSrc, handleImageError } from '@/lib/image';
 
 const CollectionDetail = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -81,11 +81,19 @@ const CollectionDetail = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
             {products.map((product, index) => (
               <AnimatedSection key={product.id} delay={index * 0.1}>
+                {(() => {
+                  const productCardImage = getSafeImageSrc(
+                    product.image,
+                    ...(product.images ?? []),
+                    collection.image,
+                    '/placeholder.svg',
+                  );
+                  return (
                 <div className="group">
                   <Link to={`/product/${product.id}`}>
                     <div className="aspect-square bg-secondary/30 mb-6 overflow-hidden">
                       <img
-                        src={product.image}
+                        src={productCardImage}
                         alt={product.name}
                         className="w-full h-full object-cover"
                         loading="lazy"
@@ -116,7 +124,7 @@ const CollectionDetail = () => {
                         id: product.id,
                         name: product.name,
                         price: product.price,
-                        image: product.image,
+                        image: productCardImage,
                         material: product.materials[0],
                       });
                     }}
@@ -125,6 +133,8 @@ const CollectionDetail = () => {
                     Add to Cart
                   </button>
                 </div>
+                  );
+                })()}
               </AnimatedSection>
             ))}
           </div>
