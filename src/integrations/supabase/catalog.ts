@@ -13,7 +13,11 @@ import { getSupabaseClient, isSupabaseConfigured } from "./client";
 type SupabaseErrorLike = {
   code?: string;
   message?: string;
+  details?: string;
+  status?: number;
 };
+
+let forceLocalCatalogFallback = !isSupabaseConfigured;
 
 type ProductQueryRow = {
   id: string;
@@ -31,10 +35,14 @@ type ProductQueryRow = {
 const shouldFallbackRead = (error: SupabaseErrorLike | null) => {
   if (!error) return false;
   return (
+    error.status === 404 ||
     error.code === "PGRST205" ||
     error.code === "42P01" ||
     error.message?.includes("schema cache") === true ||
-    error.message?.includes("does not exist") === true
+    error.message?.includes("does not exist") === true ||
+    error.message?.includes("404") === true ||
+    error.message?.toLowerCase().includes("not found") === true ||
+    error.details?.toLowerCase().includes("not found") === true
   );
 };
 
@@ -85,7 +93,7 @@ const toProduct = (row: ProductQueryRow): Product => {
 };
 
 export const fetchCollections = async (): Promise<Collection[]> => {
-  if (!isSupabaseConfigured) return fallbackCollectionsWithDemoImages;
+  if (forceLocalCatalogFallback) return fallbackCollectionsWithDemoImages;
 
   const { data, error } = await getSupabaseClient()
     .from("collections")
@@ -94,7 +102,10 @@ export const fetchCollections = async (): Promise<Collection[]> => {
     .order("name", { ascending: true });
 
   if (error) {
-    if (shouldFallbackRead(error)) return fallbackCollectionsWithDemoImages;
+    if (shouldFallbackRead(error)) {
+      forceLocalCatalogFallback = true;
+      return fallbackCollectionsWithDemoImages;
+    }
     console.warn("[catalog] Falling back to local collections due to Supabase read error:", error);
     return fallbackCollectionsWithDemoImages;
   }
@@ -102,7 +113,7 @@ export const fetchCollections = async (): Promise<Collection[]> => {
 };
 
 export const fetchCollectionBySlug = async (slug: string): Promise<Collection | null> => {
-  if (!isSupabaseConfigured) return getFallbackCollectionBySlug(slug) ?? null;
+  if (forceLocalCatalogFallback) return getFallbackCollectionBySlug(slug) ?? null;
 
   const { data, error } = await getSupabaseClient()
     .from("collections")
@@ -111,7 +122,10 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
     .maybeSingle();
 
   if (error) {
-    if (shouldFallbackRead(error)) return getFallbackCollectionBySlug(slug) ?? null;
+    if (shouldFallbackRead(error)) {
+      forceLocalCatalogFallback = true;
+      return getFallbackCollectionBySlug(slug) ?? null;
+    }
     console.warn("[catalog] Falling back to local collection due to Supabase read error:", error);
     return getFallbackCollectionBySlug(slug) ?? null;
   }
@@ -120,7 +134,7 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
 };
 
 export const fetchProducts = async (): Promise<Product[]> => {
-  if (!isSupabaseConfigured) return fallbackProducts;
+  if (forceLocalCatalogFallback) return fallbackProducts;
 
   const { data, error } = await getSupabaseClient()
     .from("products")
@@ -132,7 +146,10 @@ export const fetchProducts = async (): Promise<Product[]> => {
     .order("name", { ascending: true });
 
   if (error) {
-    if (shouldFallbackRead(error)) return fallbackProducts;
+    if (shouldFallbackRead(error)) {
+      forceLocalCatalogFallback = true;
+      return fallbackProducts;
+    }
     console.warn("[catalog] Falling back to local products due to Supabase read error:", error);
     return fallbackProducts;
   }
@@ -140,7 +157,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
 };
 
 export const fetchProductsByCollectionSlug = async (slug: string): Promise<Product[]> => {
-  if (!isSupabaseConfigured) return getFallbackProductsByCollection(slug);
+  if (forceLocalCatalogFallback) return getFallbackProductsByCollection(slug);
 
   const { data, error } = await getSupabaseClient()
     .from("products")
@@ -153,7 +170,10 @@ export const fetchProductsByCollectionSlug = async (slug: string): Promise<Produ
     .order("name", { ascending: true });
 
   if (error) {
-    if (shouldFallbackRead(error)) return getFallbackProductsByCollection(slug);
+    if (shouldFallbackRead(error)) {
+      forceLocalCatalogFallback = true;
+      return getFallbackProductsByCollection(slug);
+    }
     console.warn("[catalog] Falling back to local collection products due to Supabase read error:", error);
     return getFallbackProductsByCollection(slug);
   }
@@ -161,7 +181,7 @@ export const fetchProductsByCollectionSlug = async (slug: string): Promise<Produ
 };
 
 export const fetchProductById = async (id: string): Promise<Product | null> => {
-  if (!isSupabaseConfigured) return getFallbackProductById(id) ?? null;
+  if (forceLocalCatalogFallback) return getFallbackProductById(id) ?? null;
 
   const { data, error } = await getSupabaseClient()
     .from("products")
@@ -173,7 +193,10 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
     .maybeSingle();
 
   if (error) {
-    if (shouldFallbackRead(error)) return getFallbackProductById(id) ?? null;
+    if (shouldFallbackRead(error)) {
+      forceLocalCatalogFallback = true;
+      return getFallbackProductById(id) ?? null;
+    }
     console.warn("[catalog] Falling back to local product due to Supabase read error:", error);
     return getFallbackProductById(id) ?? null;
   }
