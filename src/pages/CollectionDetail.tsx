@@ -51,6 +51,13 @@ const CollectionDetail = () => {
     stillness: stillnessImg,
     origin: originImg,
   };
+  const normalizedSlug = (slug || "").toLowerCase();
+  const resolvedCollectionVisual =
+    (normalizedSlug.includes("monolith") && monolithImg) ||
+    (normalizedSlug.includes("stillness") && stillnessImg) ||
+    (normalizedSlug.includes("origin") && originImg) ||
+    localCollectionImageBySlug[slug || ""] ||
+    collection.image;
 
   return (
     <div className="min-h-screen pt-32 md:pt-40">
@@ -92,11 +99,8 @@ const CollectionDetail = () => {
               <AnimatedSection key={product.id} delay={index * 0.1}>
                 {(() => {
                   const productCardImage = getSafeImageSrc(
-                    localCollectionImageBySlug[product.collectionSlug],
-                    localCollectionImageBySlug[slug || ''],
+                    resolvedCollectionVisual,
                     collection.image,
-                    product.image,
-                    ...(product.images ?? []),
                     '/placeholder.svg',
                   );
                   return (
