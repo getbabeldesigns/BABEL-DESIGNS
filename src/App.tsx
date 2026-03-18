@@ -256,7 +256,7 @@ const LoadingShell = () => (
   </div>
 );
 
-const swipeRoutes = ["/", "/collections", "/lookbook", "/philosophy", "/consultancy"];
+const swipeRoutes = ["/", "/collections", "/philosophy", "/consultancy"];
 
 const MobileSwipeNavigator = () => {
   const location = useLocation();
