@@ -2,7 +2,7 @@ import { useEffect, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'lucide-react';
 import towerImage from '@/assets/babel-tower.png';
-import babelimage1 from '@/assets/babelimage1.jpeg';
+import bableimage1 from '@/assets/bableimage1.jpeg';
 import babelimage2 from '@/assets/babelimage2.jpeg';
 import babelimage3 from '@/assets/babelimage3.jpeg';
 
@@ -31,7 +31,7 @@ const Philosophy = () => {
       title: 'I. The First Stone',
       subtitle: 'Ancient Babel',
       icon: Landmark,
-      image: babelimage1,
+      image: bableimage1,
       story:
         'In the old stories, Babel began as one voice reaching upward. Its ambition was grand, but its language grew louder than its listening. For us, this is the first lesson: architecture without humility becomes monument, not home.',
     },
