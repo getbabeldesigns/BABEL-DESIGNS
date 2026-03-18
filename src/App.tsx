@@ -275,9 +275,14 @@ const MobileSwipeNavigator = () => {
       if (!isMobile() || event.touches.length !== 1) return;
 
       const target = event.target;
+      const targetElement =
+        target instanceof Element
+          ? target
+          : target instanceof Node
+            ? target.parentElement
+            : null;
       if (
-        target instanceof Element &&
-        target.closest(
+        targetElement?.closest(
           "input, textarea, select, button, a, [data-swipe-lock='true'], [data-carousel='true'], .lookbook-snap",
         )
       ) {
