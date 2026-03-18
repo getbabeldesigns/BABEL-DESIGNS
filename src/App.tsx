@@ -9,7 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import CustomCursor from "@/components/CustomCursor";
 import PageTransition from "@/components/PageTransition";
 import { useSeo } from "@/lib/seo";
 import { trackEvent } from "@/lib/analytics";
@@ -358,7 +357,6 @@ const AppContent = () => {
     <div className="site-grain">
       <ScrollToTop />
       <MobileSwipeNavigator />
-      <CustomCursor />
       <Navbar />
       <main>
         <AnimatePresence mode="wait">
