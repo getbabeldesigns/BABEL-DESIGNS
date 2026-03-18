@@ -17,7 +17,19 @@ type SupabaseErrorLike = {
   status?: number;
 };
 
-let forceLocalCatalogFallback = !isSupabaseConfigured;
+const CATALOG_LOCAL_FALLBACK_KEY = "catalog_force_local_fallback";
+
+const readPersistedFallbackPreference = () => {
+  if (typeof window === "undefined") return false;
+  return window.localStorage.getItem(CATALOG_LOCAL_FALLBACK_KEY) === "true";
+};
+
+const persistFallbackPreference = () => {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(CATALOG_LOCAL_FALLBACK_KEY, "true");
+};
+
+let forceLocalCatalogFallback = !isSupabaseConfigured || readPersistedFallbackPreference();
 
 type ProductQueryRow = {
   id: string;
@@ -104,6 +116,7 @@ export const fetchCollections = async (): Promise<Collection[]> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
+      persistFallbackPreference();
       return fallbackCollectionsWithDemoImages;
     }
     console.warn("[catalog] Falling back to local collections due to Supabase read error:", error);
@@ -124,6 +137,7 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
+      persistFallbackPreference();
       return getFallbackCollectionBySlug(slug) ?? null;
     }
     console.warn("[catalog] Falling back to local collection due to Supabase read error:", error);
@@ -148,6 +162,7 @@ export const fetchProducts = async (): Promise<Product[]> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
+      persistFallbackPreference();
       return fallbackProducts;
     }
     console.warn("[catalog] Falling back to local products due to Supabase read error:", error);
@@ -172,6 +187,7 @@ export const fetchProductsByCollectionSlug = async (slug: string): Promise<Produ
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
+      persistFallbackPreference();
       return getFallbackProductsByCollection(slug);
     }
     console.warn("[catalog] Falling back to local collection products due to Supabase read error:", error);
@@ -195,6 +211,7 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
+      persistFallbackPreference();
       return getFallbackProductById(id) ?? null;
     }
     console.warn("[catalog] Falling back to local product due to Supabase read error:", error);
