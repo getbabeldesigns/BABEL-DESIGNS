@@ -220,7 +220,7 @@ const Navbar = () => {
           </Link>
 
           {/* Navigation Links */}
-          <div className="hidden md:flex items-center gap-[clamp(12px,2.2vw,32px)]" ref={linksRef}>
+          <div className="hidden lg:flex items-center gap-[clamp(12px,2.2vw,32px)]" ref={linksRef}>
             {navLinks.map((link) => (
               <Link
                 key={link.path}
@@ -287,7 +287,7 @@ const Navbar = () => {
           </div>
 
           {/* Mobile Nav */}
-          <div className="flex md:hidden items-center gap-4">
+          <div className="flex lg:hidden items-center gap-4 md:gap-5">
             <Link
               to={user ? "/account" : "/auth"}
               className="font-sans text-[11px] uppercase tracking-[0.16em] text-muted-foreground"
@@ -322,13 +322,13 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="md:hidden border-t border-border px-4 py-3 sm:px-6">
-          <div className="grid w-full grid-cols-3 gap-2">
+        <div className="lg:hidden border-t border-border px-4 py-3 sm:px-6 md:px-8 md:py-3.5">
+          <div className="grid w-full grid-cols-3 gap-2 md:gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex min-h-9 items-center justify-center border px-2 text-center font-sans text-[11px] tracking-[0.12em] uppercase transition-colors ${
+                className={`flex min-h-9 items-center justify-center border px-2 text-center font-sans text-[11px] tracking-[0.12em] uppercase transition-colors md:min-h-10 md:text-[12px] md:tracking-[0.14em] ${
                   isActive(link.path)
                     ? 'border-foreground/35 bg-foreground text-background'
                     : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'
