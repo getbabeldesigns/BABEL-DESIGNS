@@ -202,7 +202,7 @@ const Navbar = () => {
       <div className="container-editorial max-w-none">
         <div
           className={`flex items-center justify-between px-4 sm:px-6 ${
-            isAuthPage ? 'py-3 md:py-4 md:px-7 lg:px-10' : 'py-4 md:px-8 md:py-6 lg:px-12'
+            isAuthPage ? 'py-3 md:py-4 md:px-7 lg:px-10' : 'py-3.5 md:px-8 md:py-6 lg:px-12'
           }`}
         >
           {/* Logo */}
@@ -214,7 +214,7 @@ const Navbar = () => {
             onMouseLeave={handleLogoHoverEnd}
             data-cursor="Home"
           >
-            <h1 className="logo-title text-[clamp(14px,1.8vw,24px)] font-light tracking-[clamp(0.1em,0.6vw,0.2em)] text-foreground leading-tight">
+            <h1 className="logo-title text-[clamp(15px,1.8vw,24px)] font-light tracking-[clamp(0.1em,0.6vw,0.2em)] text-foreground leading-tight">
               BABEL DESIGNS
             </h1>
           </Link>
@@ -290,16 +290,16 @@ const Navbar = () => {
           <div className="flex md:hidden items-center gap-4">
             <Link
               to={user ? "/account" : "/auth"}
-              className="font-sans text-[10px] uppercase tracking-[0.16em] text-muted-foreground"
+              className="font-sans text-[11px] uppercase tracking-[0.16em] text-muted-foreground"
               data-cursor="Account"
             >
               {user ? 'Account' : 'Sign In'}
             </Link>
             {user && (
               <Link to="/account" aria-label="Account profile" data-cursor="Profile">
-                <Avatar className="h-7 w-7 border border-border/70">
+                 <Avatar className="h-8 w-8 border border-border/70">
                   <AvatarImage src={user.user_metadata?.avatar_url as string | undefined} alt={user.email ?? 'Account avatar'} />
-                  <AvatarFallback className="text-[9px] font-sans">{initials(user)}</AvatarFallback>
+                  <AvatarFallback className="text-[10px] font-sans">{initials(user)}</AvatarFallback>
                 </Avatar>
               </Link>
             )}
@@ -322,16 +322,16 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="md:hidden border-t border-border px-2 py-2">
-          <div className="flex w-full flex-nowrap items-center justify-between gap-x-2">
+        <div className="md:hidden border-t border-border px-4 py-3 sm:px-6">
+          <div className="grid w-full grid-cols-3 gap-2">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex-1 min-w-0 whitespace-nowrap text-center font-sans text-[8px] leading-none tracking-[0.06em] uppercase ${
+                className={`flex min-h-9 items-center justify-center border px-2 text-center font-sans text-[11px] tracking-[0.12em] uppercase transition-colors ${
                   isActive(link.path)
-                    ? 'text-foreground'
-                    : 'text-muted-foreground'
+                    ? 'border-foreground/35 bg-foreground text-background'
+                    : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'
                 }`}
                 onMouseEnter={handleNavLinkHover}
                 onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive(link.path))}

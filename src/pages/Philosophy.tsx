@@ -84,7 +84,7 @@ const Philosophy = () => {
 
         <div className="absolute inset-x-0 bottom-0 top-24 bg-[radial-gradient(circle_at_50%_45%,hsl(var(--foreground)/0.08),hsl(var(--background)/0.9)_62%,hsl(var(--background))_100%)] md:top-32" />
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(88vh-6rem)] w-full max-w-7xl items-center px-8 md:min-h-[calc(88vh-8rem)] md:px-16">
+        <div className="relative z-10 mx-auto flex min-h-[calc(88vh-6rem)] w-full max-w-7xl items-center px-4 sm:px-6 md:min-h-[calc(88vh-8rem)] md:px-16">
           <div className="max-w-md">
             <p className="mb-6 font-sans text-xs uppercase tracking-[0.32em] text-muted-foreground">Babel Designs</p>
             <h1 className="mb-6 font-serif text-4xl font-light leading-tight text-foreground md:text-6xl">
@@ -101,7 +101,7 @@ const Philosophy = () => {
       </section>
 
       <section className="sticky top-20 z-20 border-b border-border/40 bg-background/80 backdrop-blur-md">
-        <div className="mx-auto flex w-full max-w-7xl flex-wrap gap-3 px-6 py-4 md:px-12">
+        <div className="mx-auto flex w-full max-w-7xl flex-wrap gap-3 px-4 py-4 sm:px-6 md:px-12">
           {chapters.map((chapter) => (
             <a
               key={chapter.id}
@@ -123,7 +123,7 @@ const Philosophy = () => {
             id={chapter.id}
             className="section-padding border-b border-border/50 bg-background/90"
           >
-            <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-6 md:grid-cols-2 md:px-12">
+            <div className="mx-auto grid w-full max-w-7xl items-center gap-12 px-4 sm:px-6 md:grid-cols-2 md:px-12">
               <div className={index % 2 ? 'md:order-2' : ''}>
                 <p className="mb-4 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">
                   Story Chapter
