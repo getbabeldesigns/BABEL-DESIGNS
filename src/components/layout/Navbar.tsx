@@ -140,10 +140,18 @@ const Navbar = () => {
     }
   }, [totalItems]);
 
-  const handleNavLinkHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
+  const getNavLinkRestColor = (target: HTMLAnchorElement, isActivePath: boolean) => {
+    // Filled active mobile buttons use a dark background and must keep light text.
+    if (target.classList.contains('bg-foreground')) {
+      return 'var(--background)';
+    }
+    return isActivePath ? 'var(--foreground)' : 'var(--muted-foreground)';
+  };
+
+  const handleNavLinkHover = (e: React.MouseEvent<HTMLAnchorElement>, isActivePath: boolean) => {
     const target = e.currentTarget;
     gsap.to(target, {
-      color: 'var(--foreground)',
+      color: getNavLinkRestColor(target, isActivePath) === 'var(--background)' ? 'var(--background)' : 'var(--foreground)',
       y: -1,
       duration: 0.4,
       ease: 'power2.out',
@@ -153,7 +161,7 @@ const Navbar = () => {
   const handleNavLinkHoverEnd = (e: React.MouseEvent<HTMLAnchorElement>, isActivePath: boolean) => {
     const target = e.currentTarget;
     gsap.to(target, {
-      color: isActivePath ? 'var(--foreground)' : 'var(--muted-foreground)',
+      color: getNavLinkRestColor(target, isActivePath),
       y: 0,
       duration: 0.4,
       ease: 'power2.out',
@@ -231,7 +239,7 @@ const Navbar = () => {
                     ? 'text-foreground'
                     : 'text-muted-foreground'
                 }`}
-                onMouseEnter={handleNavLinkHover}
+                onMouseEnter={(e) => handleNavLinkHover(e, isActive(link.path))}
                 onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive(link.path))}
                 data-cursor="Open"
               >
@@ -244,7 +252,7 @@ const Navbar = () => {
               className={`font-sans text-[clamp(10px,1.05vw,14px)] tracking-[clamp(0.14em,0.5vw,0.26em)] uppercase ${
                 isActive('/auth') || isActive('/account') ? 'text-foreground' : 'text-muted-foreground'
               }`}
-              onMouseEnter={handleNavLinkHover}
+              onMouseEnter={(e) => handleNavLinkHover(e, isActive('/auth') || isActive('/account'))}
               onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive('/auth') || isActive('/account'))}
               data-cursor="Account"
             >
@@ -334,7 +342,7 @@ const Navbar = () => {
                     ? 'border-foreground/35 bg-foreground text-background'
                     : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'
                 }`}
-                onMouseEnter={handleNavLinkHover}
+                onMouseEnter={(e) => handleNavLinkHover(e, isActive(link.path))}
                 onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive(link.path))}
                 data-cursor="Open"
               >
