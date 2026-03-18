@@ -1,242 +1,190 @@
-import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowRight } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
-import { imageZoomInVariants, heroHeadingVariants } from '@/lib/animations';
 import philosophyHero from '@/assets/philosophy-hero.jpg';
-import { useEffect, useState } from 'react';
+import monolithCollectionImg from '@/assets/monolith-collection.jpg';
+import stillnessCollectionImg from '@/assets/stillness-collection.jpg';
+import originCollectionImg from '@/assets/origin-collection.jpg';
 
+const principles = [
+  {
+    id: '01',
+    title: 'Universal Form',
+    copy: 'We shape objects that read clearly across cultures through proportion, clarity, and calm presence.',
+  },
+  {
+    id: '02',
+    title: 'Material Truth',
+    copy: 'Stone should feel grounded, wood should feel alive, and metal should age with character.',
+  },
+  {
+    id: '03',
+    title: 'Quiet Precision',
+    copy: 'Luxury is measured by restraint, alignment, and the confidence to remove visual noise.',
+  },
+  {
+    id: '04',
+    title: 'Longevity',
+    copy: 'Every detail is designed to improve through use, not fade after the first season.',
+  },
+];
 
-
+const chapters = [
+  {
+    title: 'Stone as anchor',
+    copy: 'A monolithic silhouette stabilizes the room and gives architecture a place to rest.',
+    image: monolithCollectionImg,
+  },
+  {
+    title: 'Softness as balance',
+    copy: 'Textiles and timber introduce warmth, absorb sound, and slow the rhythm of movement.',
+    image: stillnessCollectionImg,
+  },
+  {
+    title: 'Raw as clarity',
+    copy: 'Honest texture and visible structure keep each piece direct, legible, and timeless.',
+    image: originCollectionImg,
+  },
+];
 
 const Philosophy = () => {
   const prefersReducedMotion = useReducedMotion();
-  const [isCoarsePointer, setIsCoarsePointer] = useState(false);
-  const { scrollY } = useScroll();
-  const enableHeroMotion = !prefersReducedMotion && !isCoarsePointer;
-  const heroOffset = useTransform(scrollY, [0, 500], enableHeroMotion ? [0, 70] : [0, 0]);
-
-  useEffect(() => {
-    const query = window.matchMedia('(pointer: coarse)');
-    const sync = () => setIsCoarsePointer(query.matches);
-    sync();
-    query.addEventListener('change', sync);
-    return () => query.removeEventListener('change', sync);
-  }, []);
-
-  const materialPalette = [
-    { name: 'Linen Stone', tone: 'bg-[hsl(var(--linen))]' },
-    { name: 'Warm Sand', tone: 'bg-[hsl(var(--sand))]' },
-    { name: 'Muted Clay', tone: 'bg-[hsl(var(--clay))]' },
-    { name: 'Aged Wood', tone: 'bg-[hsl(var(--wood))]' },
-  ];
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
-      {/* Hero */}
-      <section className="relative h-[70vh] flex items-center justify-center overflow-hidden mb-20 section-transition">
-        <motion.div
-          variants={enableHeroMotion ? imageZoomInVariants : undefined}
-          initial={enableHeroMotion ? "hidden" : false}
-          animate={enableHeroMotion ? "visible" : false}
-          className="absolute inset-0"
-          style={{ y: heroOffset }}
-        >
-          <img
-            src={philosophyHero}
-            alt="Tower of Babel reimagined"
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-foreground/40" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.5 }}
-          className="relative z-10 text-center px-6"
-        >
-          <motion.h1
-            variants={heroHeadingVariants}
-            className="font-serif text-4xl md:text-6xl lg:text-7xl font-light text-primary-foreground mb-6"
-          >
-            Our Philosophy
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
+    <div className="min-h-screen pt-28 md:pt-36">
+      <section className="section-padding pt-0">
+        <div className="container-editorial">
+          <motion.div
+            initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 1 }}
-            className="font-serif text-lg md:text-xl text-primary-foreground/90"
+            transition={{ duration: 0.8 }}
+            className="relative overflow-hidden border border-border/60 bg-background"
           >
-            Design that transcends
-          </motion.p>
-        </motion.div>
-      </section>
+            <div className="grid grid-cols-1 lg:grid-cols-12">
+              <div className="relative lg:col-span-7">
+                <img src={philosophyHero} alt="Babel philosophy" className="h-full min-h-[420px] w-full object-cover" />
+                <div className="absolute inset-0 bg-gradient-to-r from-foreground/55 via-foreground/28 to-transparent" />
+                <div className="absolute inset-x-0 bottom-0 p-8 md:p-10">
+                  <p className="font-sans text-xs uppercase tracking-[0.3em] text-primary-foreground/80">Babel Philosophy</p>
+                  <h1 className="mt-3 max-w-3xl font-serif text-4xl font-light leading-tight text-primary-foreground md:text-6xl">
+                    Design that translates without words.
+                  </h1>
+                </div>
+              </div>
 
-      {/* What Babel Stands For */}
-      <section className="section-padding section-transition">
-        <div className="container-editorial">
-          <div className="max-w-3xl mx-auto">
-            <AnimatedSection>
-              <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-                What We Believe
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-8 leading-tight">
-                Design has no language,<br />
-                no boundaries, no culture.
-              </h2>
-              <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                At Babel Designs, we believe that true design speaks universally. It doesn't require 
-                translation, explanation, or context. When a form is honest and a material is respected, 
-                the result transcends boundaries.
-              </p>
-              <p className="font-sans text-muted-foreground leading-relaxed">
-                We create furniture that feels equally at home in Tokyo, Lagos, São Paulo, or Stockholm. 
-                Not because we design for everywhere, but because we design for everyone — 
-                honoring the shared human appreciation for craft, proportion, and material truth.
-              </p>
-            </AnimatedSection>
-          </div>
+              <div className="relative border-t border-border/60 bg-background/90 p-8 lg:col-span-5 lg:border-l lg:border-t-0 md:p-10">
+                <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Manifesto</p>
+                <p className="mt-5 font-sans text-sm leading-relaxed text-muted-foreground">
+                  Our work is guided by one belief: design should feel intelligible to anyone, anywhere.
+                  Not because it is generic, but because it is honest.
+                </p>
+                <p className="mt-4 font-sans text-sm leading-relaxed text-muted-foreground">
+                  We reject spectacle as strategy. We focus on durable forms, calibrated scale, and materials
+                  that deepen with time.
+                </p>
+                <div className="mt-8 border-l border-foreground/30 pl-4">
+                  <p className="font-serif text-2xl font-light text-foreground">"Craft without noise."</p>
+                  <p className="mt-1 font-sans text-[11px] uppercase tracking-[0.24em] text-muted-foreground">
+                    Core Position
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* Muted Luxury */}
-      <section className="section-padding bg-card section-transition">
+      <section className="section-padding bg-card/70">
         <div className="container-editorial">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-            <AnimatedSection>
-              <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-                Muted Luxury
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-8 leading-tight">
-                Luxury without shine.
-              </h2>
-              <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                We reject the notion that luxury must announce itself. Our pieces don't seek attention — 
-                they earn it. Through exceptional materials, meticulous craftsmanship, and timeless form.
-              </p>
-              <p className="font-sans text-muted-foreground leading-relaxed">
-                A Babel piece grows more beautiful with age. The leather softens, the bronze develops 
-                patina, the wood tells stories. This is luxury that improves, not depreciates.
-              </p>
-            </AnimatedSection>
-
-            <AnimatedSection delay={0.2}>
-              <div className="aspect-square bg-secondary/30 flex items-center justify-center p-12">
-                <p className="font-serif text-2xl md:text-3xl text-foreground leading-relaxed text-center">
-                  "Craft without ornament.<br />
-                  Presence without pretense."
-                </p>
+          <AnimatedSection>
+            <div className="mb-10 flex items-end justify-between gap-6 border-b border-border/60 pb-5">
+              <div>
+                <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Principles</p>
+                <h2 className="mt-3 font-serif text-3xl font-light text-foreground md:text-4xl">How we decide</h2>
               </div>
-            </AnimatedSection>
-          </div>
-        </div>
-      </section>
+              <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">04 Foundations</p>
+            </div>
+          </AnimatedSection>
 
-      {/* Material Palette */}
-      <section className="section-padding section-transition">
-        <div className="container-editorial">
-          <div className="max-w-3xl mx-auto text-center mb-12">
-            <p className="section-overline mb-4">Material Palette</p>
-            <h2 className="section-title mb-6">A restrained spectrum</h2>
-            <p className="section-copy">
-              We work within a narrow tonal family so texture and proportion lead the conversation.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {materialPalette.map((item) => (
-              <div key={item.name} className="group card-hover-lift">
-                <div className={`h-40 border border-border ${item.tone}`} />
-                <p className="mt-4 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground group-hover:text-foreground transition-colors">
-                  {item.name}
-                </p>
-              </div>
+          <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+            {principles.map((item, index) => (
+              <AnimatedSection key={item.id} delay={index * 0.08}>
+                <article className="group relative overflow-hidden border border-border/70 bg-background p-6 transition-transform hover:-translate-y-1">
+                  <div className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full bg-[radial-gradient(circle_at_35%_30%,hsl(var(--foreground)/0.08),transparent_68%)] opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+                  <p className="font-sans text-[10px] uppercase tracking-[0.26em] text-muted-foreground">{item.id}</p>
+                  <h3 className="mt-3 font-serif text-2xl font-light text-foreground">{item.title}</h3>
+                  <p className="mt-3 font-sans text-sm leading-relaxed text-muted-foreground">{item.copy}</p>
+                </article>
+              </AnimatedSection>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Minimalism Through Integration */}
-      <section className="section-padding section-transition">
+      <section className="section-padding">
         <div className="container-editorial">
-          <div className="max-w-3xl mx-auto">
-            <AnimatedSection>
-              <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-6">
-                Our Approach
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-8 leading-tight">
-                Minimalism through integration,<br />
-                not removal.
-              </h2>
-              <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                Many confuse minimalism with emptiness — stripping away until nothing remains. 
-                We take the opposite approach. We absorb complexity, integrate function, 
-                and achieve simplicity through thoughtful inclusion.
-              </p>
-              <p className="font-sans text-muted-foreground leading-relaxed mb-6">
-                A Babel dining table isn't simple because it lacks features. It's simple because 
-                every element — the joinery, the grain direction, the edge profile — has been 
-                considered and resolved. Complexity integrated, simplicity achieved.
-              </p>
-              <p className="font-sans text-muted-foreground leading-relaxed">
-                This is minimalism that feels complete, not lacking. Minimal in expression, 
-                maximal in consideration.
-              </p>
-            </AnimatedSection>
+          <AnimatedSection>
+            <div className="mb-10 text-center">
+              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Material Chapters</p>
+              <h2 className="mt-4 font-serif text-3xl font-light text-foreground md:text-4xl">A restrained spectrum</h2>
+            </div>
+          </AnimatedSection>
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {chapters.map((chapter, index) => (
+              <AnimatedSection key={chapter.title} delay={index * 0.1}>
+                <article className="group overflow-hidden border border-border/70 bg-card/70">
+                  <div className="aspect-[4/3] overflow-hidden">
+                    <img
+                      src={chapter.image}
+                      alt={chapter.title}
+                      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
+                  </div>
+                  <div className="p-5">
+                    <h3 className="font-serif text-2xl font-light text-foreground">{chapter.title}</h3>
+                    <p className="mt-2 font-sans text-sm leading-relaxed text-muted-foreground">{chapter.copy}</p>
+                  </div>
+                </article>
+              </AnimatedSection>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Tower of Babel */}
-      <section className="section-padding bg-foreground text-primary-foreground section-transition">
+      <section className="section-padding bg-foreground text-primary-foreground">
         <div className="container-editorial">
-          <div className="max-w-3xl mx-auto text-center">
-            <AnimatedSection>
-              <p className="font-sans text-xs tracking-[0.3em] uppercase text-primary-foreground/70 mb-6">
-                The Tower of Babel — Reimagined
-              </p>
-              <h2 className="font-serif text-3xl md:text-4xl font-light mb-8 leading-tight">
-                What divided us then<br />
-                unites us now.
+          <AnimatedSection>
+            <div className="mx-auto max-w-3xl text-center">
+              <p className="font-sans text-xs uppercase tracking-[0.28em] text-primary-foreground/70">Closing Note</p>
+              <h2 className="mt-4 font-serif text-3xl font-light leading-tight md:text-5xl">
+                What once divided us can now be connected through design.
               </h2>
-              <p className="font-sans text-primary-foreground/80 leading-relaxed mb-6">
-                The ancient Tower of Babel story speaks of division — humanity scattered, 
-                languages confused, understanding lost. Our brand reimagines this narrative.
+              <p className="mt-6 font-sans text-sm leading-relaxed text-primary-foreground/80">
+                A well-resolved object does not ask where you are from. It asks how you live. That is the
+                language we continue to build.
               </p>
-              <p className="font-sans text-primary-foreground/80 leading-relaxed mb-6">
-                We believe design can be the universal language that the tower builders sought. 
-                A chair crafted from honest materials and true proportion needs no translation. 
-                A table that gathers families speaks in every tongue.
-              </p>
-              <p className="font-serif text-xl md:text-2xl mt-12">
-                "Design that unites all diversities."
-              </p>
-            </AnimatedSection>
-          </div>
+            </div>
+          </AnimatedSection>
         </div>
       </section>
 
-      {/* CTA */}
-      <section className="section-padding section-transition">
+      <section className="section-padding">
         <div className="container-editorial text-center">
           <AnimatedSection>
-            <h2 className="font-serif text-3xl md:text-4xl font-light text-foreground mb-8">
-              Ready to begin?
-            </h2>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
+            <h2 className="font-serif text-3xl font-light text-foreground md:text-4xl">Continue the journey</h2>
+            <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
               <Link
                 to="/collections"
-                data-cursor="Explore"
-                className="inline-flex items-center gap-3 font-sans text-sm tracking-widest uppercase text-foreground border border-foreground/30 px-8 py-4 hover:bg-foreground hover:text-background transition-all duration-300"
+                className="inline-flex items-center gap-3 border border-foreground/35 px-8 py-4 font-sans text-xs uppercase tracking-[0.22em] text-foreground transition-colors hover:bg-foreground hover:text-background"
               >
                 Explore Collections
                 <ArrowRight size={16} />
               </Link>
               <Link
                 to="/consultancy"
-                data-cursor="Book"
-                className="inline-flex items-center gap-3 font-sans text-sm tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors"
+                className="inline-flex items-center gap-3 border border-border/70 px-8 py-4 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
               >
                 Book Consultancy
               </Link>
@@ -249,4 +197,3 @@ const Philosophy = () => {
 };
 
 export default Philosophy;
-
