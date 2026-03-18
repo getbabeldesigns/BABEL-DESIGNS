@@ -167,12 +167,6 @@ const Philosophy = () => {
               Continue to Collections
               <ArrowRight size={16} />
             </Link>
-            <Link
-              to="/consultancy"
-              className="inline-flex items-center gap-3 border border-border/70 px-7 py-4 font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-            >
-              Book Consultancy
-            </Link>
           </div>
         </div>
       </section>
