@@ -1,4 +1,4 @@
-﻿import { useParams, Link } from 'react-router-dom';
+import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import AnimatedSection from '@/components/AnimatedSection';
@@ -6,7 +6,6 @@ import { fetchCollectionBySlug, fetchProductsByCollectionSlug } from '@/integrat
 import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
-import { getSafeImageSrc, handleImageError } from '@/lib/image';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
@@ -46,110 +45,117 @@ const CollectionDetail = () => {
     );
   }
 
-  const localCollectionImageBySlug: Record<string, string> = {
-    monolith: monolithImg,
-    stillness: stillnessImg,
-    origin: originImg,
-  };
-  const normalizedSlug = (slug || "").toLowerCase();
+  const normalizedSlug = (slug || '').toLowerCase();
   const resolvedCollectionVisual =
-    (normalizedSlug.includes("monolith") && monolithImg) ||
-    (normalizedSlug.includes("stillness") && stillnessImg) ||
-    (normalizedSlug.includes("origin") && originImg) ||
-    localCollectionImageBySlug[slug || ""] ||
-    collection.image;
+    (normalizedSlug.includes('monolith') && monolithImg) ||
+    (normalizedSlug.includes('stillness') && stillnessImg) ||
+    (normalizedSlug.includes('origin') && originImg) ||
+    monolithImg;
+
+  const collectionAccent =
+    normalizedSlug.includes('monolith')
+      ? 'from-stone-300/45 via-zinc-200/20 to-transparent'
+      : normalizedSlug.includes('stillness')
+        ? 'from-amber-200/45 via-orange-100/20 to-transparent'
+        : 'from-neutral-300/45 via-stone-200/20 to-transparent';
 
   return (
     <div className="min-h-screen pt-32 md:pt-40">
       <section className="section-padding pt-0 pb-12">
         <div className="container-editorial">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
             <Link
               to="/collections"
-              className="font-sans text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground transition-colors mb-8 inline-block"
+              className="mb-8 inline-block font-sans text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground"
             >
               {'<-'} Back to Collections
             </Link>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
-              <div>
-                <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">{collection.tagline}</p>
-                <h1 className="font-serif text-4xl md:text-5xl font-light text-foreground mb-6">{collection.name}</h1>
-                <p className="font-sans text-muted-foreground leading-relaxed max-w-lg">{collection.description}</p>
-              </div>
-              <div className="aspect-[4/3] overflow-hidden">
-                <img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" onError={handleImageError} />
+
+            <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-background/75 p-8 md:p-12">
+              <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${collectionAccent}`} />
+              <div className="relative grid grid-cols-1 gap-8 lg:grid-cols-3 lg:items-end">
+                <div className="lg:col-span-2">
+                  <p className="mb-4 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">{collection.tagline}</p>
+                  <h1 className="mb-6 font-serif text-4xl font-light text-foreground md:text-5xl">{collection.name}</h1>
+                  <p className="max-w-2xl font-sans leading-relaxed text-muted-foreground">{collection.description}</p>
+                </div>
+                <div className="border border-border/60 bg-background/60 p-5">
+                  <p className="mb-3 font-sans text-[11px] uppercase tracking-[0.28em] text-muted-foreground">Collection profile</p>
+                  <p className="font-serif text-3xl font-light text-foreground">{products.length}</p>
+                  <p className="mt-1 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Available pieces</p>
+                </div>
               </div>
             </div>
           </motion.div>
         </div>
       </section>
 
-      <section className="section-padding bg-card">
+      <section className="section-padding bg-card/70">
         <div className="container-editorial">
           <AnimatedSection className="mb-12">
-            <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground">{products.length} Pieces</p>
+            <div className="flex items-center justify-between gap-6 border-y border-border/60 py-5">
+              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">{products.length} Pieces</p>
+              <p className="font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground">Crafted for long-term living</p>
+            </div>
           </AnimatedSection>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
+          <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
             {products.map((product, index) => (
-              <AnimatedSection key={product.id} delay={index * 0.1}>
-                {(() => {
-                  const productCardImage = getSafeImageSrc(
-                    resolvedCollectionVisual,
-                    collection.image,
-                    '/placeholder.svg',
-                  );
-                  return (
-                <div className="group">
-                  <Link to={`/product/${product.id}`}>
-                    <div className="aspect-square bg-secondary/30 mb-6 overflow-hidden">
-                      <img
-                        src={productCardImage}
-                        alt={product.name}
-                        className="w-full h-full object-cover"
-                        loading="lazy"
-                        decoding="async"
-                        onError={handleImageError}
-                      />
-                    </div>
-                  </Link>
+              <AnimatedSection key={product.id} delay={index * 0.08}>
+                <div className="group relative overflow-hidden rounded-2xl border border-border/60 bg-background p-6 shadow-[0_24px_56px_-48px_hsl(var(--foreground)/0.65)]">
+                  <div className={`pointer-events-none absolute -right-16 -top-16 h-40 w-40 rounded-full bg-gradient-to-br ${collectionAccent} blur-2xl`} />
 
-                  <div className="flex justify-between items-start mb-4">
+                  <div className="relative mb-4 flex items-start justify-between gap-6">
                     <div>
+                      <p className="mb-2 font-sans text-[10px] uppercase tracking-[0.28em] text-muted-foreground">
+                        Piece {String(index + 1).padStart(2, '0')}
+                      </p>
                       <Link to={`/product/${product.id}`}>
-                        <h3 className="font-serif text-xl font-light text-foreground group-hover:text-muted-foreground transition-colors">
+                        <h3 className="font-serif text-2xl font-light text-foreground transition-colors group-hover:text-muted-foreground">
                           {product.name}
                         </h3>
                       </Link>
-                      <p className="font-sans text-sm text-muted-foreground mt-1">{product.materials.join(' · ')}</p>
                     </div>
-                    <p className="font-sans text-sm text-foreground">{formatINR(product.price)}</p>
+                    <p className="font-sans text-sm uppercase tracking-[0.2em] text-foreground">{formatINR(product.price)}</p>
                   </div>
 
-                  <p className="font-sans text-sm text-muted-foreground leading-relaxed mb-6">{product.description}</p>
+                  <div className="relative mb-5 flex flex-wrap gap-2">
+                    {product.materials.slice(0, 3).map((material) => (
+                      <span
+                        key={material}
+                        className="border border-border/70 bg-secondary/20 px-3 py-1 font-sans text-[10px] uppercase tracking-[0.18em] text-muted-foreground"
+                      >
+                        {material}
+                      </span>
+                    ))}
+                  </div>
 
-                  <button
-                    onClick={() => {
-                      trackEvent({ event: 'add_to_cart', source: 'collection_detail', product_id: product.id });
-                      addItem({
-                        id: product.id,
-                        name: product.name,
-                        price: product.price,
-                        image: productCardImage,
-                        material: product.materials[0],
-                      });
-                    }}
-                    className="font-sans text-xs tracking-widest uppercase text-foreground border border-foreground/30 px-6 py-3 hover:bg-foreground hover:text-background transition-all duration-300"
-                  >
-                    Add to Cart
-                  </button>
+                  <p className="relative mb-6 font-sans text-sm leading-relaxed text-muted-foreground">{product.description}</p>
+
+                  <div className="relative flex flex-wrap items-center gap-3">
+                    <Link
+                      to={`/product/${product.id}`}
+                      className="border border-border/70 px-5 py-3 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
+                    >
+                      View Details
+                    </Link>
+                    <button
+                      onClick={() => {
+                        trackEvent({ event: 'add_to_cart', source: 'collection_detail', product_id: product.id });
+                        addItem({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          image: resolvedCollectionVisual,
+                          material: product.materials[0],
+                        });
+                      }}
+                      className="border border-foreground/35 px-5 py-3 font-sans text-xs uppercase tracking-[0.2em] transition-colors hover:bg-foreground hover:text-background"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
                 </div>
-                  );
-                })()}
               </AnimatedSection>
             ))}
           </div>
