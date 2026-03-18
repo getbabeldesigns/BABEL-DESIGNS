@@ -1,10 +1,21 @@
-﻿import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
 
 const Footer = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleFooterLinkClick = (path: string) => (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault();
+    if (location.pathname !== path) {
+      navigate(path);
+    }
+    window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+  };
+
   return (
-    <footer className="relative overflow-hidden border-t border-border bg-card">
+    <footer data-swipe-lock="true" className="relative overflow-hidden border-t border-border bg-card">
       <div className="pointer-events-none absolute inset-0 opacity-40">
         <div className="absolute -top-24 right-0 h-64 w-64 rounded-full bg-secondary/40 blur-3xl" />
         <div className="absolute bottom-0 left-0 h-56 w-56 rounded-full bg-accent/40 blur-3xl" />
@@ -51,6 +62,7 @@ const Footer = () => {
                 <motion.li key={link.path} variants={staggerItemVariants}>
                   <Link
                     to={link.path}
+                    onClick={handleFooterLinkClick(link.path)}
                     data-cursor="Open"
                     className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
                   >
@@ -81,6 +93,7 @@ const Footer = () => {
                 <motion.li key={link.path} variants={staggerItemVariants}>
                   <Link
                     to={link.path}
+                    onClick={handleFooterLinkClick(link.path)}
                     data-cursor="Open"
                     className="font-sans text-sm text-muted-foreground hover:text-foreground transition-colors inline-block"
                   >
@@ -117,7 +130,7 @@ const Footer = () => {
           transition={{ duration: 0.8, delay: 0.5 }}
         >
           <p className="font-sans text-xs text-muted-foreground tracking-wide">
-            © {new Date().getFullYear()} Babel Designs. All rights reserved.
+            � {new Date().getFullYear()} Babel Designs. All rights reserved.
           </p>
           <p className="font-serif text-sm text-muted-foreground">Crafted forms. Deliberate materials.</p>
         </motion.div>
