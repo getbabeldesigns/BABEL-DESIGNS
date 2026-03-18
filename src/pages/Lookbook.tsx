@@ -51,7 +51,7 @@ const Lookbook = () => {
       </section>
 
       <section className="section-padding bg-card/60">
-        <div className="container-editorial space-y-20">
+        <div className="container-editorial space-y-12 md:space-y-20">
           {sectionCopy.map((section) => {
             const picks = products.filter((product) => product.collectionSlug === section.collection).slice(0, 2);
             return (
@@ -62,27 +62,35 @@ const Lookbook = () => {
                   <p className="text-muted-foreground">{section.text}</p>
                 </div>
 
-                <motion.div variants={staggerContainerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                  {(isLoading ? Array.from({ length: 2 }) : picks).map((item, index) =>
-                    isLoading ? (
-                      <div key={`${section.id}-${index}`} className="overflow-hidden border border-border/70 bg-background p-4">
-                        <div className="mb-4 aspect-[4/3] animate-pulse bg-muted" />
-                        <div className="h-5 w-2/3 animate-pulse bg-muted" />
-                      </div>
-                    ) : (
-                      <motion.div key={item.id} variants={staggerItemVariants} className="overflow-hidden border border-border/70 bg-background p-4">
-                        <Link to={`/product/${item.id}`} className="group block">
-                          <div className="mb-4 aspect-[4/3] overflow-hidden bg-secondary/40">
-                            <img src={item.image} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" onError={handleImageError} />
-                          </div>
-                          <p className="font-serif text-2xl font-light">{item.name}</p>
-                          <p className="mb-3 text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
-                          <p className="text-xs uppercase tracking-[0.2em]">{formatINR(item.price)}</p>
-                        </Link>
-                      </motion.div>
-                    ),
-                  )}
-                </motion.div>
+                {isLoading || picks.length > 0 ? (
+                  <motion.div variants={staggerContainerVariants} initial="hidden" whileInView="visible" viewport={{ once: true }} className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {(isLoading ? Array.from({ length: 2 }) : picks).map((item, index) =>
+                      isLoading ? (
+                        <div key={`${section.id}-${index}`} className="overflow-hidden border border-border/70 bg-background p-4">
+                          <div className="mb-4 aspect-[4/3] animate-pulse bg-muted" />
+                          <div className="h-5 w-2/3 animate-pulse bg-muted" />
+                        </div>
+                      ) : (
+                        <motion.div key={item.id} variants={staggerItemVariants} className="overflow-hidden border border-border/70 bg-background p-4">
+                          <Link to={`/product/${item.id}`} className="group block">
+                            <div className="mb-4 aspect-[4/3] overflow-hidden bg-secondary/40">
+                              <img src={item.image} alt={item.name} className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" onError={handleImageError} />
+                            </div>
+                            <p className="font-serif text-2xl font-light">{item.name}</p>
+                            <p className="mb-3 text-sm text-muted-foreground">{item.materials.join(' / ')}</p>
+                            <p className="text-xs uppercase tracking-[0.2em]">{formatINR(item.price)}</p>
+                          </Link>
+                        </motion.div>
+                      ),
+                    )}
+                  </motion.div>
+                ) : (
+                  <div className="border border-border/70 bg-background/70 p-6">
+                    <p className="text-sm text-muted-foreground">
+                      Products for this chapter are being curated. Explore all pieces in the collections.
+                    </p>
+                  </div>
+                )}
               </motion.article>
             );
           })}
@@ -93,4 +101,3 @@ const Lookbook = () => {
 };
 
 export default Lookbook;
-
