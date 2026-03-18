@@ -197,6 +197,7 @@ const Navbar = () => {
   return (
     <nav
       ref={navRef}
+      data-swipe-lock="true"
       className="fixed top-0 left-0 right-0 z-50 bg-background/90 navbar-backdrop"
     >
       <div className="container-editorial max-w-none">
