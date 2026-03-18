@@ -1,18 +1,31 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Landmark, ScrollText, Sparkles } from 'lucide-react';
+import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'lucide-react';
 import towerImage from '@/assets/babel-tower.png';
-import babelimage1 from '@/assets/babelimage1.png';
+import babelimage1 from '@/assets/babelimage1.jpeg';
 import babelimage2 from '@/assets/babelimage2.jpeg';
 import babelimage3 from '@/assets/babelimage3.jpeg';
 
 const grainBackground =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
 
+type StoryChapter = {
+  id: string;
+  title: string;
+  subtitle: string;
+  icon: LucideIcon;
+  image: string;
+  story: string;
+};
+
 const Philosophy = () => {
   const [scrollY, setScrollY] = useState(0);
+  const parallaxStyle: CSSProperties = { transform: `translateY(${scrollY * 0.3}px)` };
+  const towerGlowStyle: CSSProperties = {
+    filter: 'drop-shadow(0 0 60px hsl(var(--sand)/0.15)) drop-shadow(0 0 110px hsl(var(--sand)/0.1))',
+  };
 
-  const chapters = [
+  const chapters: StoryChapter[] = [
     {
       id: 'chapter-origin',
       title: 'I. The First Stone',
@@ -59,13 +72,13 @@ const Philosophy = () => {
       <section className="relative min-h-[88vh] overflow-hidden border-y border-border/50">
         <div
           className="absolute inset-0 flex items-center justify-center"
-          style={{ transform: `translateY(${scrollY * 0.3}px)` }}
+          style={parallaxStyle}
         >
           <img
             src={towerImage}
             alt="The Tower of Babel"
             className="h-[72vh] max-h-[780px] w-auto object-contain opacity-90"
-            style={{ filter: 'drop-shadow(0 0 60px hsl(var(--sand)/0.15)) drop-shadow(0 0 110px hsl(var(--sand)/0.1))' }}
+            style={towerGlowStyle}
           />
         </div>
 
