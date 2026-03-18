@@ -120,20 +120,12 @@ const MaterialExplorer = () => {
                 <div className="relative aspect-[16/10] overflow-hidden">
                   <div className={`pointer-events-none absolute inset-0 bg-gradient-to-br ${material.tintClass} z-10`} />
                   <img
-                    src={product?.image || material.sampleImage}
-                    alt={product?.name ?? `${material.name} material reference`}
+                    src={material.sampleImage}
+                    alt={`${material.name} material reference`}
                     className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
                     loading="lazy"
                     decoding="async"
-                    onError={(event) => {
-                      const image = event.currentTarget;
-                      if (image.dataset.materialFallback === 'true') {
-                        handleImageError(event);
-                        return;
-                      }
-                      image.dataset.materialFallback = 'true';
-                      image.src = material.sampleImage;
-                    }}
+                    onError={handleImageError}
                   />
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 bg-gradient-to-t from-background/90 to-transparent p-5">
                     <p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Material</p>
