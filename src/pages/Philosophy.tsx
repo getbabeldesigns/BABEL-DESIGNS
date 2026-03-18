@@ -71,7 +71,7 @@ const Philosophy = () => {
 
       <section className="relative min-h-[88vh] overflow-hidden border-y border-border/50 pt-24 md:pt-32">
         <div
-          className="absolute inset-0 flex items-center justify-center"
+          className="absolute inset-x-0 bottom-0 top-24 flex items-center justify-center md:top-32"
           style={parallaxStyle}
         >
           <img
@@ -82,7 +82,7 @@ const Philosophy = () => {
           />
         </div>
 
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_45%,hsl(var(--foreground)/0.08),hsl(var(--background)/0.9)_62%,hsl(var(--background))_100%)]" />
+        <div className="absolute inset-x-0 bottom-0 top-24 bg-[radial-gradient(circle_at_50%_45%,hsl(var(--foreground)/0.08),hsl(var(--background)/0.9)_62%,hsl(var(--background))_100%)] md:top-32" />
 
         <div className="relative z-10 mx-auto flex min-h-[calc(88vh-6rem)] w-full max-w-7xl items-center px-8 md:min-h-[calc(88vh-8rem)] md:px-16">
           <div className="max-w-md">
