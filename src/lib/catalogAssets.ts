@@ -8,6 +8,9 @@ const collectionImages: Record<string, string> = {
   origin: originImg,
 };
 
+const baseUrl = import.meta.env.BASE_URL || "/";
+const placeholderPath = `${baseUrl}placeholder.svg`;
+
 const toPublicStorageUrl = (path: string) => {
   const base = import.meta.env.VITE_SUPABASE_URL;
   if (!base) return path;
@@ -27,6 +30,8 @@ const looksLikePublicAssetPath = (value: string) => {
   return /^(\.?\/)?(assets|images|img)\//i.test(value) || /^[^/]+\.[a-z0-9]{2,5}(\?.*)?$/i.test(value);
 };
 
+const toBaseAssetPath = (value: string) => `${baseUrl}${value.replace(/^\/+/, "")}`;
+
 const normalizeImageUrl = (value: string) => {
   if (isAbsoluteOrBrowserPath(value)) return value;
 
@@ -36,7 +41,7 @@ const normalizeImageUrl = (value: string) => {
   }
 
   if (looksLikePublicAssetPath(normalized)) {
-    return `/${normalized}`;
+    return toBaseAssetPath(normalized);
   }
 
   // Treat bucket-like paths as Supabase Storage public paths.
@@ -48,8 +53,14 @@ const normalizeImageUrl = (value: string) => {
 };
 
 const fallbackBySlug = (slug?: string) => {
-  if (!slug) return "/placeholder.svg";
-  return collectionImages[slug] ?? "/placeholder.svg";
+  if (!slug) return placeholderPath;
+
+  const normalizedSlug = slug.toLowerCase().trim();
+  if (collectionImages[normalizedSlug]) return collectionImages[normalizedSlug];
+  if (normalizedSlug.includes("monolith")) return monolithImg;
+  if (normalizedSlug.includes("stillness")) return stillnessImg;
+  if (normalizedSlug.includes("origin")) return originImg;
+  return placeholderPath;
 };
 
 export const getCollectionImage = (slug?: string, imageUrl?: string | null) => {
