@@ -342,8 +342,6 @@ const Navbar = () => {
                     ? 'border-foreground/35 bg-foreground text-background'
                     : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'
                 }`}
-                onMouseEnter={(e) => handleNavLinkHover(e, isActive(link.path))}
-                onMouseLeave={(e) => handleNavLinkHoverEnd(e, isActive(link.path))}
                 data-cursor="Open"
               >
                 {link.label}
