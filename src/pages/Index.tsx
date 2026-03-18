@@ -299,17 +299,6 @@ const Index = () => {
         </div>
       </section>
 
-      <div className="px-4 pb-8 md:hidden">
-        <div className="mx-auto max-w-md border border-foreground/20 bg-background/95 p-3 backdrop-blur">
-          <div className="flex items-center justify-between gap-2">
-            <p className="font-sans text-[10px] uppercase tracking-[0.14em] text-muted-foreground">Need a custom space plan?</p>
-            <Link to="/consultancy" className="inline-flex items-center gap-1 border border-foreground/30 px-3 py-2 text-[10px] uppercase tracking-[0.14em] hover:bg-foreground hover:text-background transition-colors">
-              Book Now
-              <ArrowRight size={12} />
-            </Link>
-          </div>
-        </div>
-      </div>
     </div>
   );
 };
