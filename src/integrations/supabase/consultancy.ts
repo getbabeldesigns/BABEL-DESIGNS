@@ -9,11 +9,15 @@ export interface ConsultancyRequestInput {
   message?: string;
 }
 
-const sendConsultancyConfirmationEmail = async (input: { name: string; email: string }) => {
+const sendConsultancyConfirmationEmail = async (input: ConsultancyRequestInput) => {
   const { error } = await getSupabaseClient().functions.invoke("send-consultancy-confirmation", {
     body: {
       name: input.name,
       email: input.email,
+      phone: input.phone ?? "",
+      projectType: input.projectType ?? "",
+      timeline: input.timeline ?? "",
+      message: input.message ?? "",
     },
   });
 
@@ -42,5 +46,9 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
   await sendConsultancyConfirmationEmail({
     name: input.name,
     email: input.email,
+    phone: input.phone,
+    projectType: input.projectType,
+    timeline: input.timeline,
+    message: input.message,
   });
 };

@@ -6,6 +6,10 @@ const corsHeaders = {
 interface ConsultancyConfirmationBody {
   name?: string;
   email?: string;
+  phone?: string;
+  projectType?: string;
+  timeline?: string;
+  message?: string;
 }
 
 const isValidEmail = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -34,6 +38,14 @@ Deno.serve(async (request: Request) => {
     const name = body.name?.trim() || "there";
     const safeName = escapeHtml(name);
     const email = body.email?.trim();
+    const phone = body.phone?.trim() || "—";
+    const projectType = body.projectType?.trim() || "—";
+    const timeline = body.timeline?.trim() || "—";
+    const message = body.message?.trim() || "—";
+    const safePhone = escapeHtml(phone);
+    const safeProjectType = escapeHtml(projectType);
+    const safeTimeline = escapeHtml(timeline);
+    const safeMessage = escapeHtml(message);
 
     if (!email || !isValidEmail(email)) {
       return new Response(JSON.stringify({ error: "A valid email is required." }), {
@@ -45,6 +57,7 @@ Deno.serve(async (request: Request) => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const fromEmail = Deno.env.get("CONSULTANCY_CONFIRMATION_FROM_EMAIL") ?? "Babel Designs <onboarding@resend.dev>";
     const replyToEmail = Deno.env.get("CONSULTANCY_CONFIRMATION_REPLY_TO");
+    const adminEmail = Deno.env.get("CONSULTANCY_NOTIFICATION_EMAIL") ?? "getbabeldesigns@gmail.com";
 
     if (!resendApiKey) {
       return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY secret." }), {
@@ -53,7 +66,7 @@ Deno.serve(async (request: Request) => {
       });
     }
 
-    const resendResponse = await fetch("https://api.resend.com/emails", {
+    const clientResponse = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${resendApiKey}`,
@@ -82,10 +95,54 @@ Deno.serve(async (request: Request) => {
       }),
     });
 
-    if (!resendResponse.ok) {
-      const resendErrorBody = await resendResponse.text();
-      console.error("send-consultancy-confirmation: Resend API error", resendErrorBody);
+    if (!clientResponse.ok) {
+      const resendErrorBody = await clientResponse.text();
+      console.error("send-consultancy-confirmation: client email error", resendErrorBody);
       return new Response(JSON.stringify({ error: "Failed to send confirmation email." }), {
+        status: 502,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    const adminResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: fromEmail,
+        to: [adminEmail],
+        reply_to: replyToEmail ? [replyToEmail] : undefined,
+        subject: "New consultancy submission received",
+        html: `
+          <div style="font-family: Arial, sans-serif; color: #1f1f1f; line-height: 1.6; max-width: 620px; margin: 0 auto;">
+            <h2 style="margin: 0 0 16px;">New consultancy submission</h2>
+            <table style="border-collapse: collapse; width: 100%;">
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Name</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeName}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Email</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${escapeHtml(email)}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Phone</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePhone}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Project Type</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeProjectType}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Timeline</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeTimeline}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Message</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeMessage}</td></tr>
+            </table>
+          </div>
+        `,
+        text:
+          "New consultancy submission\n\n" +
+          `Name: ${name}\n` +
+          `Email: ${email}\n` +
+          `Phone: ${phone}\n` +
+          `Project Type: ${projectType}\n` +
+          `Timeline: ${timeline}\n` +
+          `Message: ${message}\n`,
+      }),
+    });
+
+    if (!adminResponse.ok) {
+      const resendErrorBody = await adminResponse.text();
+      console.error("send-consultancy-confirmation: admin email error", resendErrorBody);
+      return new Response(JSON.stringify({ error: "Failed to send admin notification email." }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
