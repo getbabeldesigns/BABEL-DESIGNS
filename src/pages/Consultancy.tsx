@@ -210,198 +210,200 @@ const Consultancy = () => {
         </div>
       </section>
       {/* Booking Form */}
-      <section className="section-padding section-transition bg-card">
+      <section className="section-padding section-transition bg-card/70">
         <div className="container-editorial">
-          <div className="max-w-2xl mx-auto">
-            <motion.form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-8 xl:grid-cols-12">
+            <aside className="relative overflow-hidden border border-border/70 bg-background/75 p-7 xl:col-span-4">
+              <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_15%_20%,hsl(var(--sand)/0.26),transparent_38%),radial-gradient(circle_at_90%_80%,hsl(var(--foreground)/0.1),transparent_42%)]" />
+              <div className="relative space-y-7">
+                <div>
+                  <p className="mb-3 font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Consultancy Desk</p>
+                  <h2 className="font-serif text-3xl font-light leading-tight text-foreground">Let us shape your brief.</h2>
+                </div>
+                <div className="space-y-3">
                   {[
-                    { label: 'Name *', name: 'name', type: 'text', required: true },
-                    { label: 'Email *', name: 'email', type: 'email', required: true },
-                  ].map((field, index) => (
-                    <motion.div
-                      key={field.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
-                        {field.label}
-                      </label>
-                      <motion.input
-                        type={field.type}
-                        name={field.name}
-                        required={field.required}
-                        value={formData[field.name as keyof typeof formData]}
-                        onChange={handleChange}
-                        className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
-                        whileFocus={{ boxShadow: '0 0 0 2px rgba(0,0,0,0.1)' }}
-                      />
-                    </motion.div>
+                    'Response within 48 hours',
+                    'No consultation fee',
+                    'Tailored to your space and timeline',
+                  ].map((item) => (
+                    <div key={item} className="border border-border/60 bg-background/65 px-4 py-3">
+                      <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">{item}</p>
+                    </div>
                   ))}
                 </div>
+                <div className="border border-border/60 bg-background/70 p-4">
+                  <p className="font-sans text-[11px] uppercase tracking-[0.24em] text-muted-foreground">Selected schedule</p>
+                  <p className="mt-2 font-serif text-xl text-foreground">
+                    {bookingDate ? bookingDate : 'Date not selected'}
+                  </p>
+                  <p className="mt-1 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    {selectedSlot || 'Slot not selected'}
+                  </p>
+                </div>
+              </div>
+            </aside>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  {[
-                    { label: 'Phone', name: 'phone', type: 'tel' },
-                    { label: 'Project Type', name: 'projectType', type: 'select', options: ['Private Residence', 'Hospitality', 'Commercial', 'Collection Piece'] },
-                  ].map((field, index) => (
-                    <motion.div
-                      key={field.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
-                        {field.label}
-                      </label>
-                      {field.type === 'select' ? (
-                        <select
-                          name={field.name}
-                          title={field.label}
-                          value={formData[field.name as keyof typeof formData]}
-                          onChange={handleChange}
-                          className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
-                        >
-                          <option value="">Select...</option>
-                          {field.options?.map((opt) => (
-                            <option key={opt} value={opt.toLowerCase().replace(/\s+/g, '-')}>
-                              {opt}
-                            </option>
-                          ))}
-                        </select>
-                      ) : (
-                        <motion.input
+            <div className="xl:col-span-8">
+              <motion.form
+                onSubmit={handleSubmit}
+                className="relative overflow-hidden border border-border/70 bg-background/80 p-7 md:p-9"
+              >
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(140deg,hsl(var(--background)/0.75)_0%,hsl(var(--foreground)/0.04)_100%)]" />
+                <div className="relative space-y-7">
+                  <div className="border-b border-border/70 pb-5">
+                    <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Project Intake</p>
+                    <p className="mt-3 font-serif text-3xl font-light text-foreground">Design consultation form</p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {[
+                      { label: 'Name *', name: 'name', type: 'text', required: true },
+                      { label: 'Email *', name: 'email', type: 'email', required: true },
+                    ].map((field) => (
+                      <div key={field.name}>
+                        <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                          {field.label}
+                        </label>
+                        <input
                           type={field.type}
                           name={field.name}
+                          required={field.required}
                           value={formData[field.name as keyof typeof formData]}
                           onChange={handleChange}
-                          className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
-                          whileFocus={{ boxShadow: '0 0 0 2px rgba(0,0,0,0.1)' }}
+                          className="w-full border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
                         />
-                      )}
-                    </motion.div>
-                  ))}
-                </div>
+                      </div>
+                    ))}
+                  </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                  >
-                    <label
-                      htmlFor="consultancy-preferred-date"
-                      className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2"
-                    >
-                      Preferred Date
-                    </label>
-                    <input
-                      id="consultancy-preferred-date"
-                      type="date"
-                      value={bookingDate}
-                      onChange={(event) => setBookingDate(event.target.value)}
-                      className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
-                    />
-                  </motion.div>
-                  {[
-                    { 
-                      label: 'Timeline', 
-                      name: 'timeline', 
-                      type: 'select',
-                      options: ['Within 3 months', '3-6 months', '6-12 months', 'Planning phase']
-                    },
-                  ].map((field, index) => (
-                    <motion.div
-                      key={field.name}
-                      initial={{ opacity: 0, y: 20 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true }}
-                      transition={{ delay: index * 0.1 }}
-                    >
-                      <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
-                        {field.label}
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    {[
+                      { label: 'Phone', name: 'phone', type: 'tel' },
+                      {
+                        label: 'Project Type',
+                        name: 'projectType',
+                        type: 'select',
+                        options: ['Private Residence', 'Hospitality', 'Commercial', 'Collection Piece'],
+                      },
+                    ].map((field) => (
+                      <div key={field.name}>
+                        <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                          {field.label}
+                        </label>
+                        {field.type === 'select' ? (
+                          <select
+                            name={field.name}
+                            title={field.label}
+                            value={formData[field.name as keyof typeof formData]}
+                            onChange={handleChange}
+                            className="w-full border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
+                          >
+                            <option value="">Select...</option>
+                            {field.options?.map((opt) => (
+                              <option key={opt} value={opt.toLowerCase().replace(/\s+/g, '-')}>
+                                {opt}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <input
+                            type={field.type}
+                            name={field.name}
+                            value={formData[field.name as keyof typeof formData]}
+                            onChange={handleChange}
+                            className="w-full border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
+                          />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                      <label htmlFor="consultancy-preferred-date" className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                        Preferred Date
+                      </label>
+                      <input
+                        id="consultancy-preferred-date"
+                        type="date"
+                        value={bookingDate}
+                        onChange={(event) => setBookingDate(event.target.value)}
+                        className="w-full border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                        Timeline
                       </label>
                       <select
-                        name={field.name}
-                        title={field.label}
-                        value={formData[field.name as keyof typeof formData]}
+                        name="timeline"
+                        title="Timeline"
+                        value={formData.timeline}
                         onChange={handleChange}
-                        className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors"
+                        className="w-full border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
                       >
                         <option value="">Select...</option>
-                        {field.options?.map((opt) => (
+                        {['Within 3 months', '3-6 months', '6-12 months', 'Planning phase'].map((opt) => (
                           <option key={opt} value={opt.toLowerCase().replace(/[\s,+$]+/g, '-')}>
                             {opt}
                           </option>
                         ))}
                       </select>
-                    </motion.div>
-                  ))}
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.15 }}
-                >
-                  <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-3">
-                    Preferred Slot
-                  </label>
-                  <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-                    {consultationSlots.map((slot) => {
-                      const active = selectedSlot === slot;
-                      return (
-                        <button
-                          key={slot}
-                          type="button"
-                          onClick={() => setSelectedSlot(slot)}
-                          className={`border px-3 py-2 text-xs uppercase tracking-[0.18em] transition-colors ${active ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/50'}`}
-                        >
-                          {slot}
-                        </button>
-                      );
-                    })}
+                    </div>
                   </div>
-                </motion.div>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <label className="block font-sans text-xs tracking-widest uppercase text-muted-foreground mb-2">
-                    Tell us about your project
-                  </label>
-                  <motion.textarea
-                    name="message"
-                    rows={5}
-                    value={formData.message}
-                    onChange={handleChange}
-                    className="w-full bg-background border border-border px-4 py-3 font-sans text-foreground focus:outline-none focus:border-foreground transition-colors resize-none"
-                    placeholder="Describe your space, vision, and any specific pieces you're considering..."
-                    whileFocus={{ boxShadow: '0 0 0 2px rgba(0,0,0,0.1)' }}
-                  />
-                </motion.div>
+                  <div>
+                    <label className="mb-3 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                      Preferred Slot
+                    </label>
+                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                      {consultationSlots.map((slot) => {
+                        const active = selectedSlot === slot;
+                        return (
+                          <button
+                            key={slot}
+                            type="button"
+                            onClick={() => setSelectedSlot(slot)}
+                            className={`border px-3 py-3 font-sans text-[11px] uppercase tracking-[0.2em] transition-colors ${active ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/40'}`}
+                          >
+                            {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
 
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  data-cursor="Submit"
-                  className="w-full font-sans text-sm tracking-widest uppercase bg-foreground text-background py-4 hover:bg-foreground/90 transition-colors"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  {isSubmitting ? 'Submitting...' : 'Begin Your Design Journey'}
-                </motion.button>
-                <p className="text-center font-sans text-xs uppercase tracking-[0.26em] text-muted-foreground">
-                  No consultation fee. We never charge for this inquiry.
-                </p>
-            </motion.form>
+                  <div>
+                    <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                      Tell us about your project
+                    </label>
+                    <textarea
+                      name="message"
+                      rows={5}
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full resize-none border border-border bg-background px-4 py-3 font-sans text-foreground outline-none transition-colors focus:border-foreground/60"
+                      placeholder="Describe your space, vision, and any specific pieces you're considering..."
+                    />
+                  </div>
+
+                  <div className="space-y-3 border-t border-border/70 pt-6">
+                    <motion.button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full border border-foreground/35 bg-foreground py-4 font-sans text-sm uppercase tracking-[0.24em] text-background transition-colors hover:bg-foreground/90"
+                      whileHover={{ scale: 1.01 }}
+                      whileTap={{ scale: 0.99 }}
+                    >
+                      {isSubmitting ? 'Submitting...' : 'Begin Your Design Journey'}
+                    </motion.button>
+                    <p className="text-center font-sans text-xs uppercase tracking-[0.24em] text-muted-foreground">
+                      No consultation fee. We never charge for this inquiry.
+                    </p>
+                  </div>
+                </div>
+              </motion.form>
+            </div>
           </div>
         </div>
       </section>
