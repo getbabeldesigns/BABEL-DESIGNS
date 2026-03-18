@@ -79,6 +79,14 @@ const fallbackCollectionsWithDemoImages: Collection[] = fallbackCollections.map(
   image: getCollectionImage(collection.slug, null),
 }));
 
+const mapFallbackCollection = (collection: Collection | null | undefined): Collection | null => {
+  if (!collection) return null;
+  return {
+    ...collection,
+    image: getCollectionImage(collection.slug, collection.image),
+  };
+};
+
 const toProduct = (row: ProductQueryRow): Product => {
   const linkedCollection = Array.isArray(row.collections) ? row.collections[0] : row.collections;
   const collectionSlug = linkedCollection?.slug ?? "";
@@ -126,7 +134,7 @@ export const fetchCollections = async (): Promise<Collection[]> => {
 };
 
 export const fetchCollectionBySlug = async (slug: string): Promise<Collection | null> => {
-  if (forceLocalCatalogFallback) return getFallbackCollectionBySlug(slug) ?? null;
+  if (forceLocalCatalogFallback) return mapFallbackCollection(getFallbackCollectionBySlug(slug));
 
   const { data, error } = await getSupabaseClient()
     .from("collections")
@@ -138,10 +146,10 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
       persistFallbackPreference();
-      return getFallbackCollectionBySlug(slug) ?? null;
+      return mapFallbackCollection(getFallbackCollectionBySlug(slug));
     }
     console.warn("[catalog] Falling back to local collection due to Supabase read error:", error);
-    return getFallbackCollectionBySlug(slug) ?? null;
+    return mapFallbackCollection(getFallbackCollectionBySlug(slug));
   }
   if (!data) return null;
   return toCollection(data);
