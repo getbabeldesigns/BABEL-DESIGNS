@@ -267,10 +267,11 @@ const Consultancy = () => {
                       { label: 'Email *', name: 'email', type: 'email', required: true },
                     ].map((field) => (
                       <div key={field.name}>
-                        <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                        <label htmlFor={`consultancy-${field.name}`} className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
                           {field.label}
                         </label>
                         <input
+                          id={`consultancy-${field.name}`}
                           type={field.type}
                           name={field.name}
                           required={field.required}
@@ -293,11 +294,12 @@ const Consultancy = () => {
                       },
                     ].map((field) => (
                       <div key={field.name}>
-                        <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                        <label htmlFor={`consultancy-${field.name}`} className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
                           {field.label}
                         </label>
                         {field.type === 'select' ? (
                           <select
+                            id={`consultancy-${field.name}`}
                             name={field.name}
                             title={field.label}
                             value={formData[field.name as keyof typeof formData]}
@@ -313,6 +315,7 @@ const Consultancy = () => {
                           </select>
                         ) : (
                           <input
+                            id={`consultancy-${field.name}`}
                             type={field.type}
                             name={field.name}
                             value={formData[field.name as keyof typeof formData]}
@@ -338,10 +341,11 @@ const Consultancy = () => {
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                      <label htmlFor="consultancy-timeline" className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
                         Timeline
                       </label>
                       <select
+                        id="consultancy-timeline"
                         name="timeline"
                         title="Timeline"
                         value={formData.timeline}
@@ -380,10 +384,11 @@ const Consultancy = () => {
                   </div>
 
                   <div>
-                    <label className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                    <label htmlFor="consultancy-message" className="mb-2 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
                       Tell us about your project
                     </label>
                     <textarea
+                      id="consultancy-message"
                       name="message"
                       rows={5}
                       value={formData.message}

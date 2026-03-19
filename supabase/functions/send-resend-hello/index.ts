@@ -1,4 +1,7 @@
-import { Resend } from "npm:resend";
+declare const Deno: {
+  env: { get: (key: string) => string | undefined };
+  serve: (handler: (request: Request) => Response | Promise<Response>) => void;
+};
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -30,20 +33,29 @@ Deno.serve(async (request: Request) => {
       );
     }
 
-    const resend = new Resend(resendApiKey);
-    const { data, error } = await resend.emails.send({
-      from: "onboarding@resend.dev",
-      to: "getbabeldesigns@gmail.com",
-      subject: "Hello World",
-      html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+    const resendResponse = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${resendApiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        from: "onboarding@resend.dev",
+        to: ["getbabeldesigns@gmail.com"],
+        subject: "Hello World",
+        html: "<p>Congrats on sending your <strong>first email</strong>!</p>",
+      }),
     });
 
-    if (error) {
-      return new Response(JSON.stringify({ error: error.message ?? "Failed to send email." }), {
+    if (!resendResponse.ok) {
+      const resendError = await resendResponse.text();
+      return new Response(JSON.stringify({ error: resendError || "Failed to send email." }), {
         status: 502,
         headers: { ...corsHeaders, "Content-Type": "application/json" },
       });
     }
+
+    const data = await resendResponse.json();
 
     return new Response(JSON.stringify({ success: true, data }), {
       status: 200,
