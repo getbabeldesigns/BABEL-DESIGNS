@@ -4,7 +4,7 @@ import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'luc
 import babelimage1 from '@/assets/babelimage1.jpeg';
 import babelimage2 from '@/assets/babelimage2.jpeg';
 import babelimage3 from '@/assets/babelimage3.jpeg';
-import philosophyHeroNew from '@/assets/philosophy/philosophy-hero-new.svg';
+import babelPhilosophyImg from '../../babelphilosophy.jpeg';
 
 const grainBackground =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
@@ -103,7 +103,7 @@ const Philosophy = () => {
             <div className="space-y-4 lg:col-span-7">
               <div className="overflow-hidden border border-border/60 bg-background/55 p-2 sm:p-3">
                 <img
-                  src={philosophyHeroNew}
+                  src={babelPhilosophyImg}
                   alt="Abstract architectural composition"
                   className="h-[300px] w-full object-cover sm:h-[370px] md:h-[450px] lg:h-[520px]"
                   style={heroImageStyle}
