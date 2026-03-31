@@ -3,9 +3,10 @@ import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { fetchProducts } from '@/integrations/supabase/catalog';
 import { handleImageError } from '@/lib/image';
-import monolithImg from '@/assets/monolith-collection.jpg';
-import stillnessImg from '@/assets/stillness-collection.jpg';
-import originImg from '@/assets/origin-collection.jpg';
+import stoneTextureImg from '@/assets/materials/stone-texture.svg';
+import woodTextureImg from '@/assets/materials/wood-texture.svg';
+import metalTextureImg from '@/assets/materials/metal-texture.svg';
+import textileTextureImg from '@/assets/materials/textile-texture.svg';
 
 type MaterialNote = {
   name: string;
@@ -27,7 +28,7 @@ const materialNotes: MaterialNote[] = [
     tintClass: 'from-stone-300/35 via-zinc-200/20 to-transparent',
     query: 'travertine limestone marble stone',
     tags: ['travertine', 'limestone', 'marble', 'stone', 'granite'],
-    sampleImage: monolithImg,
+    sampleImage: stoneTextureImg,
   },
   {
     name: 'Wood',
@@ -37,7 +38,7 @@ const materialNotes: MaterialNote[] = [
     tintClass: 'from-amber-300/35 via-yellow-200/20 to-transparent',
     query: 'oak walnut ash wood',
     tags: ['oak', 'walnut', 'ash', 'teak', 'wood'],
-    sampleImage: stillnessImg,
+    sampleImage: woodTextureImg,
   },
   {
     name: 'Metal',
@@ -47,7 +48,7 @@ const materialNotes: MaterialNote[] = [
     tintClass: 'from-slate-300/30 via-zinc-300/15 to-transparent',
     query: 'bronze brass steel metal',
     tags: ['bronze', 'brass', 'steel', 'metal', 'iron'],
-    sampleImage: originImg,
+    sampleImage: metalTextureImg,
   },
   {
     name: 'Textiles',
@@ -57,7 +58,7 @@ const materialNotes: MaterialNote[] = [
     tintClass: 'from-neutral-300/35 via-stone-200/20 to-transparent',
     query: 'linen cotton textile upholstery',
     tags: ['linen', 'cotton', 'textile', 'upholstery', 'wool'],
-    sampleImage: stillnessImg,
+    sampleImage: textileTextureImg,
   },
 ];
 

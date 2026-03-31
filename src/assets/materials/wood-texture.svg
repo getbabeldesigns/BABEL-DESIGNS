@@ -1,0 +1,20 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Wood grain texture">
+  <defs>
+    <linearGradient id="woodBase" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#8b5e3c"/>
+      <stop offset="55%" stop-color="#72472b"/>
+      <stop offset="100%" stop-color="#4f2f1b"/>
+    </linearGradient>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#woodBase)"/>
+  <g fill="none" stroke-linecap="round">
+    <path d="M-120 120C260 20 560 240 920 150S1420 70 1760 190" stroke="#c7925f" stroke-width="14" opacity="0.35"/>
+    <path d="M-140 250C230 170 560 350 930 290S1420 210 1740 320" stroke="#d2a06e" stroke-width="10" opacity="0.3"/>
+    <path d="M-100 390C230 320 560 470 920 420S1410 350 1750 460" stroke="#af7d4f" stroke-width="12" opacity="0.35"/>
+    <path d="M-140 560C220 490 560 650 930 590S1420 520 1760 620" stroke="#c58f5b" stroke-width="9" opacity="0.33"/>
+    <path d="M-90 730C260 670 580 810 950 760S1430 700 1760 790" stroke="#9e6a3f" stroke-width="13" opacity="0.32"/>
+    <path d="M-120 900C270 850 580 980 930 930S1430 870 1760 950" stroke="#d9a270" stroke-width="8" opacity="0.28"/>
+  </g>
+  <ellipse cx="1180" cy="530" rx="190" ry="120" fill="none" stroke="#e0ad78" stroke-width="12" opacity="0.25"/>
+  <ellipse cx="1180" cy="530" rx="115" ry="70" fill="none" stroke="#f0be88" stroke-width="8" opacity="0.22"/>
+</svg>

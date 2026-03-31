@@ -1,0 +1,24 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" role="img" aria-label="Stone texture">
+  <defs>
+    <linearGradient id="stoneBase" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d7d2cb"/>
+      <stop offset="45%" stop-color="#b6b0a8"/>
+      <stop offset="100%" stop-color="#8d8880"/>
+    </linearGradient>
+    <filter id="stoneNoise" x="-20%" y="-20%" width="140%" height="140%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" stitchTiles="stitch"/>
+      <feColorMatrix type="saturate" values="0.2"/>
+      <feComponentTransfer>
+        <feFuncA type="table" tableValues="0 0.14"/>
+      </feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#stoneBase)"/>
+  <g opacity="0.34" stroke="#706a62" stroke-width="7" fill="none">
+    <path d="M-80 220C210 140 440 280 700 210S1200 140 1680 250"/>
+    <path d="M-60 420C220 320 510 500 780 430S1260 330 1690 430"/>
+    <path d="M-40 620C240 540 540 700 840 630S1300 540 1700 650"/>
+    <path d="M0 820C260 760 560 870 860 810S1330 760 1720 860"/>
+  </g>
+  <rect width="1600" height="1000" fill="#635d56" filter="url(#stoneNoise)"/>
+</svg>
