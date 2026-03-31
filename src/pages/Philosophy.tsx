@@ -1,10 +1,10 @@
 import { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'lucide-react';
-import towerImage from '@/assets/babel-tower.png';
 import babelimage1 from '@/assets/babelimage1.jpeg';
 import babelimage2 from '@/assets/babelimage2.jpeg';
 import babelimage3 from '@/assets/babelimage3.jpeg';
+import philosophyHeroNew from '@/assets/philosophy/philosophy-hero-new.svg';
 
 const grainBackground =
   "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E\")";
@@ -19,8 +19,8 @@ type StoryChapter = {
 };
 
 const Philosophy = () => {
-  const towerGlowStyle: CSSProperties = {
-    filter: 'drop-shadow(0 24px 56px hsl(var(--foreground)/0.2))',
+  const heroImageStyle: CSSProperties = {
+    filter: 'saturate(0.92) contrast(1.03)',
   };
 
   const chapters: StoryChapter[] = [
@@ -61,51 +61,57 @@ const Philosophy = () => {
         style={{ backgroundImage: grainBackground }}
       />
 
-      <section className="relative overflow-hidden border-y border-border/50 pt-24 md:pt-32">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,hsl(var(--sand)/0.22),transparent_44%),radial-gradient(circle_at_88%_28%,hsl(var(--foreground)/0.07),transparent_40%)]" />
+      <section className="relative overflow-hidden border-y border-border/50 bg-[linear-gradient(160deg,hsl(var(--background)),hsl(var(--secondary)/0.55))] pt-24 md:pt-32">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_14%_10%,hsl(var(--sand)/0.28),transparent_42%),radial-gradient(circle_at_88%_86%,hsl(var(--foreground)/0.09),transparent_40%)]" />
 
         <div className="relative mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 md:pb-20 md:px-10 lg:px-12">
-          <div className="grid items-center gap-8 md:gap-10 lg:grid-cols-12 lg:gap-14">
-            <div className="space-y-6 lg:col-span-5">
-              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Babel Designs</p>
-              <h1 className="font-serif text-4xl font-light leading-[1.05] text-foreground sm:text-5xl lg:text-6xl">
-                The Philosophy
+          <div className="grid gap-6 md:gap-8 lg:grid-cols-12 lg:items-start">
+            <div className="space-y-5 border border-border/60 bg-background/80 p-6 sm:p-7 lg:col-span-5 lg:sticky lg:top-28">
+              <p className="font-sans text-[11px] uppercase tracking-[0.28em] text-muted-foreground">Philosophy Journal</p>
+              <h1 className="font-serif text-4xl font-light leading-[1.03] text-foreground sm:text-5xl lg:text-6xl">
+                Form, Memory,
                 <br />
-                of Babel
+                and Ritual
               </h1>
               <p className="max-w-lg font-sans text-sm leading-relaxed text-muted-foreground sm:text-base">
-                We design objects that balance memory and modern life. Our language is built through proportion,
-                materials, and quiet permanence.
+                This is our opening frame: how we translate ancient narratives into contemporary furniture language.
+                Every proportion, seam, and surface is chosen to feel calm and lasting.
               </p>
-              <div className="grid grid-cols-2 gap-3 sm:max-w-md">
-                <div className="border border-border/60 bg-background/70 px-4 py-3">
-                  <p className="font-serif text-2xl font-light">3</p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Story chapters</p>
+              <div className="grid grid-cols-3 gap-2">
+                <div className="border border-border/60 bg-secondary/30 p-3">
+                  <p className="font-serif text-xl">03</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Acts</p>
                 </div>
-                <div className="border border-border/60 bg-background/70 px-4 py-3">
-                  <p className="font-serif text-2xl font-light">One</p>
-                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Design voice</p>
+                <div className="border border-border/60 bg-secondary/30 p-3">
+                  <p className="font-serif text-xl">12</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Principles</p>
+                </div>
+                <div className="border border-border/60 bg-secondary/30 p-3">
+                  <p className="font-serif text-xl">01</p>
+                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Voice</p>
                 </div>
               </div>
+              <a
+                href="#chapter-origin"
+                className="inline-flex items-center gap-3 border border-foreground/35 px-5 py-3 text-xs uppercase tracking-[0.22em] transition-colors hover:bg-foreground hover:text-background"
+              >
+                Read first chapter
+                <ArrowRight size={14} />
+              </a>
             </div>
 
-            <div className="lg:col-span-7">
-              <div className="relative overflow-hidden border border-border/60 bg-background/40 p-2 sm:p-3">
-                <div className="absolute left-4 top-4 z-10 border border-border/60 bg-background/70 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:left-6 sm:top-6">
-                  A pursuit not of height, but of meaning
-                </div>
+            <div className="space-y-4 lg:col-span-7">
+              <div className="overflow-hidden border border-border/60 bg-background/55 p-2 sm:p-3">
                 <img
-                  src={towerImage}
-                  alt="The Tower of Babel"
-                  className="h-[320px] w-full object-contain bg-gradient-to-b from-secondary/40 to-background/30 p-6 sm:h-[420px] md:h-[470px] lg:h-[520px]"
-                  style={towerGlowStyle}
+                  src={philosophyHeroNew}
+                  alt="Abstract architectural composition"
+                  className="h-[300px] w-full object-cover sm:h-[370px] md:h-[450px] lg:h-[520px]"
+                  style={heroImageStyle}
                 />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent px-5 pb-5 pt-12 sm:px-8 sm:pb-8">
-                  <p className="max-w-xl text-xs uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
-                    From monument to home: restraint, tactility, and enduring form.
-                  </p>
-                </div>
               </div>
+              <p className="max-w-2xl border-l border-border/70 pl-4 font-serif text-base italic leading-relaxed text-muted-foreground sm:text-lg">
+                We no longer chase monuments. We build objects that bring people back to stillness.
+              </p>
             </div>
           </div>
         </div>
