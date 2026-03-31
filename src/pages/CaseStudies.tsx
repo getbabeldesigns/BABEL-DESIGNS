@@ -1,24 +1,24 @@
 import { Link } from 'react-router-dom';
-import monolithImg from '@/assets/monolith-collection.jpg';
-import stillnessImg from '@/assets/stillness-collection.jpg';
-import originImg from '@/assets/origin-collection.jpg';
+import urbanResidenceMumbaiImg from '@/assets/blogs/urban-residence-mumbai.svg';
+import boutiqueHospitalityDubaiImg from '@/assets/blogs/boutique-hospitality-dubai.svg';
+import privateCollectorBengaluruImg from '@/assets/blogs/private-collector-bengaluru.svg';
 
 const CaseStudies = () => {
   const studies = [
     {
       title: 'Urban Residence, Mumbai',
       outcome: 'Reduced visual clutter by 42% while increasing seating capacity by 30%.',
-      image: monolithImg,
+      image: urbanResidenceMumbaiImg,
     },
     {
       title: 'Boutique Hospitality Lounge, Dubai',
       outcome: 'Lifted average guest dwell time from 18 to 33 minutes.',
-      image: stillnessImg,
+      image: boutiqueHospitalityDubaiImg,
     },
     {
       title: 'Private Collector Apartment, Bengaluru',
       outcome: 'Integrated 11 bespoke pieces with a unified material language.',
-      image: originImg,
+      image: privateCollectorBengaluruImg,
     },
   ];
 
