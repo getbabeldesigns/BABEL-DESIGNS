@@ -1,4 +1,4 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'lucide-react';
 import towerImage from '@/assets/babel-tower.png';
@@ -19,10 +19,8 @@ type StoryChapter = {
 };
 
 const Philosophy = () => {
-  const [scrollY, setScrollY] = useState(0);
-  const parallaxStyle: CSSProperties = { transform: `translateY(${scrollY * 0.3}px)` };
   const towerGlowStyle: CSSProperties = {
-    filter: 'drop-shadow(0 0 60px hsl(var(--sand)/0.15)) drop-shadow(0 0 110px hsl(var(--sand)/0.1))',
+    filter: 'drop-shadow(0 24px 56px hsl(var(--foreground)/0.2))',
   };
 
   const chapters: StoryChapter[] = [
@@ -55,12 +53,6 @@ const Philosophy = () => {
     },
   ];
 
-  useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   return (
     <div className="relative min-h-screen bg-background">
       <div
@@ -69,33 +61,52 @@ const Philosophy = () => {
         style={{ backgroundImage: grainBackground }}
       />
 
-      <section className="relative min-h-[88vh] overflow-hidden border-y border-border/50 pt-24 md:pt-32">
-        <div
-          className="absolute inset-x-0 bottom-0 top-24 flex items-center justify-center md:top-32"
-          style={parallaxStyle}
-        >
-          <img
-            src={towerImage}
-            alt="The Tower of Babel"
-            className="h-[72vh] max-h-[780px] w-auto object-contain opacity-90"
-            style={towerGlowStyle}
-          />
-        </div>
+      <section className="relative overflow-hidden border-y border-border/50 pt-24 md:pt-32">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_20%,hsl(var(--sand)/0.22),transparent_44%),radial-gradient(circle_at_88%_28%,hsl(var(--foreground)/0.07),transparent_40%)]" />
 
-        <div className="absolute inset-x-0 bottom-0 top-24 bg-[radial-gradient(circle_at_50%_45%,hsl(var(--foreground)/0.08),hsl(var(--background)/0.9)_62%,hsl(var(--background))_100%)] md:top-32" />
+        <div className="relative mx-auto w-full max-w-7xl px-4 pb-14 sm:px-6 md:pb-20 md:px-10 lg:px-12">
+          <div className="grid items-center gap-8 md:gap-10 lg:grid-cols-12 lg:gap-14">
+            <div className="space-y-6 lg:col-span-5">
+              <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">Babel Designs</p>
+              <h1 className="font-serif text-4xl font-light leading-[1.05] text-foreground sm:text-5xl lg:text-6xl">
+                The Philosophy
+                <br />
+                of Babel
+              </h1>
+              <p className="max-w-lg font-sans text-sm leading-relaxed text-muted-foreground sm:text-base">
+                We design objects that balance memory and modern life. Our language is built through proportion,
+                materials, and quiet permanence.
+              </p>
+              <div className="grid grid-cols-2 gap-3 sm:max-w-md">
+                <div className="border border-border/60 bg-background/70 px-4 py-3">
+                  <p className="font-serif text-2xl font-light">3</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Story chapters</p>
+                </div>
+                <div className="border border-border/60 bg-background/70 px-4 py-3">
+                  <p className="font-serif text-2xl font-light">One</p>
+                  <p className="mt-1 text-[11px] uppercase tracking-[0.2em] text-muted-foreground">Design voice</p>
+                </div>
+              </div>
+            </div>
 
-        <div className="relative z-10 mx-auto flex min-h-[calc(88vh-6rem)] w-full max-w-7xl items-center px-4 sm:px-6 md:min-h-[calc(88vh-8rem)] md:px-16">
-          <div className="max-w-md">
-            <p className="mb-6 font-sans text-xs uppercase tracking-[0.32em] text-muted-foreground">Babel Designs</p>
-            <h1 className="mb-6 font-serif text-4xl font-light leading-tight text-foreground md:text-6xl">
-              The Philosophy
-              <br />
-              of Babel
-            </h1>
-            <div className="mb-6 h-px w-24 bg-gradient-to-r from-transparent via-foreground/60 to-transparent" />
-            <p className="font-sans text-sm italic leading-relaxed text-muted-foreground">
-              A pursuit not of height, but of meaning.
-            </p>
+            <div className="lg:col-span-7">
+              <div className="relative overflow-hidden border border-border/60 bg-background/40 p-2 sm:p-3">
+                <div className="absolute left-4 top-4 z-10 border border-border/60 bg-background/70 px-3 py-2 text-[10px] uppercase tracking-[0.22em] text-muted-foreground sm:left-6 sm:top-6">
+                  A pursuit not of height, but of meaning
+                </div>
+                <img
+                  src={towerImage}
+                  alt="The Tower of Babel"
+                  className="h-[320px] w-full object-contain bg-gradient-to-b from-secondary/40 to-background/30 p-6 sm:h-[420px] md:h-[470px] lg:h-[520px]"
+                  style={towerGlowStyle}
+                />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-background/90 to-transparent px-5 pb-5 pt-12 sm:px-8 sm:pb-8">
+                  <p className="max-w-xl text-xs uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
+                    From monument to home: restraint, tactility, and enduring form.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
