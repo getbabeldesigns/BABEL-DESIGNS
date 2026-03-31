@@ -108,12 +108,12 @@ const Philosophy = () => {
 
       <section className="sticky top-20 z-20 border-b border-border/40 bg-background/80 backdrop-blur-md">
         <div className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 md:px-12">
-          <div className="flex flex-nowrap gap-3 overflow-x-auto pb-1 md:grid md:grid-cols-3 md:overflow-visible md:pb-0">
+          <div className="grid grid-cols-3 gap-2 md:gap-3">
             {chapters.map((chapter) => (
               <a
                 key={chapter.id}
                 href={`#${chapter.id}`}
-                className="flex min-h-12 min-w-[210px] flex-none items-center justify-center whitespace-nowrap border border-border/60 px-5 py-3 text-center font-sans text-[11px] uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground md:min-w-0 md:w-full"
+                className="flex min-h-10 w-full items-center justify-center border border-border/60 px-2 py-2 text-center font-sans text-[10px] uppercase tracking-[0.08em] leading-tight text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground md:min-h-12 md:px-5 md:py-3 md:text-[11px] md:tracking-[0.22em]"
               >
                 {chapter.subtitle}
               </a>
