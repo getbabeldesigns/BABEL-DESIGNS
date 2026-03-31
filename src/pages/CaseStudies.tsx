@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import homepageBgImg from '@/assets/homepagebg.jpeg';
-import benchViolaImg from '@/assets/BENCH VIOLA.png';
+import benchViolaImg from '@/assets/bench-viola-hero.webp';
 import babelImage3Img from '@/assets/babelimage3.jpeg';
 
 const CaseStudies = () => {
