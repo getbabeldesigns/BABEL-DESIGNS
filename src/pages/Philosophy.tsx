@@ -77,20 +77,9 @@ const Philosophy = () => {
                 This is our opening frame: how we translate ancient narratives into contemporary furniture language.
                 Every proportion, seam, and surface is chosen to feel calm and lasting.
               </p>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="border border-border/60 bg-secondary/30 p-3">
-                  <p className="font-serif text-xl">03</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Acts</p>
-                </div>
-                <div className="border border-border/60 bg-secondary/30 p-3">
-                  <p className="font-serif text-xl">12</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Principles</p>
-                </div>
-                <div className="border border-border/60 bg-secondary/30 p-3">
-                  <p className="font-serif text-xl">01</p>
-                  <p className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">Voice</p>
-                </div>
-              </div>
+              <p className="border-l border-border/70 pl-4 text-sm leading-relaxed text-muted-foreground">
+                The page is structured in three chapters: Ancient Babel, After the Fall, and The Modern Atelier.
+              </p>
               <a
                 href="#chapter-origin"
                 className="inline-flex items-center gap-3 border border-foreground/35 px-5 py-3 text-xs uppercase tracking-[0.22em] transition-colors hover:bg-foreground hover:text-background"
