@@ -4,6 +4,25 @@ export interface SendStudioDispatchConfirmationEmailInput {
   email: string;
 }
 
+const sendFallbackConfirmationEmail = async (input: SendStudioDispatchConfirmationEmailInput) => {
+  const { error } = await getSupabaseClient().functions.invoke("send-consultancy-confirmation", {
+    body: {
+      name: "Studio Dispatch Subscriber",
+      email: input.email,
+      phone: "",
+      projectType: "Studio Dispatch",
+      timeline: "",
+      preferredDate: "",
+      preferredSlot: "",
+      message: "Studio Dispatch subscription",
+    },
+  });
+
+  if (error) {
+    throw new Error("Subscription saved, but confirmation email could not be sent.");
+  }
+};
+
 const sendStudioDispatchConfirmationEmail = async (input: SendStudioDispatchConfirmationEmailInput) => {
   const { error } = await getSupabaseClient().functions.invoke("send-studio-dispatch-confirmation", {
     body: {
@@ -11,9 +30,11 @@ const sendStudioDispatchConfirmationEmail = async (input: SendStudioDispatchConf
     },
   });
 
-  if (error) {
-    throw new Error("Subscription saved, but confirmation email could not be sent.");
+  if (!error) {
+    return;
   }
+
+  await sendFallbackConfirmationEmail(input);
 };
 
 export interface StudioDispatchSubscriptionInput {

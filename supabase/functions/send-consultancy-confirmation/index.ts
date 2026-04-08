@@ -95,14 +95,14 @@ Deno.serve(async (request: Request) => {
             <h1 style="font-size: 28px; margin-bottom: 20px;">Babel Designs</h1>
             <p style="font-size: 16px; margin-bottom: 16px;">Hello ${safeName},</p>
             <p style="font-size: 16px; margin-bottom: 16px;">Thank you for submitting your consultancy application.</p>
-            <p style="font-size: 16px; margin-bottom: 16px;">Our team has received your request and will get back to you within 48 hours.</p>
+            <p style="font-size: 16px; margin-bottom: 16px;">Team Babel Designs has received your application and will reach out to you shortly.</p>
             <p style="font-size: 14px; color: #555;">Babel Designs<br />Design that unites all diversities.</p>
           </div>
         `,
         text:
           `Hello ${name},\n\n` +
           "Thank you for submitting your consultancy application.\n" +
-          "Our team has received your request and will get back to you within 48 hours.\n\n" +
+          "Team Babel Designs has received your application and will reach out to you shortly.\n\n" +
           "Babel Designs",
       }),
     });
