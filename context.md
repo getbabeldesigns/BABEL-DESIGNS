@@ -15,3 +15,17 @@
 - Verified both live endpoints now return success:
   - `send-studio-dispatch-confirmation`
   - `send-consultancy-confirmation`
+- Reproduced user-facing error `"Request saved, but confirmation email could not be sent."` by testing with a non-owner recipient (`example@gmail.com`) on `send-consultancy-confirmation`.
+- Confirmed behavior difference: owner mailbox succeeds, external mailbox fails, indicating current Resend configuration is likely restricted (test-mode style behavior).
+- Verified email-related Supabase secrets exist (`RESEND_API_KEY`, `CONSULTANCY_CONFIRMATION_FROM_EMAIL`, etc.), so failure is likely provider/account-level permission rather than missing secret.
+- Updated Supabase secrets with user-provided Resend API key and standardized sender settings:
+  - `RESEND_API_KEY`
+  - `CONSULTANCY_CONFIRMATION_FROM_EMAIL`
+  - `STUDIO_DISPATCH_FROM_EMAIL`
+  - `CONSULTANCY_CONFIRMATION_REPLY_TO`
+  - `STUDIO_DISPATCH_REPLY_TO`
+- Redeployed:
+  - `send-consultancy-confirmation`
+  - `send-studio-dispatch-confirmation`
+- Retested with external recipient (`example@gmail.com`): both functions still return `"Failed to send confirmation email."`.
+- Conclusion remains provider-level sending restriction for external recipients (likely due to unverified sending domain on Resend).
