@@ -1,10 +1,19 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
-import { ArrowUpRight, Clock3, Compass, Gem, Layers3, LogOut, ShieldCheck, Sparkles } from "lucide-react";
+import { 
+  ArrowUpRight, 
+  LogOut, 
+  User as UserIcon, 
+  ShoppingBag, 
+  Settings, 
+  Package,
+  Clock
+} from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser, signOutUser } from "@/integrations/supabase/auth";
+import { motion, AnimatePresence } from "framer-motion";
 
 const initialsFrom = (user: User | null) => {
   const metadataName =
@@ -24,6 +33,7 @@ const Account = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<"overview" | "orders" | "settings">("overview");
 
   useEffect(() => {
     let mounted = true;
@@ -59,7 +69,7 @@ const Account = () => {
     return (
       (user?.user_metadata?.full_name as string | undefined) ||
       (user?.user_metadata?.name as string | undefined) ||
-      "Babel Collector"
+      "Collector"
     );
   }, [user]);
 
@@ -71,12 +81,6 @@ const Account = () => {
     });
   }, [user]);
 
-  const providerLabel = useMemo(() => {
-    const provider = user?.app_metadata?.provider;
-    if (!provider) return "OAuth";
-    return provider.charAt(0).toUpperCase() + provider.slice(1);
-  }, [user]);
-
   const onSignOut = async () => {
     await signOutUser();
     navigate("/auth");
@@ -84,150 +88,214 @@ const Account = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pt-28 md:pt-36">
-        <section className="section-padding pt-0">
-          <div className="container-editorial space-y-4">
-            <div className="h-16 w-full animate-pulse bg-muted/70" />
-            <div className="h-52 w-full animate-pulse bg-muted/70" />
-            <div className="h-64 w-full animate-pulse bg-muted/70" />
+      <div className="min-h-screen bg-background pt-32 pb-24">
+        <div className="mx-auto max-w-6xl px-6">
+          <div className="h-10 w-48 mb-12 animate-pulse bg-muted/60 rounded" />
+          <div className="flex flex-col md:flex-row gap-12">
+            <div className="w-full md:w-64 shrink-0 space-y-4">
+               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
+               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
+               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
+            </div>
+            <div className="flex-1 space-y-6">
+               <div className="h-48 w-full animate-pulse bg-muted/60 rounded-xl" />
+               <div className="h-64 w-full animate-pulse bg-muted/60 rounded-xl" />
+            </div>
           </div>
-        </section>
+        </div>
       </div>
     );
   }
 
   if (!user) return null;
 
+  const tabs = [
+    { id: "overview", label: "Overview", icon: UserIcon },
+    { id: "orders", label: "Order History", icon: ShoppingBag },
+    { id: "settings", label: "Settings", icon: Settings },
+  ] as const;
+
+  const slideVariants = {
+    initial: { opacity: 0, y: 15 },
+    enter: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } },
+    exit: { opacity: 0, y: -15, transition: { duration: 0.3, ease: [0.16, 1, 0.3, 1] } }
+  };
+
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background pt-28 md:pt-36">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute left-0 top-12 h-80 w-80 rounded-full bg-[radial-gradient(circle_at_35%_30%,hsl(var(--sand)/0.46),transparent_68%)] blur-3xl" />
-        <div className="absolute -right-14 top-40 h-[30rem] w-[30rem] rounded-full bg-[radial-gradient(circle_at_40%_35%,hsl(var(--foreground)/0.12),transparent_70%)] blur-3xl" />
-      </div>
+    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 font-sans selection:bg-foreground selection:text-background">
+      <div className="mx-auto max-w-[1100px] px-6 md:px-12">
+        
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className="mb-14"
+        >
+          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">Account</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-light">My Profile</h1>
+        </motion.div>
 
-      <section className="section-padding pt-0">
-        <div className="container-editorial relative z-10 space-y-10">
-          <header className="relative overflow-hidden rounded-3xl border border-border/70 bg-background/75 p-7 md:p-10">
-            <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(110deg,hsl(var(--background))_0%,hsl(var(--background)/0.9)_52%,hsl(var(--foreground)/0.08)_100%)]" />
-            <div className="relative grid grid-cols-1 gap-8 md:grid-cols-[1fr_auto] md:items-end">
-              <div>
-                <p className="mb-3 font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground">
-                  Account Studio
-                </p>
-                <h1 className="font-serif text-4xl font-light leading-tight text-foreground md:text-6xl">
-                  Your curated control room.
-                </h1>
-                <p className="mt-4 max-w-2xl font-sans text-sm leading-relaxed text-muted-foreground">
-                  A redesigned space for profile identity, session trust, and fast pathways into your product world.
-                </p>
-              </div>
-              <div className="grid grid-cols-2 gap-3 text-center">
-                <div className="border border-border/70 bg-background/70 px-4 py-3">
-                  <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Member Since</p>
-                  <p className="mt-1 font-serif text-sm text-foreground">{joinedDate}</p>
-                </div>
-                <div className="border border-border/70 bg-background/70 px-4 py-3">
-                  <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Provider</p>
-                  <p className="mt-1 font-serif text-sm text-foreground">{providerLabel}</p>
-                </div>
-              </div>
-            </div>
-          </header>
-
-          <div className="grid grid-cols-1 gap-8 xl:grid-cols-[360px_1fr]">
-            <aside className="relative overflow-hidden rounded-3xl border border-border/70 bg-card/80 p-7 backdrop-blur-sm">
-              <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full border border-border/50" />
-              <div className="pointer-events-none absolute -bottom-14 -left-10 h-36 w-36 rounded-full bg-[radial-gradient(circle_at_35%_30%,hsl(var(--clay)/0.38),transparent_72%)] blur-2xl" />
-
-              <div className="relative mb-7 flex items-center gap-4">
-                <Avatar className="h-16 w-16 border border-border/70">
-                  <AvatarImage src={accountImage ?? undefined} alt={user.email ?? "Account avatar"} />
-                  <AvatarFallback className="font-serif text-lg">{initialsFrom(user)}</AvatarFallback>
-                </Avatar>
-                <div>
-                  <p className="font-serif text-2xl font-light text-foreground">{accountName}</p>
-                  <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">Active profile</p>
-                </div>
-              </div>
-
-              <div className="relative space-y-3">
-                <div className="border border-border/60 bg-background/70 p-4">
-                  <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Email</p>
-                  <p className="mt-2 break-all font-sans text-sm text-foreground">{user.email}</p>
-                </div>
-                <div className="border border-border/60 bg-background/70 p-4">
-                  <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-muted-foreground">Account ID</p>
-                  <p className="mt-2 break-all font-mono text-xs text-muted-foreground">{user.id}</p>
-                </div>
-              </div>
-
+        <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
+          
+          {/* Sidebar Navigation */}
+          <aside className="w-full md:w-56 shrink-0">
+            <nav className="flex flex-col gap-1 relative">
+              {tabs.map((tab) => {
+                const isActive = activeTab === tab.id;
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => setActiveTab(tab.id as any)}
+                    className={`group relative flex items-center gap-4 px-4 py-4 text-left transition-all duration-300
+                      ${isActive ? 'text-foreground bg-muted/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'}`}
+                  >
+                    {isActive && (
+                      <motion.div 
+                        layoutId="activeTabIndicator"
+                        className="absolute left-0 top-0 h-full w-[2px] bg-foreground"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 40 }}
+                      />
+                    )}
+                    <Icon size={16} className={`transition-colors ${isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
+                    <span className="text-xs uppercase tracking-[0.14em]">{tab.label}</span>
+                  </button>
+                );
+              })}
+              
+              <div className="my-6 h-[1px] w-full bg-border/40" />
+              
               <button
                 onClick={onSignOut}
-                className="relative mt-6 flex w-full items-center justify-center gap-2 border border-foreground/35 bg-foreground px-4 py-3 font-sans text-xs uppercase tracking-[0.22em] text-background transition-colors hover:bg-foreground/90"
+                className="group flex items-center gap-4 px-4 py-4 text-left text-muted-foreground transition-all duration-300 hover:text-destructive"
               >
-                <LogOut size={14} />
-                Sign out
+                <LogOut size={16} />
+                <span className="text-xs uppercase tracking-[0.14em]">Sign Out</span>
               </button>
-            </aside>
+            </nav>
+          </aside>
 
-            <main className="space-y-8">
-              <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
-                <article className="rounded-2xl border border-border/70 bg-card/80 p-6">
-                  <Sparkles className="mb-4 h-5 w-5 text-foreground" />
-                  <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Style Pulse</p>
-                  <p className="mt-2 font-serif text-2xl font-light text-foreground">Sculpted Minimal</p>
-                </article>
-                <article className="rounded-2xl border border-border/70 bg-card/80 p-6">
-                  <Gem className="mb-4 h-5 w-5 text-foreground" />
-                  <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Material Bias</p>
-                  <p className="mt-2 font-serif text-2xl font-light text-foreground">Stone + Wood</p>
-                </article>
-                <article className="rounded-2xl border border-border/70 bg-card/80 p-6">
-                  <ShieldCheck className="mb-4 h-5 w-5 text-foreground" />
-                  <p className="font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">Session Trust</p>
-                  <p className="mt-2 font-serif text-2xl font-light text-foreground">Verified</p>
-                </article>
-              </section>
+          {/* Main Content Area */}
+          <main className="flex-1 min-w-0">
+            <AnimatePresence mode="wait">
+              
+              {activeTab === "overview" && (
+                <motion.div
+                  key="overview"
+                  variants={slideVariants}
+                  initial="initial"
+                  animate="enter"
+                  exit="exit"
+                  className="space-y-12"
+                >
+                  {/* Digital Identity Card */}
+                  <section className="p-8 md:p-10 border border-border/60 bg-muted/5 flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left">
+                    <Avatar className="h-28 w-28 border border-border/70 shrink-0">
+                      <AvatarImage src={accountImage ?? undefined} alt={user.email ?? "Avatar"} />
+                      <AvatarFallback className="font-serif text-3xl bg-muted/30">{initialsFrom(user)}</AvatarFallback>
+                    </Avatar>
+                    <div className="space-y-3 pt-2">
+                      <h2 className="font-serif text-3xl font-light tracking-wide">{accountName}</h2>
+                      <p className="text-muted-foreground text-sm tracking-wide">{user.email}</p>
+                      <div className="pt-4 flex items-center justify-center sm:justify-start gap-4 text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                        <span>Joined {joinedDate}</span>
+                      </div>
+                    </div>
+                  </section>
 
-              <section className="rounded-3xl border border-border/70 bg-card/80 p-7 md:p-8">
-                <div className="mb-6 flex items-center gap-3">
-                  <Layers3 size={18} className="text-foreground" />
-                  <p className="font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Navigation Deck</p>
-                </div>
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                  <Link
-                    to="/collections"
-                    className="group flex items-center justify-between border border-border/70 bg-background/70 px-5 py-4 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <Compass size={14} />
-                      Explore collections
-                    </span>
-                    <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                  <Link
-                    to="/consultancy"
-                    className="group flex items-center justify-between border border-border/70 bg-background/70 px-5 py-4 font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground transition-colors hover:border-foreground/40 hover:text-foreground"
-                  >
-                    <span className="inline-flex items-center gap-2">
-                      <Clock3 size={14} />
-                      Start design brief
-                    </span>
-                    <ArrowUpRight size={14} className="transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-              </section>
+                  {/* Quick Actions */}
+                  <section>
+                    <h3 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-6">Quick Actions</h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      <Link
+                        to="/collections"
+                        className="group flex flex-col justify-between p-6 border border-border/50 bg-muted/5 hover:border-foreground/30 transition-all duration-300 h-36"
+                      >
+                        <Package size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[11px] uppercase tracking-[0.15em] group-hover:text-foreground">Explore Collections</span>
+                          <ArrowUpRight size={16} className="text-muted-foreground group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </Link>
+                      <Link
+                        to="/consultancy"
+                        className="group flex flex-col justify-between p-6 border border-border/50 bg-muted/5 hover:border-foreground/30 transition-all duration-300 h-36"
+                      >
+                        <Clock size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <div className="flex items-center justify-between w-full">
+                          <span className="text-[11px] uppercase tracking-[0.15em] group-hover:text-foreground">Start Brief</span>
+                          <ArrowUpRight size={16} className="text-muted-foreground group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                        </div>
+                      </Link>
+                    </div>
+                  </section>
+                </motion.div>
+              )}
 
-              <section className="rounded-3xl border border-border/70 bg-card/80 p-7 md:p-8">
-                <p className="mb-4 font-sans text-xs uppercase tracking-[0.28em] text-muted-foreground">Profile Note</p>
-                <p className="font-sans text-sm leading-relaxed text-muted-foreground">
-                  Name and avatar are synced from your Google identity provider. Update those in Google to reflect changes here automatically.
-                </p>
-              </section>
-            </main>
-          </div>
+              {activeTab === "orders" && (
+                <motion.div
+                  key="orders"
+                  variants={slideVariants}
+                  initial="initial"
+                  animate="enter"
+                  exit="exit"
+                  className="space-y-8"
+                >
+                  <h2 className="font-serif text-2xl font-light mb-6">Order History</h2>
+                  <div className="border border-border/50 bg-muted/5 p-16 text-center flex flex-col items-center justify-center h-[350px]">
+                    <ShoppingBag size={28} className="text-muted-foreground/40 mb-6" />
+                    <p className="text-sm text-muted-foreground mb-8">Your collection is currently empty.</p>
+                    <Link
+                      to="/collections"
+                      className="inline-flex items-center justify-center bg-foreground text-background px-8 py-3 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-foreground/90 active:scale-[0.98]"
+                    >
+                      Browse Studio
+                    </Link>
+                  </div>
+                </motion.div>
+              )}
+
+              {activeTab === "settings" && (
+                <motion.div
+                  key="settings"
+                  variants={slideVariants}
+                  initial="initial"
+                  animate="enter"
+                  exit="exit"
+                  className="space-y-10"
+                >
+                  <h2 className="font-serif text-2xl font-light mb-6">Account Settings</h2>
+                  
+                  <div className="space-y-5">
+                    <div className="border border-border/50 bg-muted/5 p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-2">Primary Email</p>
+                        <p className="text-sm">{user.email}</p>
+                      </div>
+                      <span className="text-[10px] uppercase tracking-[0.2em] px-3 py-1 bg-muted border border-border/50 text-foreground">Active</span>
+                    </div>
+
+                    <div className="border border-border/50 bg-muted/5 p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                      <div>
+                        <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-2">Network ID</p>
+                        <p className="font-mono text-xs text-muted-foreground break-all">{user.id}</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-10">
+                    <p className="text-xs text-muted-foreground leading-loose max-w-2xl border-l-[2px] border-border/50 pl-5">
+                      Note: Your identity footprint is synced securely via your authentication provider ({(user?.app_metadata?.provider || 'oauth').toUpperCase()}). To adjust your avatar or primary credentials, please administer modifications directly through your provider's platform.
+                    </p>
+                  </div>
+                </motion.div>
+              )}
+
+            </AnimatePresence>
+          </main>
         </div>
-      </section>
+      </div>
     </div>
   );
 };
