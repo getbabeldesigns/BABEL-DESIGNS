@@ -88,18 +88,18 @@ const Account = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-background pt-32 pb-24">
+      <div className="min-h-screen bg-[#faf9f8] pt-32 pb-24">
         <div className="mx-auto max-w-6xl px-6">
-          <div className="h-10 w-48 mb-12 animate-pulse bg-muted/60 rounded" />
+          <div className="h-10 w-48 mb-12 animate-pulse bg-[#eaeaea] rounded" />
           <div className="flex flex-col md:flex-row gap-12">
             <div className="w-full md:w-64 shrink-0 space-y-4">
-               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
-               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
-               <div className="h-12 w-full animate-pulse bg-muted/60 rounded" />
+               <div className="h-12 w-full animate-pulse bg-[#eaeaea] rounded" />
+               <div className="h-12 w-full animate-pulse bg-[#eaeaea] rounded" />
+               <div className="h-12 w-full animate-pulse bg-[#eaeaea] rounded" />
             </div>
             <div className="flex-1 space-y-6">
-               <div className="h-48 w-full animate-pulse bg-muted/60 rounded-xl" />
-               <div className="h-64 w-full animate-pulse bg-muted/60 rounded-xl" />
+               <div className="h-48 w-full animate-pulse bg-[#eaeaea] rounded-xl" />
+               <div className="h-64 w-full animate-pulse bg-[#eaeaea] rounded-xl" />
             </div>
           </div>
         </div>
@@ -122,7 +122,7 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-32 pb-24 font-sans selection:bg-foreground selection:text-background">
+    <div className="min-h-screen bg-[#faf9f8] text-[#333] pt-32 pb-24 font-sans selection:bg-[#111] selection:text-white">
       <div className="mx-auto max-w-[1100px] px-6 md:px-12">
         
         <motion.div 
@@ -131,8 +131,8 @@ const Account = () => {
           transition={{ duration: 0.6, ease: "easeOut" }}
           className="mb-14"
         >
-          <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground mb-4">Account</p>
-          <h1 className="font-serif text-4xl md:text-5xl font-light">My Profile</h1>
+          <p className="text-[10px] uppercase tracking-[0.3em] text-[#888] mb-4">Account</p>
+          <h1 className="font-serif text-4xl md:text-5xl font-light text-[#111]">My Profile</h1>
         </motion.div>
 
         <div className="flex flex-col md:flex-row gap-12 lg:gap-20">
@@ -147,31 +147,23 @@ const Account = () => {
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as any)}
-                    className={`group relative flex items-center gap-4 px-4 py-4 text-left transition-all duration-300
-                      ${isActive ? 'text-foreground bg-muted/10' : 'text-muted-foreground hover:text-foreground hover:bg-muted/30'}`}
+                    className={`group relative flex items-center gap-4 px-4 py-4 text-left transition-all duration-300 rounded-lg
+                      ${isActive ? 'text-[#111] bg-white shadow-sm border border-[#eaeaea]' : 'text-[#666] hover:text-[#111] hover:bg-[#f2f0ef]'}`}
                   >
-                    {isActive && (
-                      <motion.div 
-                        layoutId="activeTabIndicator"
-                        className="absolute left-0 top-0 h-full w-[2px] bg-foreground"
-                        initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 40 }}
-                      />
-                    )}
-                    <Icon size={16} className={`transition-colors ${isActive ? 'text-foreground' : 'text-muted-foreground group-hover:text-foreground'}`} />
-                    <span className="text-xs uppercase tracking-[0.14em]">{tab.label}</span>
+                    <Icon size={16} className={`transition-colors ${isActive ? 'text-[#111]' : 'text-[#888] group-hover:text-[#111]'}`} />
+                    <span className="text-xs uppercase tracking-[0.14em] font-light">{tab.label}</span>
                   </button>
                 );
               })}
               
-              <div className="my-6 h-[1px] w-full bg-border/40" />
+              <div className="my-6 h-[1px] w-full bg-[#eaeaea]" />
               
               <button
                 onClick={onSignOut}
-                className="group flex items-center gap-4 px-4 py-4 text-left text-muted-foreground transition-all duration-300 hover:text-destructive"
+                className="group flex items-center gap-4 px-4 py-4 text-left text-[#666] transition-all duration-300 hover:text-red-800 rounded-lg hover:bg-red-50/50"
               >
                 <LogOut size={16} />
-                <span className="text-xs uppercase tracking-[0.14em]">Sign Out</span>
+                <span className="text-xs uppercase tracking-[0.14em] font-light">Sign Out</span>
               </button>
             </nav>
           </aside>
@@ -187,18 +179,18 @@ const Account = () => {
                   initial="initial"
                   animate="enter"
                   exit="exit"
-                  className="space-y-12"
+                  className="space-y-10"
                 >
                   {/* Digital Identity Card */}
-                  <section className="p-8 md:p-10 border border-border/60 bg-muted/5 flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left">
-                    <Avatar className="h-28 w-28 border border-border/70 shrink-0">
+                  <section className="p-8 md:p-10 border border-[#eaeaea] rounded-2xl bg-white flex flex-col sm:flex-row items-center sm:items-start gap-8 text-center sm:text-left shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                    <Avatar className="h-28 w-28 border border-[#eaeaea] shrink-0 bg-[#faf9f8]">
                       <AvatarImage src={accountImage ?? undefined} alt={user.email ?? "Avatar"} />
-                      <AvatarFallback className="font-serif text-3xl bg-muted/30">{initialsFrom(user)}</AvatarFallback>
+                      <AvatarFallback className="font-serif text-3xl text-[#555]">{initialsFrom(user)}</AvatarFallback>
                     </Avatar>
                     <div className="space-y-3 pt-2">
-                      <h2 className="font-serif text-3xl font-light tracking-wide">{accountName}</h2>
-                      <p className="text-muted-foreground text-sm tracking-wide">{user.email}</p>
-                      <div className="pt-4 flex items-center justify-center sm:justify-start gap-4 text-[10px] text-muted-foreground uppercase tracking-[0.2em]">
+                      <h2 className="font-serif text-3xl font-light tracking-wide text-[#111]">{accountName}</h2>
+                      <p className="text-[#666] text-sm font-light tracking-wide">{user.email}</p>
+                      <div className="pt-4 flex items-center justify-center sm:justify-start gap-4 text-[10px] text-[#888] uppercase tracking-[0.2em]">
                         <span>Joined {joinedDate}</span>
                       </div>
                     </div>
@@ -206,26 +198,26 @@ const Account = () => {
 
                   {/* Quick Actions */}
                   <section>
-                    <h3 className="text-[10px] uppercase tracking-[0.25em] text-muted-foreground mb-6">Quick Actions</h3>
+                    <h3 className="text-[10px] uppercase tracking-[0.25em] text-[#888] mb-6 pl-1">Quick Actions</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                       <Link
                         to="/collections"
-                        className="group flex flex-col justify-between p-6 border border-border/50 bg-muted/5 hover:border-foreground/30 transition-all duration-300 h-36"
+                        className="group flex flex-col justify-between p-6 border border-[#eaeaea] rounded-2xl bg-white hover:border-[#ccc] hover:shadow-md transition-all duration-300 h-36"
                       >
-                        <Package size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <Package size={20} className="text-[#888] group-hover:text-[#111] transition-colors" />
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-[11px] uppercase tracking-[0.15em] group-hover:text-foreground">Explore Collections</span>
-                          <ArrowUpRight size={16} className="text-muted-foreground group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                          <span className="text-[11px] uppercase tracking-[0.15em] text-[#555] group-hover:text-[#111]">Explore Collections</span>
+                          <ArrowUpRight size={16} className="text-[#888] group-hover:text-[#111] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </Link>
                       <Link
                         to="/consultancy"
-                        className="group flex flex-col justify-between p-6 border border-border/50 bg-muted/5 hover:border-foreground/30 transition-all duration-300 h-36"
+                        className="group flex flex-col justify-between p-6 border border-[#eaeaea] rounded-2xl bg-white hover:border-[#ccc] hover:shadow-md transition-all duration-300 h-36"
                       >
-                        <Clock size={20} className="text-muted-foreground group-hover:text-foreground transition-colors" />
+                        <Clock size={20} className="text-[#888] group-hover:text-[#111] transition-colors" />
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-[11px] uppercase tracking-[0.15em] group-hover:text-foreground">Start Brief</span>
-                          <ArrowUpRight size={16} className="text-muted-foreground group-hover:text-foreground group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
+                          <span className="text-[11px] uppercase tracking-[0.15em] text-[#555] group-hover:text-[#111]">Start Brief</span>
+                          <ArrowUpRight size={16} className="text-[#888] group-hover:text-[#111] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </Link>
                     </div>
@@ -242,13 +234,13 @@ const Account = () => {
                   exit="exit"
                   className="space-y-8"
                 >
-                  <h2 className="font-serif text-2xl font-light mb-6">Order History</h2>
-                  <div className="border border-border/50 bg-muted/5 p-16 text-center flex flex-col items-center justify-center h-[350px]">
-                    <ShoppingBag size={28} className="text-muted-foreground/40 mb-6" />
-                    <p className="text-sm text-muted-foreground mb-8">Your collection is currently empty.</p>
+                  <h2 className="font-serif text-2xl font-light mb-6 text-[#111]">Order History</h2>
+                  <div className="border border-[#eaeaea] bg-white rounded-2xl p-16 text-center flex flex-col items-center justify-center h-[350px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                    <ShoppingBag size={28} className="text-[#aaa] mb-6" />
+                    <p className="text-sm font-light text-[#666] mb-8">Your collection is currently empty.</p>
                     <Link
                       to="/collections"
-                      className="inline-flex items-center justify-center bg-foreground text-background px-8 py-3 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-foreground/90 active:scale-[0.98]"
+                      className="inline-flex items-center justify-center bg-[#1c1c1c] text-[#fcfcfc] rounded-xl px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-[#333] active:scale-[0.98] shadow-sm"
                     >
                       Browse Studio
                     </Link>
@@ -265,27 +257,27 @@ const Account = () => {
                   exit="exit"
                   className="space-y-10"
                 >
-                  <h2 className="font-serif text-2xl font-light mb-6">Account Settings</h2>
+                  <h2 className="font-serif text-2xl font-light mb-6 text-[#111]">Account Settings</h2>
                   
                   <div className="space-y-5">
-                    <div className="border border-border/50 bg-muted/5 p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="border border-[#eaeaea] bg-white rounded-2xl p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                       <div>
-                        <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-2">Primary Email</p>
-                        <p className="text-sm">{user.email}</p>
+                        <p className="text-[11px] uppercase tracking-[0.15em] text-[#888] mb-2 font-light">Primary Email</p>
+                        <p className="text-sm text-[#333] tracking-wide">{user.email}</p>
                       </div>
-                      <span className="text-[10px] uppercase tracking-[0.2em] px-3 py-1 bg-muted border border-border/50 text-foreground">Active</span>
+                      <span className="text-[10px] uppercase tracking-[0.2em] px-3 py-1 bg-[#f5f5f5] border border-[#e5e5e5] text-[#555] rounded-full">Active</span>
                     </div>
 
-                    <div className="border border-border/50 bg-muted/5 p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div className="border border-[#eaeaea] bg-white rounded-2xl p-7 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
                       <div>
-                        <p className="text-[11px] uppercase tracking-[0.15em] text-muted-foreground mb-2">Network ID</p>
-                        <p className="font-mono text-xs text-muted-foreground break-all">{user.id}</p>
+                        <p className="text-[11px] uppercase tracking-[0.15em] text-[#888] mb-2 font-light">Network ID</p>
+                        <p className="font-mono text-xs text-[#666] break-all">{user.id}</p>
                       </div>
                     </div>
                   </div>
 
                   <div className="pt-10">
-                    <p className="text-xs text-muted-foreground leading-loose max-w-2xl border-l-[2px] border-border/50 pl-5">
+                    <p className="text-xs font-light text-[#777] leading-loose max-w-2xl border-l-[2px] border-[#eaeaea] pl-5">
                       Note: Your identity footprint is synced securely via your authentication provider ({(user?.app_metadata?.provider || 'oauth').toUpperCase()}). To adjust your avatar or primary credentials, please administer modifications directly through your provider's platform.
                     </p>
                   </div>
