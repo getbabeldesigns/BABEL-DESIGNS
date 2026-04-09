@@ -1,9 +1,9 @@
 import { type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Landmark, ScrollText, Sparkles, type LucideIcon } from 'lucide-react';
-import babelimage1 from '@/assets/babelimage1.jpeg';
-import babelimage2 from '@/assets/babelimage2.jpeg';
-import babelimage3 from '@/assets/babelimage3.jpeg';
+import philosophyChapter1 from '../../phylosophy_ch1.jpg';
+import philosophyChapter2 from '../../phylosophy_ch2.jpg';
+import philosophyChapter3 from '../../phylosophy_ch3.jpg';
 import babelPhilosophyImg from '../../babelphilosophy.jpeg';
 
 const grainBackground =
@@ -29,7 +29,7 @@ const Philosophy = () => {
       title: 'I. The First Stone',
       subtitle: 'Ancient Babel',
       icon: Landmark,
-      image: babelimage1,
+      image: philosophyChapter1,
       story:
         'In the old stories, Babel began as one voice reaching upward. Its ambition was grand, but its language grew louder than its listening. For us, this is the first lesson: architecture without humility becomes monument, not home.',
     },
@@ -38,7 +38,7 @@ const Philosophy = () => {
       title: 'II. The Fracture',
       subtitle: 'After the Fall',
       icon: ScrollText,
-      image: babelimage2,
+      image: philosophyChapter2,
       story:
         'When the tower fractured, people scattered with new tongues and new distances. Yet every fragment kept a memory of proportion, touch, and ritual. Babel Designs begins here, in those fragments, reassembled with patience.',
     },
@@ -47,7 +47,7 @@ const Philosophy = () => {
       title: 'III. The Renewal',
       subtitle: 'The Modern Atelier',
       icon: Sparkles,
-      image: babelimage3,
+      image: philosophyChapter3,
       story:
         'Our contemporary Babel is not about height. It is about resonance: objects that hold stillness, spaces that invite belonging, and forms that speak quietly across cultures. This is our philosophy of making - beauty that translates.',
     },

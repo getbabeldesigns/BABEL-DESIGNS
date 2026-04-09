@@ -29,3 +29,10 @@
   - `send-studio-dispatch-confirmation`
 - Retested with external recipient (`example@gmail.com`): both functions still return `"Failed to send confirmation email."`.
 - Conclusion remains provider-level sending restriction for external recipients (likely due to unverified sending domain on Resend).
+
+## 2026-04-09
+- Updated Philosophy chapter images in `src/pages/Philosophy.tsx`:
+  - Chapter 1 now uses `phylosophy_ch1.jpg`
+  - Chapter 2 now uses `phylosophy_ch2.jpg`
+  - Chapter 3 now uses `phylosophy_ch3.jpg`
+- Verified project builds successfully after image replacement using `npm run build`.
