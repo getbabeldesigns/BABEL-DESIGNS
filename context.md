@@ -36,3 +36,5 @@
   - Chapter 2 now uses `phylosophy_ch2.jpg`
   - Chapter 3 now uses `phylosophy_ch3.jpg`
 - Verified project builds successfully after image replacement using `npm run build`.
+- Replaced Philosophy hero image import in `src/pages/Philosophy.tsx` from `babelphilosophy.jpeg` to `main_phylosophy.jpg` (new file present in project root).
+- Verified build success after hero image replacement using `npm run build`.
