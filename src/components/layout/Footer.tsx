@@ -52,7 +52,7 @@ const Footer = () => {
         <footer className="relative bg-[#f7f7f7] text-[#222] pt-24 pb-12 overflow-hidden rounded-[2rem] shadow-[0_0_40px_rgba(0,0,0,0.02)]">
           
           {/* 4. BACKGROUND BRAND ELEMENT */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center opacity-[0.03] pointer-events-none select-none blur-[1px]">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center opacity-[0.08] pointer-events-none select-none blur-[1px]">
             <span 
               className="logo-title font-bold tracking-tighter whitespace-nowrap text-[#1a1a1a]"
               style={{
@@ -71,14 +71,11 @@ const Footer = () => {
               {/* 1. LEFT SECTION */}
               <div className="col-span-1 lg:col-span-5 flex flex-col items-start">
                 <Link to="/" onClick={handleScrollToTop} className="mb-6 inline-block">
-                  <h3 className="font-serif text-3xl font-light tracking-wide text-[#111]">
-                    <span
-                      className="logo-title"
-                      style={{ fontFamily: "'Amoret Sans', 'Crimson Text', Georgia, serif" }}
-                    >
-                      Babel
-                    </span>{' '}
-                    Designs
+                  <h3
+                    className="logo-title text-3xl font-light tracking-wide text-[#111]"
+                    style={{ fontFamily: "'Amoret Sans', 'Crimson Text', Georgia, serif" }}
+                  >
+                    Babel Designs
                   </h3>
                 </Link>
                 <p className="text-sm text-[#555] leading-relaxed max-w-md mb-8 font-light tracking-wide">
