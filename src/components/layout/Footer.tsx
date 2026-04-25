@@ -54,7 +54,7 @@ const Footer = () => {
           {/* 4. BACKGROUND BRAND ELEMENT */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full flex justify-center opacity-[0.03] pointer-events-none select-none blur-[1px]">
             <span 
-              className="font-serif font-bold tracking-tighter whitespace-nowrap text-[#1a1a1a]"
+              className="logo-title font-bold tracking-tighter whitespace-nowrap text-[#1a1a1a]"
               style={{ fontSize: 'clamp(10rem, 30vw, 35rem)' }}
             >
               Babel
