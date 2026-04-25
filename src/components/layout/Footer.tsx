@@ -57,7 +57,7 @@ const Footer = () => {
               className="logo-title font-bold tracking-tighter whitespace-nowrap text-[#1a1a1a]"
               style={{
                 fontFamily: "'Amoret Sans', 'Crimson Text', Georgia, serif",
-                fontSize: 'clamp(10rem, 30vw, 35rem)',
+                fontSize: 'clamp(7rem, 22vw, 24rem)',
               }}
             >
               Babel
@@ -72,7 +72,7 @@ const Footer = () => {
               <div className="col-span-1 lg:col-span-5 flex flex-col items-start">
                 <Link to="/" onClick={handleScrollToTop} className="mb-6 inline-block">
                   <h3
-                    className="logo-title text-3xl font-light tracking-wide text-[#111]"
+                    className="logo-title text-2xl font-light tracking-wide text-[#111]"
                     style={{ fontFamily: "'Amoret Sans', 'Crimson Text', Georgia, serif" }}
                   >
                     Babel Designs
