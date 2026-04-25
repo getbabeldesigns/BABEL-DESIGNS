@@ -41,6 +41,36 @@ export const supabaseDiagnostics = {
   keyUrlRefMismatch: Boolean(supabaseUrlRef && supabaseKeyRef && supabaseUrlRef !== supabaseKeyRef),
 };
 
+type SupabaseAuthLock = <T>(
+  name: string,
+  acquireTimeout: number,
+  fn: () => Promise<T>,
+) => Promise<T>;
+
+const browserSafeAuthLock: SupabaseAuthLock = async (name, acquireTimeout, fn) => {
+  if (typeof window === "undefined") {
+    return fn();
+  }
+
+  if (typeof navigator === "undefined" || !("locks" in navigator) || !navigator.locks) {
+    return fn();
+  }
+
+  try {
+    return await navigator.locks.request(name, { mode: "exclusive" }, async () => fn());
+  } catch (error) {
+    const message = error instanceof Error ? error.message.toLowerCase() : "";
+    if (message.includes("timed out waiting")) {
+      console.warn(
+        `[supabase] auth lock timeout for "${name}" after ${acquireTimeout}ms; falling back to unlocked auth flow.`,
+      );
+      return fn();
+    }
+
+    throw error;
+  }
+};
+
 export const supabase = isSupabaseConfigured
   ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
       auth: {
@@ -48,6 +78,7 @@ export const supabase = isSupabaseConfigured
         autoRefreshToken: true,
         detectSessionInUrl: true,
         flowType: "implicit",
+        lock: browserSafeAuthLock,
       },
     })
   : null;
