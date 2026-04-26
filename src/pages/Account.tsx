@@ -146,7 +146,7 @@ const Account = () => {
                 return (
                   <button
                     key={tab.id}
-                    onClick={() => setActiveTab(tab.id as any)}
+                    onClick={() => setActiveTab(tab.id)}
                     className={`group relative flex items-center gap-4 px-4 py-4 text-left transition-all duration-300 rounded-lg
                       ${isActive ? 'text-[#111] bg-white shadow-sm border border-[#eaeaea]' : 'text-[#666] hover:text-[#111] hover:bg-[#f2f0ef]'}`}
                   >

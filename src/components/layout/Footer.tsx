@@ -85,7 +85,7 @@ const Footer = () => {
                   <a 
                     href="https://www.instagram.com/babel.designs/" 
                     target="_blank" 
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     title="Follow us on Instagram"
                     className="p-3 bg-[#e8e8e8] rounded-full text-[#333] hover:text-[#111] hover:bg-[#ddd] hover:scale-105 transition-all duration-300"
                   >
@@ -94,7 +94,7 @@ const Footer = () => {
                   <a 
                     href="https://linkedin.com" 
                     target="_blank" 
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     title="Follow us on LinkedIn"
                     className="p-3 bg-[#e8e8e8] rounded-full text-[#333] hover:text-[#111] hover:bg-[#ddd] hover:scale-105 transition-all duration-300"
                   >
@@ -104,7 +104,7 @@ const Footer = () => {
                   <a 
                     href="https://pinterest.com" 
                     target="_blank" 
-                    rel="noreferrer"
+                    rel="noopener noreferrer"
                     title="Follow us on Pinterest"
                     className="p-3 bg-[#e8e8e8] rounded-full text-[#333] hover:text-[#111] hover:bg-[#ddd] hover:scale-105 transition-all duration-300 flex items-center justify-center"
                   >
