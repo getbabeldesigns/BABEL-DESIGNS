@@ -67,19 +67,25 @@ Deno.serve(async (request: Request) => {
     const adminCheck = await requireAdmin(supabase, request);
     if (!adminCheck.ok) return adminCheck.response;
 
+    // NOTE: destructuring defaults like `{ data: x = [] }` only kick in when
+    // the value is `undefined` — Postgrest returns `data: null` (not
+    // undefined) when a query errors, so that pattern silently let `null`
+    // through to the JSON response and crashed the frontend's `.map()` calls.
+    // Coalescing explicitly below (`?? []` / `?? 0`) guards against that for
+    // every field, regardless of why a particular query might fail.
     const [
-      { data: orders = [] },
-      { data: consultancyRequests = [] },
-      { data: subscribers = [] },
-      { data: collections = [] },
-      { data: products = [] },
+      ordersResult,
+      consultancyResult,
+      subscribersResult,
+      collectionsResult,
+      productsResult,
       // True totals via `count: 'exact', head: true` (no rows returned, just
       // the count) so the dashboard's KPI tiles reflect the whole table, not
       // just the most-recent 20 rows fetched above for the list views.
-      { count: totalOrders = 0 },
-      { count: totalPaidOrders = 0 },
-      { count: totalConsultancyRequests = 0 },
-      { count: totalSubscribers = 0 },
+      totalOrdersResult,
+      totalPaidOrdersResult,
+      totalConsultancyResult,
+      totalSubscribersResult,
     ] = await Promise.all([
       supabase
         .from("orders")
@@ -113,11 +119,29 @@ Deno.serve(async (request: Request) => {
       supabase.from("studio_dispatch_subscribers").select("id", { count: "exact", head: true }),
     ]);
 
+    for (const [label, result] of [
+      ["orders", ordersResult],
+      ["consultancy_requests", consultancyResult],
+      ["studio_dispatch_subscribers", subscribersResult],
+      ["collections", collectionsResult],
+      ["products", productsResult],
+    ] as const) {
+      if (result.error) {
+        console.error(`admin-dashboard: failed to load ${label}`, result.error);
+      }
+    }
+
+    const orders = ordersResult.data ?? [];
+    const consultancyRequests = consultancyResult.data ?? [];
+    const subscribers = subscribersResult.data ?? [];
+    const collections = collectionsResult.data ?? [];
+    const products = productsResult.data ?? [];
+
     const metrics = {
-      orders: totalOrders ?? 0,
-      paidOrders: totalPaidOrders ?? 0,
-      consultancyRequests: totalConsultancyRequests ?? 0,
-      subscribers: totalSubscribers ?? 0,
+      orders: totalOrdersResult.count ?? 0,
+      paidOrders: totalPaidOrdersResult.count ?? 0,
+      consultancyRequests: totalConsultancyResult.count ?? 0,
+      subscribers: totalSubscribersResult.count ?? 0,
     };
 
     return new Response(

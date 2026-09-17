@@ -124,7 +124,7 @@ const Admin = () => {
 
   const collectionModel = useMemo(() => {
     if (!data) return [];
-    return data.collections.map((collection) => ({
+    return (data.collections ?? []).map((collection) => ({
       ...collection,
       edit: collectionEdit[collection.id] ?? {
         tagline: collection.tagline,
@@ -136,7 +136,7 @@ const Admin = () => {
 
   const productModel = useMemo(() => {
     if (!data) return [];
-    return data.products.map((product) => ({
+    return (data.products ?? []).map((product) => ({
       ...product,
       edit: productEdit[product.id] ?? {
         imageUrl: product.image_url ?? "",
@@ -244,7 +244,7 @@ const Admin = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.orders.map((order) => (
+                  {(data.orders ?? []).map((order) => (
                     <tr key={order.id} className="border-t border-border">
                       <td className="p-3 font-mono text-xs">{order.id.slice(0, 8).toUpperCase()}</td>
                       <td className="p-3">
@@ -396,7 +396,7 @@ const Admin = () => {
             <div>
               <h2 className="font-serif text-2xl mb-4">Recent Consultancy Requests</h2>
               <div className="space-y-3">
-                {data.consultancyRequests.map((item) => (
+                {(data.consultancyRequests ?? []).map((item) => (
                   <div key={item.id} className="border border-border p-4 bg-card">
                     <p className="font-serif text-lg">{item.name}</p>
                     <p className="text-sm text-muted-foreground">{item.email}</p>
@@ -415,7 +415,7 @@ const Admin = () => {
             <div>
               <h2 className="font-serif text-2xl mb-4">Recent Subscribers</h2>
               <div className="space-y-3">
-                {data.subscribers.map((item) => (
+                {(data.subscribers ?? []).map((item) => (
                   <div key={item.id} className="border border-border p-4 bg-card">
                     <p className="font-sans">{item.email}</p>
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
