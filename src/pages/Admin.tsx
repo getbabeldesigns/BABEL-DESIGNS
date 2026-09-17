@@ -350,6 +350,11 @@ const Admin = () => {
                     <p className="font-serif text-lg">{item.name}</p>
                     <p className="text-sm text-muted-foreground">{item.email}</p>
                     <p className="text-sm text-muted-foreground">{item.project_type ?? "-"}</p>
+                    {(item.preferred_date || item.preferred_slot) && (
+                      <p className="text-sm text-muted-foreground">
+                        Requested slot: {item.preferred_date ?? "-"} {item.preferred_slot ?? ""}
+                      </p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
                   </div>
                 ))}

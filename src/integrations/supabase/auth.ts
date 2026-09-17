@@ -39,6 +39,34 @@ export const completeOAuthSignInFromUrl = async () => {
   }
 };
 
+export const signUpWithEmail = async (email: string, password: string, fullName?: string) => {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");
+  }
+
+  const { data, error } = await getSupabaseClient().auth.signUp({
+    email,
+    password,
+    options: {
+      emailRedirectTo: typeof window === "undefined" ? undefined : `${window.location.origin}/auth`,
+      data: fullName ? { full_name: fullName } : undefined,
+    },
+  });
+
+  if (error) throw error;
+  return data;
+};
+
+export const signInWithEmail = async (email: string, password: string) => {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");
+  }
+
+  const { data, error } = await getSupabaseClient().auth.signInWithPassword({ email, password });
+  if (error) throw error;
+  return data;
+};
+
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");

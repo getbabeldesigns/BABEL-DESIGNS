@@ -37,9 +37,17 @@ create table if not exists public.consultancy_requests (
   phone text,
   project_type text,
   timeline text,
+  preferred_date date,
+  preferred_slot text,
   message text,
   created_at timestamptz not null default now()
 );
+
+-- Added after the initial table creation above; kept as idempotent ALTERs
+-- (matching the orders table's pattern below) so re-running this file
+-- against an existing database backfills the columns instead of failing.
+alter table public.consultancy_requests add column if not exists preferred_date date;
+alter table public.consultancy_requests add column if not exists preferred_slot text;
 
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),

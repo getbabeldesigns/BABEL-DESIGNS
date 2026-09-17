@@ -5,6 +5,19 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-token",
 };
 
+// Constant-time comparison, consistent with the Razorpay signature checks
+// elsewhere in this project (plain `!==` leaks a timing signal).
+const timingSafeEqualStrings = (a: string, b: string) => {
+  const bufA = new TextEncoder().encode(a);
+  const bufB = new TextEncoder().encode(b);
+  const length = Math.max(bufA.length, bufB.length);
+  let mismatch = bufA.length === bufB.length ? 0 : 1;
+  for (let i = 0; i < length; i++) {
+    mismatch |= (bufA[i] ?? 0) ^ (bufB[i] ?? 0);
+  }
+  return mismatch === 0;
+};
+
 type ManageCatalogBody =
   | {
       action: "update_collection";
@@ -36,7 +49,7 @@ Deno.serve(async (request: Request) => {
     const adminToken = request.headers.get("x-admin-token");
     const expectedToken = Deno.env.get("ADMIN_DASHBOARD_TOKEN");
 
-    if (!adminToken || !expectedToken || adminToken !== expectedToken) {
+    if (!adminToken || !expectedToken || !timingSafeEqualStrings(adminToken, expectedToken)) {
       return new Response(JSON.stringify({ error: "Unauthorized" }), {
         status: 401,
         headers: { ...corsHeaders, "Content-Type": "application/json" },

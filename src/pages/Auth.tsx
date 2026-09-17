@@ -6,7 +6,9 @@ import {
   completeOAuthSignInFromUrl,
   getCurrentUser,
   onAuthChange,
+  signInWithEmail,
   signOutUser,
+  signUpWithEmail,
   startOAuthSignIn,
   type OAuthProvider,
 } from "@/integrations/supabase/auth";
@@ -17,6 +19,9 @@ const Auth = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState<OAuthProvider | 'email' | null>(null);
+  // There's no separate /login route — this page handles both sign-up and
+  // sign-in, switching the form via this mode instead of navigating away.
+  const [mode, setMode] = useState<'signup' | 'login'>('signup');
 
   // Form states
   const [name, setName] = useState("");
@@ -66,17 +71,36 @@ const Auth = () => {
       });
   };
 
-  const handleEmailSignUp = (e: React.FormEvent) => {
+  const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isSupabaseConfigured) {
+      toast.error("Sign-in isn't configured yet. Please try again later.");
+      return;
+    }
+
     setIsSubmitting('email');
-    
-    // Simulate signup request since actual email/password signup might need additional 
-    // supabase configuration depending on the exact implementation in `@/integrations/supabase/auth`.
-    setTimeout(() => {
-      toast.success("Account created successfully. Welcome to Babel.");
+    try {
+      if (mode === 'signup') {
+        const result = await signUpWithEmail(email, password, name);
+        if (!result.session) {
+          // Email confirmation is required before a session exists.
+          toast.success("Check your email to confirm your account, then log in.");
+          setMode('login');
+        } else {
+          toast.success("Account created. Welcome to Babel.");
+          navigate("/account");
+        }
+      } else {
+        await signInWithEmail(email, password);
+        toast.success("Signed in.");
+        navigate("/account");
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong. Please try again.";
+      toast.error(message);
+    } finally {
       setIsSubmitting(null);
-      navigate("/account");
-    }, 1500);
+    }
   };
 
   const handleSignOut = async () => {
@@ -142,27 +166,29 @@ const Auth = () => {
               {/* Header */}
               <div className="mb-8">
                 <h2 className="font-serif text-3xl font-light text-[#111] mb-2 tracking-wide">
-                  Create your account
+                  {mode === 'signup' ? 'Create your account' : 'Welcome back'}
                 </h2>
                 <p className="text-sm text-[#777] font-light tracking-wide">
-                  Begin your journey with Babel Designs
+                  {mode === 'signup' ? 'Begin your journey with Babel Designs' : 'Log in to continue with Babel Designs'}
                 </p>
               </div>
 
               {/* Form */}
-              <form onSubmit={handleEmailSignUp} className="space-y-5">
-                
-                {/* Name */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] uppercase tracking-widest text-[#888] pl-1">Name</label>
-                  <input
-                    type="text"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    className="w-full bg-[#faf9f8] border border-[#e5e5e5] rounded-xl px-4 py-3.5 text-sm text-[#333] placeholder-[#aaa] outline-none focus:border-[#999] focus:bg-white transition-colors"
-                  />
-                </div>
+              <form onSubmit={handleEmailAuth} className="space-y-5">
+
+                {/* Name (sign-up only) */}
+                {mode === 'signup' && (
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] uppercase tracking-widest text-[#888] pl-1">Name</label>
+                    <input
+                      type="text"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      className="w-full bg-[#faf9f8] border border-[#e5e5e5] rounded-xl px-4 py-3.5 text-sm text-[#333] placeholder-[#aaa] outline-none focus:border-[#999] focus:bg-white transition-colors"
+                    />
+                  </div>
+                )}
 
                 {/* Email */}
                 <div className="space-y-1.5">
@@ -195,7 +221,9 @@ const Auth = () => {
                     disabled={isSubmitting !== null}
                     className="w-full bg-[#1c1c1c] text-[#fcfcfc] rounded-xl py-4 text-sm font-light tracking-wider hover:bg-[#333] disabled:opacity-70 transition-all shadow-sm"
                   >
-                    {isSubmitting === 'email' ? "Creating account..." : "Create account"}
+                    {isSubmitting === 'email'
+                      ? (mode === 'signup' ? "Creating account..." : "Logging in...")
+                      : (mode === 'signup' ? "Create account" : "Log in")}
                   </button>
                 </div>
               </form>
@@ -222,10 +250,14 @@ const Auth = () => {
               {/* Footer */}
               <div className="mt-8 text-center">
                 <p className="text-xs text-[#888] tracking-wide font-light">
-                  Already have an account?{' '}
-                  <Link to="/login" className="text-[#111] hover:underline transition-all">
-                    Log in
-                  </Link>
+                  {mode === 'signup' ? 'Already have an account?' : "Don't have an account yet?"}{' '}
+                  <button
+                    type="button"
+                    onClick={() => setMode(mode === 'signup' ? 'login' : 'signup')}
+                    className="text-[#111] hover:underline transition-all"
+                  >
+                    {mode === 'signup' ? 'Log in' : 'Create one'}
+                  </button>
                 </p>
               </div>
             </>

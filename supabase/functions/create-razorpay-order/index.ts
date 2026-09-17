@@ -65,12 +65,58 @@ Deno.serve(async (request: Request) => {
       });
     }
 
+    // `orders.total_amount` was written by an anonymous client under a public
+    // INSERT policy, so it cannot be trusted as-is. Recompute the charge from
+    // the order_items rows (also client-submitted, but at least internally
+    // consistent line-by-line) instead of the order's own total_amount field.
+    const { data: orderItems, error: itemsError } = await supabase
+      .from("order_items")
+      .select("product_id,unit_price,quantity")
+      .eq("order_id", localOrderId);
+
+    if (itemsError || !orderItems || orderItems.length === 0) {
+      return new Response(JSON.stringify({ error: "Order has no items." }), {
+        status: 400,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      });
+    }
+
+    // Where a line item's product_id matches a real row in the live Supabase
+    // catalog, reject the order if the submitted unit_price undercuts the
+    // currently published price (catches a tampered/stale cart total). Line
+    // items placed while the site was running on the static/offline fallback
+    // catalog won't match a UUID here and are left unverified, since there's
+    // no server-side source of truth to check them against in that mode.
+    const productIds = [...new Set(orderItems.map((item) => item.product_id).filter(Boolean))];
+    const { data: liveProducts } = await supabase
+      .from("products")
+      .select("id,price")
+      .in("id", productIds);
+
+    const livePriceById = new Map((liveProducts ?? []).map((p) => [p.id, Number(p.price)]));
+    const PRICE_TOLERANCE = 0.01;
+
+    for (const item of orderItems) {
+      const livePrice = livePriceById.get(item.product_id);
+      if (livePrice !== undefined && Number(item.unit_price) < livePrice - PRICE_TOLERANCE) {
+        return new Response(
+          JSON.stringify({ error: "Order pricing is out of date. Please refresh your cart and try again." }),
+          { status: 409, headers: { ...corsHeaders, "Content-Type": "application/json" } },
+        );
+      }
+    }
+
+    const recomputedTotal = orderItems.reduce(
+      (sum, item) => sum + Number(item.unit_price) * Number(item.quantity),
+      0,
+    );
+
     const razorpay = new Razorpay({
       key_id: razorpayKeyId,
       key_secret: razorpayKeySecret,
     });
 
-    const amount = toSubunits(Number(order.total_amount));
+    const amount = toSubunits(recomputedTotal);
     const currency = order.currency ?? "INR";
 
     if (order.razorpay_order_id && order.payment_status !== "paid") {
@@ -104,6 +150,9 @@ Deno.serve(async (request: Request) => {
         payment_status: "pending",
         razorpay_order_id: razorpayOrder.id,
         status: "payment_pending",
+        // Keep the stored total in sync with what was actually recomputed
+        // and charged above, instead of leaving the client-submitted value.
+        total_amount: recomputedTotal,
       })
       .eq("id", localOrderId);
 

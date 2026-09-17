@@ -12,7 +12,9 @@ const aboutLinks = [
   { path: '/philosophy', label: 'Philosophy' },
   { path: '/blogs', label: 'Journal' },
   { path: '/consultancy', label: 'Consultancy' },
-  { path: '/contact', label: 'Contact' },
+  // No dedicated /contact page exists yet; the consultancy form is the site's
+  // actual "get in touch" path, so point the Contact link there instead of a 404.
+  { path: '/consultancy', label: 'Contact' },
 ];
 
 const legalLinks = [
@@ -193,7 +195,9 @@ const Footer = () => {
                   Privacy Policy
                 </Link>
                 <div className="w-[3px] h-[3px] rounded-full bg-[#ccc]"></div>
-                <Link to="/terms-of-service" onClick={handleScrollToTop} className="hover:text-[#111] transition-colors">
+                {/* No dedicated Terms of Service page exists yet; point to the
+                    legal-pages hub instead of a dead route until one is written. */}
+                <Link to="/policies" onClick={handleScrollToTop} className="hover:text-[#111] transition-colors">
                   Terms of Service
                 </Link>
                 <div className="w-[3px] h-[3px] rounded-full bg-[#ccc]"></div>

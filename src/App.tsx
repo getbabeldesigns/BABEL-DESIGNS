@@ -205,11 +205,13 @@ const routeSeo = (pathname: string) => {
     };
   }
 
-  if (pathname === "/blogs") {
+  if (pathname === "/blogs" || pathname === "/case-studies") {
     return {
       title: "Blogs | Babel Designs",
       description: "Read stories, notes, and project insights from Babel Designs.",
-      canonicalPath: pathname,
+      // Both paths render the same CaseStudies component; canonicalize to /blogs
+      // so search engines don't treat them as separate/duplicate pages.
+      canonicalPath: "/blogs",
     };
   }
 

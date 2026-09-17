@@ -37,6 +37,8 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
     phone: input.phone || null,
     project_type: input.projectType || null,
     timeline: input.timeline || null,
+    preferred_date: input.preferredDate || null,
+    preferred_slot: input.preferredSlot || null,
     message: input.message || null,
   });
 

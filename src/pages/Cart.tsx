@@ -155,7 +155,7 @@ const Cart = () => {
                           {item.name}
                         </h3>
                         <motion.button
-                          onClick={() => removeItem(item.id)}
+                          onClick={() => removeItem(item.id, item.material)}
                           className="text-muted-foreground transition-colors hover:text-foreground"
                           whileHover={{ scale: 1.1, rotate: 90 }}
                           whileTap={{ scale: 0.9 }}
@@ -173,7 +173,7 @@ const Cart = () => {
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
                           <motion.button
-                            onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity - 1, item.material)}
                             className="flex h-8 w-8 items-center justify-center border border-border bg-background transition-colors hover:bg-secondary"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
@@ -184,7 +184,7 @@ const Cart = () => {
                             {item.quantity}
                           </span>
                           <motion.button
-                            onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item.id, item.quantity + 1, item.material)}
                             className="flex h-8 w-8 items-center justify-center border border-border bg-background transition-colors hover:bg-secondary"
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}

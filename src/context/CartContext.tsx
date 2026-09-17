@@ -1,5 +1,8 @@
-import React, { createContext, useContext, useEffect, useMemo, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState, ReactNode } from 'react';
 import { toast } from 'sonner';
+import { isSupabaseConfigured } from '@/integrations/supabase/client';
+import { getCurrentUser, onAuthChange } from '@/integrations/supabase/auth';
+import { fetchUserCartItems, saveUserCartItems } from '@/integrations/supabase/user_cart';
 
 export interface CartItem {
   id: string;
@@ -13,8 +16,8 @@ export interface CartItem {
 interface CartContextType {
   items: CartItem[];
   addItem: (item: Omit<CartItem, 'quantity'>) => void;
-  removeItem: (id: string) => void;
-  updateQuantity: (id: string, quantity: number) => void;
+  removeItem: (id: string, material?: string) => void;
+  updateQuantity: (id: string, quantity: number, material?: string) => void;
   clearCart: () => void;
   totalItems: number;
   totalPrice: number;
@@ -52,16 +55,85 @@ const writeGuestCart = (items: CartItem[]) => {
 };
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(() => readGuestCart());
+  const [userId, setUserId] = useState<string | null>(null);
+  // Guards the sync-to-server effect from firing before we've actually loaded
+  // that user's cart (so we don't overwrite their saved cart with an empty one).
+  const hasHydratedServerCart = useRef(false);
 
+  // Guest (signed-out) cart is always mirrored to localStorage so it still
+  // works with no Supabase configured at all, and survives a sign-out.
   useEffect(() => {
-    const guestItems = readGuestCart();
-    setItems(guestItems);
+    if (!userId) {
+      writeGuestCart(items);
+    }
+  }, [items, userId]);
+
+  // Resolve the signed-in user (if any) once, and keep listening for sign-in/out.
+  useEffect(() => {
+    if (!isSupabaseConfigured) return;
+
+    let cancelled = false;
+
+    getCurrentUser()
+      .then((user) => {
+        if (!cancelled) setUserId(user?.id ?? null);
+      })
+      .catch(() => undefined);
+
+    const subscription = onAuthChange((user) => {
+      setUserId(user?.id ?? null);
+    });
+
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
 
+  // When a user signs in, pull their saved cart from Supabase (`user_carts`).
+  // If they already had a guest cart going (items added before signing in) and
+  // the server has nothing saved yet, migrate the guest cart up instead of
+  // discarding it. On sign-out, fall back to whatever is in the guest cart.
   useEffect(() => {
-    writeGuestCart(items);
-  }, [items]);
+    if (!isSupabaseConfigured) return;
+
+    if (!userId) {
+      hasHydratedServerCart.current = false;
+      setItems(readGuestCart());
+      return;
+    }
+
+    let cancelled = false;
+    const guestItemsAtSignIn = readGuestCart();
+    hasHydratedServerCart.current = false;
+
+    fetchUserCartItems(userId)
+      .then(async (serverItems) => {
+        if (cancelled) return;
+        if (serverItems.length === 0 && guestItemsAtSignIn.length > 0) {
+          await saveUserCartItems(userId, guestItemsAtSignIn).catch(() => undefined);
+          if (!cancelled) setItems(guestItemsAtSignIn);
+        } else {
+          setItems(serverItems);
+        }
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (!cancelled) hasHydratedServerCart.current = true;
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [userId]);
+
+  // Keep the signed-in user's cart saved to Supabase after every change, once
+  // the initial server cart has actually been loaded (see hasHydratedServerCart).
+  useEffect(() => {
+    if (!isSupabaseConfigured || !userId || !hasHydratedServerCart.current) return;
+    saveUserCartItems(userId, items).catch(() => undefined);
+  }, [items, userId]);
 
   const addItem = (item: Omit<CartItem, 'quantity'>) => {
     toast.success('Added to cart');
@@ -78,16 +150,18 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     });
   };
 
-  const removeItem = (id: string) => {
-    setItems((prev) => prev.filter((i) => i.id !== id));
+  const removeItem = (id: string, material?: string) => {
+    setItems((prev) => prev.filter((i) => !(i.id === id && (i.material ?? '') === (material ?? ''))));
   };
 
-  const updateQuantity = (id: string, quantity: number) => {
+  const updateQuantity = (id: string, quantity: number, material?: string) => {
     if (quantity <= 0) {
-      removeItem(id);
+      removeItem(id, material);
       return;
     }
-    setItems((prev) => prev.map((i) => (i.id === id ? { ...i, quantity } : i)));
+    setItems((prev) =>
+      prev.map((i) => (i.id === id && (i.material ?? '') === (material ?? '') ? { ...i, quantity } : i)),
+    );
   };
 
   const clearCart = () => setItems([]);
