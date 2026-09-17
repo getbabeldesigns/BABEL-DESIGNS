@@ -97,6 +97,20 @@ create table if not exists public.user_carts (
   updated_at timestamptz not null default now()
 );
 
+-- Membership table for real admin access: a signed-in Supabase user (Google
+-- OAuth) is treated as an admin only if their auth.users id has a row here.
+-- Deliberately no RLS policies below (RLS is enabled, no policy = nobody via
+-- anon/authenticated key can read or write it) — only the edge functions,
+-- using the service-role key, can check or manage this table. There is no
+-- self-service "become an admin" path by design; the first row has to be
+-- inserted manually in the SQL Editor (see README for the exact statement).
+create table if not exists public.admin_users (
+  user_id uuid primary key references auth.users(id) on delete cascade,
+  created_at timestamptz not null default now()
+);
+
+alter table public.admin_users enable row level security;
+
 create index if not exists idx_collections_slug on public.collections(slug);
 create index if not exists idx_products_collection_id on public.products(collection_id);
 create index if not exists idx_products_active on public.products(active);

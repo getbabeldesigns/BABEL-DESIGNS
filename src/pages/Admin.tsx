@@ -1,5 +1,5 @@
-import { FormEvent, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import type { User } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   fetchAdminDashboard,
@@ -7,6 +7,8 @@ import {
   updateAdminOrderStatus,
   updateAdminProduct,
 } from "@/integrations/supabase/admin";
+import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/supabase/auth";
+import { isSupabaseConfigured } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 
 const formatDate = (iso: string) => new Date(iso).toLocaleString();
@@ -14,47 +16,80 @@ const formatDate = (iso: string) => new Date(iso).toLocaleString();
 const orderStatuses = ["created", "payment_pending", "paid", "fulfilled", "cancelled"];
 const paymentStatuses = ["created", "pending", "paid", "failed", "refunded"];
 
-const adminStorageKey = "babel_admin_token";
-
 const Admin = () => {
   const queryClient = useQueryClient();
-  const [tokenInput, setTokenInput] = useState(() => sessionStorage.getItem(adminStorageKey) ?? "");
-  const [adminToken, setAdminToken] = useState(() => sessionStorage.getItem(adminStorageKey) ?? "");
+  // Real admin gating: sign in with the same Google OAuth used on /auth, then
+  // the edge functions check whether this signed-in user's id is in the
+  // admin_users table (see supabase/schema.sql). There's no shared secret
+  // anymore, so being signed in isn't enough on its own — see the
+  // isForbidden handling below for the "signed in but not an admin" case.
+  const [user, setUser] = useState<User | null>(null);
+  const [authLoading, setAuthLoading] = useState(true);
+  const [isSigningIn, setIsSigningIn] = useState(false);
 
   const [collectionEdit, setCollectionEdit] = useState<Record<string, { tagline: string; description: string; heroImageUrl: string }>>({});
   const [productEdit, setProductEdit] = useState<Record<string, { imageUrl: string; active: boolean }>>({});
 
-  const hasToken = adminToken.trim().length > 0;
-
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["admin-dashboard", adminToken],
-    queryFn: () => fetchAdminDashboard(adminToken),
-    enabled: hasToken,
-  });
-
-  const saveToken = (event: FormEvent) => {
-    event.preventDefault();
-    const trimmed = tokenInput.trim();
-    if (!trimmed) {
-      toast.error("Enter admin token.");
+  useEffect(() => {
+    if (!isSupabaseConfigured) {
+      setAuthLoading(false);
       return;
     }
-    sessionStorage.setItem(adminStorageKey, trimmed);
-    setAdminToken(trimmed);
+
+    let mounted = true;
+    getCurrentUser()
+      .then((currentUser) => {
+        if (mounted) setUser(currentUser);
+      })
+      .catch(() => undefined)
+      .finally(() => {
+        if (mounted) setAuthLoading(false);
+      });
+
+    const subscription = onAuthChange((nextUser) => {
+      if (mounted) setUser(nextUser);
+    });
+
+    return () => {
+      mounted = false;
+      subscription.unsubscribe();
+    };
+  }, []);
+
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin-dashboard", user?.id],
+    queryFn: () => fetchAdminDashboard(),
+    enabled: Boolean(user),
+    retry: false,
+  });
+
+  const handleSignIn = () => {
+    setIsSigningIn(true);
+    startOAuthSignIn("google")
+      .catch((error) => {
+        const message = error instanceof Error ? error.message : "Failed to start sign in";
+        toast.error(message);
+      })
+      .finally(() => setIsSigningIn(false));
   };
 
-  const clearToken = () => {
-    sessionStorage.removeItem(adminStorageKey);
-    setAdminToken("");
-    setTokenInput("");
+  const handleSignOut = async () => {
+    try {
+      await signOutUser();
+      setUser(null);
+      toast.success("Signed out.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to sign out";
+      toast.error(message);
+    }
   };
 
   const updateStatusMutation = useMutation({
     mutationFn: ({ orderId, status, paymentStatus }: { orderId: string; status: string; paymentStatus: string | null }) =>
-      updateAdminOrderStatus(adminToken, orderId, status, paymentStatus),
+      updateAdminOrderStatus(orderId, status, paymentStatus),
     onSuccess: () => {
       toast.success("Order status updated.");
-      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", adminToken] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] });
     },
     onError: (error) => {
       const message = error instanceof Error ? error.message : "Failed to update order.";
@@ -64,10 +99,10 @@ const Admin = () => {
 
   const updateCollectionMutation = useMutation({
     mutationFn: (input: { collectionId: string; tagline: string; description: string; heroImageUrl: string }) =>
-      updateAdminCollection(adminToken, input),
+      updateAdminCollection(input),
     onSuccess: () => {
       toast.success("Collection updated.");
-      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", adminToken] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] });
     },
     onError: (error) => {
       const message = error instanceof Error ? error.message : "Failed to update collection.";
@@ -76,10 +111,10 @@ const Admin = () => {
   });
 
   const updateProductMutation = useMutation({
-    mutationFn: (input: { productId: string; active: boolean; imageUrl: string }) => updateAdminProduct(adminToken, input),
+    mutationFn: (input: { productId: string; active: boolean; imageUrl: string }) => updateAdminProduct(input),
     onSuccess: () => {
       toast.success("Product updated.");
-      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", adminToken] });
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] });
     },
     onError: (error) => {
       const message = error instanceof Error ? error.message : "Failed to update product.";
@@ -110,25 +145,37 @@ const Admin = () => {
     }));
   }, [data, productEdit]);
 
-  if (!hasToken) {
+  if (authLoading) {
+    return (
+      <div className="min-h-screen pt-32 md:pt-40">
+        <section className="section-padding pt-0">
+          <div className="container-editorial">
+            <h1 className="font-serif text-4xl">Checking your session...</h1>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
+  if (!user) {
     return (
       <div className="min-h-screen pt-32 md:pt-40">
         <section className="section-padding pt-0">
           <div className="container-editorial max-w-lg">
             <h1 className="font-serif text-4xl mb-6">Admin Access</h1>
-            <form onSubmit={saveToken} className="space-y-4 border border-border bg-card p-6">
-              <label className="block text-xs uppercase tracking-[0.25em] text-muted-foreground">Admin token</label>
-              <input
-                type="password"
-                value={tokenInput}
-                onChange={(event) => setTokenInput(event.target.value)}
-                className="w-full border border-border bg-background px-3 py-2"
-                placeholder="Enter ADMIN_DASHBOARD_TOKEN"
-              />
-              <button className="w-full border border-foreground/40 py-3 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors">
-                Unlock Dashboard
+            <div className="space-y-4 border border-border bg-card p-6">
+              <p className="text-sm text-muted-foreground">
+                Sign in with the Google account that's been granted admin access to manage orders,
+                collections, products and requests.
+              </p>
+              <button
+                onClick={handleSignIn}
+                disabled={isSigningIn}
+                className="w-full border border-foreground/40 py-3 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors disabled:opacity-60"
+              >
+                {isSigningIn ? "Connecting..." : "Sign in with Google"}
               </button>
-            </form>
+            </div>
           </div>
         </section>
       </div>
@@ -151,10 +198,13 @@ const Admin = () => {
     return (
       <div className="min-h-screen pt-32 md:pt-40">
         <section className="section-padding pt-0">
-          <div className="container-editorial">
-            <h1 className="font-serif text-4xl mb-4">Admin dashboard unavailable</h1>
-            <p className="font-sans text-muted-foreground mb-6">Check token and deployed admin functions.</p>
-            <button onClick={clearToken} className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em]">Reset Token</button>
+          <div className="container-editorial max-w-lg">
+            <h1 className="font-serif text-4xl mb-4">Not authorized</h1>
+            <p className="font-sans text-muted-foreground mb-6">
+              You're signed in as {user.email}, but this account doesn't have admin access. Ask an
+              existing admin to add your account, or sign in with a different one.
+            </p>
+            <button onClick={handleSignOut} className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em]">Sign out</button>
           </div>
         </section>
       </div>
@@ -168,7 +218,8 @@ const Admin = () => {
           <div className="mb-8 flex items-center justify-between">
             <h1 className="font-serif text-4xl md:text-5xl">Admin Dashboard</h1>
             <div className="flex items-center gap-3">
-              <button onClick={clearToken} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Lock</button>
+              <span className="text-xs text-muted-foreground">{user.email}</span>
+              <button onClick={handleSignOut} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Sign out</button>
             </div>
           </div>
 

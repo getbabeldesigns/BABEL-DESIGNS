@@ -56,26 +56,23 @@ export interface AdminDashboardResponse {
   products: AdminProduct[];
 }
 
-const adminHeaders = (adminToken: string) => ({
-  "x-admin-token": adminToken,
-});
+// No token headers needed here: supabase-js's functions.invoke() automatically
+// sends `Authorization: Bearer <current session's access token>` for a
+// signed-in user, which is exactly what the admin edge functions now check
+// (real Supabase auth + admin_users membership) instead of a shared secret.
 
-export const fetchAdminDashboard = async (adminToken: string): Promise<AdminDashboardResponse> => {
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-dashboard", {
-    headers: adminHeaders(adminToken),
-  });
+export const fetchAdminDashboard = async (): Promise<AdminDashboardResponse> => {
+  const { data, error } = await getSupabaseClient().functions.invoke("admin-dashboard");
   if (error) throw error;
   return data as AdminDashboardResponse;
 };
 
 export const updateAdminOrderStatus = async (
-  adminToken: string,
   orderId: string,
   status: string,
   paymentStatus?: string | null,
 ) => {
   const { data, error } = await getSupabaseClient().functions.invoke("admin-update-order-status", {
-    headers: adminHeaders(adminToken),
     body: {
       orderId,
       status,
@@ -87,12 +84,13 @@ export const updateAdminOrderStatus = async (
   return data as { success: boolean };
 };
 
-export const updateAdminCollection = async (
-  adminToken: string,
-  input: { collectionId: string; tagline: string; description: string; heroImageUrl: string },
-) => {
+export const updateAdminCollection = async (input: {
+  collectionId: string;
+  tagline: string;
+  description: string;
+  heroImageUrl: string;
+}) => {
   const { data, error } = await getSupabaseClient().functions.invoke("admin-manage-catalog", {
-    headers: adminHeaders(adminToken),
     body: {
       action: "update_collection",
       ...input,
@@ -103,12 +101,12 @@ export const updateAdminCollection = async (
   return data as { success: boolean };
 };
 
-export const updateAdminProduct = async (
-  adminToken: string,
-  input: { productId: string; active: boolean; imageUrl: string },
-) => {
+export const updateAdminProduct = async (input: {
+  productId: string;
+  active: boolean;
+  imageUrl: string;
+}) => {
   const { data, error } = await getSupabaseClient().functions.invoke("admin-manage-catalog", {
-    headers: adminHeaders(adminToken),
     body: {
       action: "update_product",
       ...input,

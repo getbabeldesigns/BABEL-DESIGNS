@@ -95,6 +95,18 @@ export const getCurrentUser = async (): Promise<User | null> => {
   return sessionData.session?.user ?? null;
 };
 
+// Returns the signed-in user's current access token (JWT), or null if
+// there's no session. Used to authenticate as a real Supabase user against
+// edge functions (e.g. the admin functions) instead of a shared secret.
+export const getAccessToken = async (): Promise<string | null> => {
+  if (!isSupabaseConfigured) return null;
+
+  const client = getSupabaseClient();
+  const { data: sessionData, error: sessionError } = await client.auth.getSession();
+  if (sessionError && !isSessionMissingError(sessionError)) throw sessionError;
+  return sessionData.session?.access_token ?? null;
+};
+
 export const onAuthChange = (callback: (user: User | null) => void) => {
   if (!isSupabaseConfigured) {
     return { unsubscribe: () => undefined };

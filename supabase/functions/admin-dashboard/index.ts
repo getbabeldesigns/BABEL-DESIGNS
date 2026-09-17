@@ -2,22 +2,48 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type, x-admin-token",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-// Plain `!==` leaks a timing signal proportional to how many leading
-// characters match. This function is not used for anything, but it brings
-// the admin-token check in line with the constant-time comparison already
-// used for the Razorpay signature checks elsewhere in this project.
-const timingSafeEqualStrings = (a: string, b: string) => {
-  const bufA = new TextEncoder().encode(a);
-  const bufB = new TextEncoder().encode(b);
-  const length = Math.max(bufA.length, bufB.length);
-  let mismatch = bufA.length === bufB.length ? 0 : 1;
-  for (let i = 0; i < length; i++) {
-    mismatch |= (bufA[i] ?? 0) ^ (bufB[i] ?? 0);
+// Real admin gating: the caller must send a signed-in Supabase user's JWT as
+// `Authorization: Bearer <token>` (not a shared secret), and that user's id
+// must have a row in admin_users. supabase.auth.getUser() verifies the JWT
+// against Supabase Auth; the admin_users lookup then uses the service-role
+// client to bypass RLS (admin_users has no public policies at all).
+const requireAdmin = async (supabase: ReturnType<typeof createClient>, request: Request) => {
+  const authHeader = request.headers.get("authorization") ?? request.headers.get("Authorization");
+  const accessToken = authHeader?.toLowerCase().startsWith("bearer ")
+    ? authHeader.slice("bearer ".length).trim()
+    : null;
+
+  const unauthorized = () =>
+    new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: { ...corsHeaders, "Content-Type": "application/json" },
+    });
+
+  if (!accessToken) return { ok: false as const, response: unauthorized() };
+
+  const { data: userData, error: userError } = await supabase.auth.getUser(accessToken);
+  if (userError || !userData.user) return { ok: false as const, response: unauthorized() };
+
+  const { data: adminRow, error: adminError } = await supabase
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id", userData.user.id)
+    .maybeSingle();
+
+  if (adminError || !adminRow) {
+    return {
+      ok: false as const,
+      response: new Response(JSON.stringify({ error: "Forbidden: not an admin." }), {
+        status: 403,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }),
+    };
   }
-  return mismatch === 0;
+
+  return { ok: true as const };
 };
 
 Deno.serve(async (request: Request) => {
@@ -26,15 +52,6 @@ Deno.serve(async (request: Request) => {
   }
 
   try {
-    const adminToken = request.headers.get("x-admin-token");
-    const expectedToken = Deno.env.get("ADMIN_DASHBOARD_TOKEN");
-    if (!adminToken || !expectedToken || !timingSafeEqualStrings(adminToken, expectedToken)) {
-      return new Response(JSON.stringify({ error: "Unauthorized" }), {
-        status: 401,
-        headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
-    }
-
     const supabaseUrl = Deno.env.get("SUPABASE_URL");
     const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
@@ -46,6 +63,9 @@ Deno.serve(async (request: Request) => {
     }
 
     const supabase = createClient(supabaseUrl, serviceRoleKey);
+
+    const adminCheck = await requireAdmin(supabase, request);
+    if (!adminCheck.ok) return adminCheck.response;
 
     const [
       { data: orders = [] },
