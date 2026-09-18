@@ -84,7 +84,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen">
-      <section className="relative h-screen flex items-center justify-center overflow-hidden section-transition">
+      <section className="hero-section relative h-screen flex items-center justify-center overflow-hidden section-transition">
         <motion.div
           variants={enableHeroMotion ? imageZoomInVariants : undefined}
           initial={enableHeroMotion ? "hidden" : false}

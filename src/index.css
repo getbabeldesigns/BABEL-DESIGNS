@@ -126,10 +126,19 @@
     scroll-behavior: smooth;
   }
 
+  html {
+    /* Prevent transient horizontal scroll from off-screen animation offsets
+       (e.g. framer-motion x: -40/40 entrance transforms) on narrow viewports. */
+    overflow-x: hidden;
+    max-width: 100vw;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "kern" 1, "liga" 1;
     font-weight: 300;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -302,5 +311,19 @@ li.font-sans:not(.uppercase) {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
+  }
+}
+
+/* Phone-landscape safeguard: on short, wide viewports (e.g. a phone turned
+   sideways) the fixed navbar can take up a large share of a h-screen hero,
+   centering the headline underneath it. Let the hero grow past 100vh and
+   start below the navbar instead of being vertically centered behind it. */
+@media (max-height: 500px) and (orientation: landscape) {
+  .hero-section {
+    height: auto;
+    min-height: 100vh;
+    align-items: flex-start;
+    padding-top: 10rem;
+    padding-bottom: 3rem;
   }
 }

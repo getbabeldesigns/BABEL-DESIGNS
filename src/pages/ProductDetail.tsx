@@ -68,7 +68,7 @@ const ProductDetail = () => {
   const galleryImages = product.images?.length ? product.images : [product.image, product.image, product.image];
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <motion.div

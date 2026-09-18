@@ -333,7 +333,7 @@ const Navbar = () => {
 
         {/* Mobile Menu */}
         <div className="lg:hidden border-t border-border px-4 py-3 sm:px-6 md:px-8 md:py-3.5">
-          <div className="grid w-full grid-cols-3 gap-2 md:gap-3">
+          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.path}

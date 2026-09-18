@@ -52,7 +52,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding section-transition pt-0 pb-12">
         <div className="container-editorial">
           <motion.div

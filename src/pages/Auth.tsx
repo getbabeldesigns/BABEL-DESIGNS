@@ -114,8 +114,8 @@ const Auth = () => {
   };
 
   return (
-    <div className="flex min-h-screen flex-col lg:flex-row bg-[#faf9f8] font-sans">
-      
+    <div className="flex min-h-screen flex-col pt-40 md:pt-52 lg:flex-row lg:pt-0 bg-[#faf9f8] font-sans">
+
       {/* LEFT SIDE: Visual Section */}
       <div className="relative w-full lg:w-1/2 min-h-[40vh] lg:min-h-screen order-2 lg:order-1">
         <img

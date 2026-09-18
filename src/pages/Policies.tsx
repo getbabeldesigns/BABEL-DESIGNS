@@ -25,7 +25,7 @@ const Policies = () => {
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background pt-32 md:pt-40">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-40 md:pt-52">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-10 top-16 h-56 w-56 rounded-full bg-secondary/40 blur-3xl" />
         <div className="absolute right-0 top-64 h-64 w-64 rounded-full bg-accent/35 blur-3xl" />

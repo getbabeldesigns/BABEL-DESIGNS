@@ -41,7 +41,7 @@ const OrderSuccess = () => {
   const order = orders?.[0];
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial max-w-3xl text-center">
           <p className="font-sans text-xs uppercase tracking-[0.3em] text-muted-foreground mb-4">

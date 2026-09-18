@@ -151,7 +151,7 @@ const Collections = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial">
             <div className="mb-12"><div className="mb-4 h-4 w-32 animate-pulse bg-muted" /><div className="h-12 w-80 animate-pulse bg-muted" /></div>
@@ -168,7 +168,7 @@ const Collections = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial text-center">
             <h1 className="font-serif text-3xl text-foreground mb-4">Unable to load collections</h1>
@@ -180,7 +180,7 @@ const Collections = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0 section-transition">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-12">
@@ -238,7 +238,7 @@ const Collections = () => {
               )}
             </div>
 
-            <select value={collectionFilter} onChange={(event) => setCollectionFilter(event.target.value)} title="Filter by collection" className="border border-border bg-background px-3 py-2 text-sm">
+            <select value={collectionFilter} onChange={(event) => setCollectionFilter(event.target.value)} title="Filter by collection" className="w-full border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All collections</option>
               {collections.map((collection) => (
                 <option key={collection.slug} value={collection.slug}>
@@ -246,11 +246,11 @@ const Collections = () => {
                 </option>
               ))}
             </select>
-            <select value={materialFilter} onChange={(event) => setMaterialFilter(event.target.value)} title="Filter by material" className="border border-border bg-background px-3 py-2 text-sm">
+            <select value={materialFilter} onChange={(event) => setMaterialFilter(event.target.value)} title="Filter by material" className="w-full border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All materials</option>
               {materials.map((material) => (<option key={material} value={material}>{material}</option>))}
             </select>
-            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} title="Filter by category" className="border border-border bg-background px-3 py-2 text-sm">
+            <select value={categoryFilter} onChange={(event) => setCategoryFilter(event.target.value)} title="Filter by category" className="w-full border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All categories</option>
               {categories.map((category) => (
                 <option key={category} value={category}>
@@ -258,7 +258,7 @@ const Collections = () => {
                 </option>
               ))}
             </select>
-            <select value={priceBand} onChange={(event) => setPriceBand(event.target.value as 'all' | '0-3000' | '3001-7000' | '7001+')} title="Filter by price" className="border border-border bg-background px-3 py-2 text-sm">
+            <select value={priceBand} onChange={(event) => setPriceBand(event.target.value as 'all' | '0-3000' | '3001-7000' | '7001+')} title="Filter by price" className="w-full border border-border bg-background px-3 py-2 text-sm">
               <option value="all">All prices</option>
               <option value="0-3000">Up to INR 3,000</option>
               <option value="3001-7000">INR 3,001 - 7,000</option>

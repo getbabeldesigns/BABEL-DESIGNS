@@ -61,7 +61,7 @@ const CollectionDetail = () => {
         : 'from-neutral-300/45 via-stone-200/20 to-transparent';
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0 pb-12">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

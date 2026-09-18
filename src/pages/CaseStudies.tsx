@@ -23,7 +23,7 @@ const CaseStudies = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <p className="mb-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">Blogs</p>

@@ -17,19 +17,17 @@ type SupabaseErrorLike = {
   status?: number;
 };
 
-const CATALOG_LOCAL_FALLBACK_KEY = "catalog_force_local_fallback";
-
-const readPersistedFallbackPreference = () => {
-  if (typeof window === "undefined") return false;
-  return window.localStorage.getItem(CATALOG_LOCAL_FALLBACK_KEY) === "true";
-};
-
-const persistFallbackPreference = () => {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(CATALOG_LOCAL_FALLBACK_KEY, "true");
-};
-
-let forceLocalCatalogFallback = !isSupabaseConfigured || readPersistedFallbackPreference();
+// NOTE: this used to also persist to localStorage once a Supabase read
+// failed, permanently latching that visitor's browser onto the static
+// fallback catalog forever (there was no code path that ever cleared it).
+// A single transient blip — a network hiccup, a brief RLS misconfig, an
+// edge-case timeout — would silently pin that one visitor to stale demo
+// products and prices for every future visit, with admin catalog changes
+// never reaching them again, and no way for them (or us) to know why.
+// Falling back for the rest of the current page session (in-memory only,
+// below) is reasonable so we don't hammer a broken endpoint repeatedly
+// during one visit; falling back forever, silently, across visits is not.
+let forceLocalCatalogFallback = !isSupabaseConfigured;
 
 type ProductQueryRow = {
   id: string;
@@ -124,7 +122,6 @@ export const fetchCollections = async (): Promise<Collection[]> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
-      persistFallbackPreference();
       return fallbackCollectionsWithDemoImages;
     }
     console.warn("[catalog] Falling back to local collections due to Supabase read error:", error);
@@ -145,7 +142,6 @@ export const fetchCollectionBySlug = async (slug: string): Promise<Collection | 
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
-      persistFallbackPreference();
       return mapFallbackCollection(getFallbackCollectionBySlug(slug));
     }
     console.warn("[catalog] Falling back to local collection due to Supabase read error:", error);
@@ -170,7 +166,6 @@ export const fetchProducts = async (): Promise<Product[]> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
-      persistFallbackPreference();
       return fallbackProducts;
     }
     console.warn("[catalog] Falling back to local products due to Supabase read error:", error);
@@ -195,7 +190,6 @@ export const fetchProductsByCollectionSlug = async (slug: string): Promise<Produ
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
-      persistFallbackPreference();
       return getFallbackProductsByCollection(slug);
     }
     console.warn("[catalog] Falling back to local collection products due to Supabase read error:", error);
@@ -219,7 +213,6 @@ export const fetchProductById = async (id: string): Promise<Product | null> => {
   if (error) {
     if (shouldFallbackRead(error)) {
       forceLocalCatalogFallback = true;
-      persistFallbackPreference();
       return getFallbackProductById(id) ?? null;
     }
     console.warn("[catalog] Falling back to local product due to Supabase read error:", error);

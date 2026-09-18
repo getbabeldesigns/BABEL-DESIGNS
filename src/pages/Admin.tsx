@@ -147,7 +147,7 @@ const Admin = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0">
           <div className="container-editorial">
             <h1 className="font-serif text-4xl">Checking your session...</h1>
@@ -159,7 +159,7 @@ const Admin = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0">
           <div className="container-editorial max-w-lg">
             <h1 className="font-serif text-4xl mb-6">Admin Access</h1>
@@ -184,7 +184,7 @@ const Admin = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0">
           <div className="container-editorial">
             <h1 className="font-serif text-4xl">Loading admin dashboard...</h1>
@@ -196,7 +196,7 @@ const Admin = () => {
 
   if (isError || !data) {
     return (
-      <div className="min-h-screen pt-32 md:pt-40">
+      <div className="min-h-screen pt-40 md:pt-52">
         <section className="section-padding pt-0">
           <div className="container-editorial max-w-lg">
             <h1 className="font-serif text-4xl mb-4">Not authorized</h1>
@@ -212,7 +212,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen pt-32 md:pt-40">
+    <div className="min-h-screen pt-40 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <div className="mb-8 flex items-center justify-between">
