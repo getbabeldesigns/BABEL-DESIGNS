@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Minus, Plus, X, ArrowRight } from 'lucide-react';
+import { Minus, Plus, X, ArrowRight, ShieldCheck, RotateCcw } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import AnimatedSection from '@/components/AnimatedSection';
 import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
@@ -275,9 +275,23 @@ const Cart = () => {
                 Proceed to Checkout
               </motion.button>
 
-              <p className="text-center font-sans text-xs text-muted-foreground">
+              <p className="mb-4 text-center font-sans text-xs text-muted-foreground">
                 Made to order. Final delivery timeline confirmed after order review.
               </p>
+
+              <div className="flex items-center justify-center gap-6 border-t border-border/60 pt-4">
+                <span className="flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.16em] text-muted-foreground">
+                  <ShieldCheck size={14} />
+                  Secure Payment
+                </span>
+                <Link
+                  to="/return-policy"
+                  className="flex items-center gap-2 font-sans text-[11px] uppercase tracking-[0.16em] text-muted-foreground hover:text-foreground"
+                >
+                  <RotateCcw size={14} />
+                  7-Day Returns
+                </Link>
+              </div>
             </motion.div>
           </div>
         </div>

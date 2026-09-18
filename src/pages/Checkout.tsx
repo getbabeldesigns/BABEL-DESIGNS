@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ShieldCheck, RotateCcw, Truck } from "lucide-react";
 import { toast } from "sonner";
 import { useCart } from "@/context/CartContext";
 import { createOrder } from "@/integrations/supabase/orders";
@@ -93,7 +93,16 @@ const Checkout = () => {
             clearCart();
             trackEvent({ event: "checkout_success", order_id: localOrderId });
             toast.success(`Payment successful. Reference: ${localOrderId.slice(0, 8).toUpperCase()}`);
-            navigate(`/order/success/${localOrderId}`);
+            // Also stash the email in sessionStorage (not just navigate state) so a
+            // refresh of the confirmation page can still re-fetch the order details.
+            if (typeof window !== "undefined") {
+              try {
+                window.sessionStorage.setItem(`babel_order_email_${localOrderId}`, formData.email.trim());
+              } catch {
+                // Ignore storage failures (private browsing, quota, etc.).
+              }
+            }
+            navigate(`/order/success/${localOrderId}`, { state: { email: formData.email.trim() } });
             resolve();
           } catch (error) {
             await markPaymentFailed({ localOrderId, reason: "verify_failed" }).catch(() => undefined);
@@ -291,6 +300,24 @@ const Checkout = () => {
                 >
                   {isSubmitting ? "Processing..." : "Pay Securely"}
                 </button>
+
+                <div className="mt-5 space-y-2 border-t border-border/60 pt-4">
+                  <p className="flex items-center gap-2 font-sans text-[11px] text-muted-foreground">
+                    <ShieldCheck size={14} className="flex-shrink-0" />
+                    Payments are encrypted and processed securely via Razorpay.
+                  </p>
+                  <p className="flex items-center gap-2 font-sans text-[11px] text-muted-foreground">
+                    <Truck size={14} className="flex-shrink-0" />
+                    Made to order — 8-12 weeks production, plus transit time for your area.
+                  </p>
+                  <p className="flex items-center gap-2 font-sans text-[11px] text-muted-foreground">
+                    <RotateCcw size={14} className="flex-shrink-0" />
+                    7-day returns on ready-stock pieces.{" "}
+                    <Link to="/return-policy" className="underline underline-offset-2 hover:text-foreground">
+                      Return policy
+                    </Link>
+                  </p>
+                </div>
               </div>
             </motion.aside>
           </div>

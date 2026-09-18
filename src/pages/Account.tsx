@@ -1,19 +1,31 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
-import { 
-  ArrowUpRight, 
-  LogOut, 
-  User as UserIcon, 
-  ShoppingBag, 
-  Settings, 
+import { useQuery } from "@tanstack/react-query";
+import {
+  ArrowUpRight,
+  LogOut,
+  User as UserIcon,
+  ShoppingBag,
+  Settings,
   Package,
   Clock
 } from "lucide-react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getCurrentUser, signOutUser } from "@/integrations/supabase/auth";
+import { fetchCustomerOrders } from "@/integrations/supabase/orders";
+import { formatINR } from "@/lib/currency";
+import { handleImageError } from "@/lib/image";
 import { motion, AnimatePresence } from "framer-motion";
+
+const ORDER_STATUS_LABELS: Record<string, string> = {
+  created: "Order Received",
+  payment_pending: "Payment Pending",
+  paid: "Payment Confirmed",
+  fulfilled: "Fulfilled",
+  cancelled: "Cancelled",
+};
 
 const initialsFrom = (user: User | null) => {
   const metadataName =
@@ -85,6 +97,12 @@ const Account = () => {
     await signOutUser();
     navigate("/auth");
   };
+
+  const { data: orders = [], isLoading: ordersLoading, isError: ordersError } = useQuery({
+    queryKey: ["account-orders", user?.email],
+    queryFn: () => fetchCustomerOrders({ email: user!.email! }),
+    enabled: Boolean(user?.email) && activeTab === "orders",
+  });
 
   if (isLoading) {
     return (
@@ -235,16 +253,76 @@ const Account = () => {
                   className="space-y-8"
                 >
                   <h2 className="font-serif text-2xl font-light mb-6 text-[#111]">Order History</h2>
-                  <div className="border border-[#eaeaea] bg-white rounded-2xl p-16 text-center flex flex-col items-center justify-center h-[350px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
-                    <ShoppingBag size={28} className="text-[#aaa] mb-6" />
-                    <p className="text-sm font-light text-[#666] mb-8">Your collection is currently empty.</p>
-                    <Link
-                      to="/collections"
-                      className="inline-flex items-center justify-center bg-[#1c1c1c] text-[#fcfcfc] rounded-xl px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-[#333] active:scale-[0.98] shadow-sm"
-                    >
-                      Browse Studio
-                    </Link>
-                  </div>
+
+                  {ordersLoading && (
+                    <div className="border border-[#eaeaea] bg-white rounded-2xl p-16 text-center flex flex-col items-center justify-center h-[350px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                      <p className="text-sm font-light text-[#666]">Loading your orders...</p>
+                    </div>
+                  )}
+
+                  {!ordersLoading && ordersError && (
+                    <div className="border border-[#eaeaea] bg-white rounded-2xl p-16 text-center flex flex-col items-center justify-center h-[350px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                      <p className="text-sm font-light text-[#666]">We couldn't load your orders right now. Please try again shortly.</p>
+                    </div>
+                  )}
+
+                  {!ordersLoading && !ordersError && orders.length === 0 && (
+                    <div className="border border-[#eaeaea] bg-white rounded-2xl p-16 text-center flex flex-col items-center justify-center h-[350px] shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                      <ShoppingBag size={28} className="text-[#aaa] mb-6" />
+                      <p className="text-sm font-light text-[#666] mb-8">Your collection is currently empty.</p>
+                      <Link
+                        to="/collections"
+                        className="inline-flex items-center justify-center bg-[#1c1c1c] text-[#fcfcfc] rounded-xl px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-[#333] active:scale-[0.98] shadow-sm"
+                      >
+                        Browse Studio
+                      </Link>
+                    </div>
+                  )}
+
+                  {!ordersLoading && !ordersError && orders.length > 0 && (
+                    <div className="space-y-5">
+                      {orders.map((order) => (
+                        <div key={order.id} className="border border-[#eaeaea] bg-white rounded-2xl p-6 md:p-7 shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
+                          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                              <p className="text-[10px] uppercase tracking-[0.2em] text-[#888]">Reference</p>
+                              <p className="font-mono text-base text-[#111]">{order.id.slice(0, 8).toUpperCase()}</p>
+                            </div>
+                            <div className="flex gap-2">
+                              <span className="border border-[#e5e5e5] px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] text-[#555]">
+                                {ORDER_STATUS_LABELS[order.status] ?? order.status}
+                              </span>
+                              <span className="border border-[#e5e5e5] px-3 py-1 rounded-full text-[10px] uppercase tracking-[0.18em] text-[#555]">
+                                {order.payment_status ? `Payment: ${order.payment_status}` : "Payment: pending"}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            {order.items.map((item, index) => (
+                              <div key={`${item.product_id}-${index}`} className="flex items-center gap-3 border-b border-[#f0f0f0] pb-2">
+                                {item.image_url && (
+                                  <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-md bg-[#f5f5f5]">
+                                    <img src={item.image_url} alt={item.product_name} className="h-full w-full object-cover" onError={handleImageError} />
+                                  </div>
+                                )}
+                                <div className="min-w-0 flex-1">
+                                  <p className="truncate text-sm text-[#333]">{item.product_name}</p>
+                                  <p className="text-xs text-[#888]">Qty {item.quantity}</p>
+                                </div>
+                                <p className="text-sm text-[#333]">{formatINR(item.unit_price * item.quantity)}</p>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-3 flex items-center justify-between text-sm">
+                            <span className="text-[#888]">
+                              {new Date(order.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "long", year: "numeric" })}
+                            </span>
+                            <span className="font-serif text-lg text-[#111]">{formatINR(order.total_amount)}</span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </motion.div>
               )}
 

@@ -15,6 +15,30 @@ export interface CreatedOrder {
   currency: string;
 }
 
+export interface CustomerOrderItem {
+  order_id: string;
+  product_id: string;
+  product_name: string;
+  unit_price: number;
+  quantity: number;
+  material: string | null;
+  image_url: string | null;
+}
+
+export interface CustomerOrder {
+  id: string;
+  full_name: string | null;
+  email: string | null;
+  notes: string | null;
+  status: string;
+  payment_status: string | null;
+  payment_provider: string | null;
+  currency: string;
+  total_amount: number;
+  created_at: string;
+  items: CustomerOrderItem[];
+}
+
 export const createOrder = async (input: CreateOrderInput): Promise<CreatedOrder> => {
   const supabase = getSupabaseClient();
 
@@ -56,4 +80,19 @@ export const createOrder = async (input: CreateOrderInput): Promise<CreatedOrder
     totalAmount,
     currency,
   };
+};
+
+// Looks up orders by the customer's email (guest checkouts never create an
+// account, so email is the only stable handle we have for them). Pass
+// orderId to narrow to a single order — used right after checkout, where we
+// already know exactly which order we're confirming. Omit it to list a
+// customer's full order history — used on the Track Order page and the
+// signed-in Account "Order History" tab (with the account's own email).
+export const fetchCustomerOrders = async (input: { email: string; orderId?: string }): Promise<CustomerOrder[]> => {
+  const { data, error } = await getSupabaseClient().functions.invoke("customer-orders", {
+    body: { email: input.email, orderId: input.orderId },
+  });
+
+  if (error) throw error;
+  return ((data as { orders?: CustomerOrder[] } | null)?.orders) ?? [];
 };

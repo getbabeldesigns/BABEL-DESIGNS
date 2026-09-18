@@ -1,7 +1,7 @@
 ﻿import { useEffect, useMemo } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Truck, RotateCcw, ShieldCheck } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useCart } from '@/context/CartContext';
 import AnimatedSection from '@/components/AnimatedSection';
@@ -159,7 +159,32 @@ const ProductDetail = () => {
                 Add to Cart
               </button>
 
-              <p className="font-sans text-xs text-muted-foreground text-center mt-4">Made to order - 8-12 weeks delivery</p>
+              <div className="mt-8 grid grid-cols-1 gap-4 border-t border-border pt-6 sm:grid-cols-3">
+                <div className="flex flex-col items-start gap-2">
+                  <Truck size={18} className="text-foreground" />
+                  <p className="font-sans text-xs text-foreground">Made to order</p>
+                  <p className="font-sans text-xs text-muted-foreground leading-relaxed">
+                    8-12 weeks production, plus delivery. Check your pincode at checkout for an exact estimate.
+                  </p>
+                </div>
+                <div className="flex flex-col items-start gap-2">
+                  <RotateCcw size={18} className="text-foreground" />
+                  <p className="font-sans text-xs text-foreground">7-day returns</p>
+                  <p className="font-sans text-xs text-muted-foreground leading-relaxed">
+                    On ready-stock pieces, unused and in original packaging.{' '}
+                    <Link to="/return-policy" className="underline underline-offset-2 hover:text-foreground">
+                      Full policy
+                    </Link>
+                  </p>
+                </div>
+                <div className="flex flex-col items-start gap-2">
+                  <ShieldCheck size={18} className="text-foreground" />
+                  <p className="font-sans text-xs text-foreground">Secure payment</p>
+                  <p className="font-sans text-xs text-muted-foreground leading-relaxed">
+                    Payments are processed securely through Razorpay.
+                  </p>
+                </div>
+              </div>
             </motion.div>
           </div>
         </div>

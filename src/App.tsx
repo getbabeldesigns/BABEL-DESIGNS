@@ -27,6 +27,7 @@ const Checkout = lazy(() => import("./pages/Checkout"));
 const Auth = lazy(() => import("./pages/Auth"));
 const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
+const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const Admin = lazy(() => import("./pages/Admin"));
 const Policies = lazy(() => import("./pages/Policies"));
 const ReturnPolicy = lazy(() => import("./pages/ReturnPolicy"));
@@ -224,6 +225,15 @@ const routeSeo = (pathname: string) => {
     };
   }
 
+  if (pathname === "/track-order") {
+    return {
+      title: "Track Order | Babel Designs",
+      description: "Look up the status of your Babel Designs order using your email and order reference.",
+      canonicalPath: pathname,
+      noIndex: true,
+    };
+  }
+
   if (pathname === "/admin") {
     return {
       title: "Admin Dashboard | Babel Designs",
@@ -385,6 +395,7 @@ const AppContent = () => {
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<Account />} />
                 <Route path="/order/success/:orderId" element={<OrderSuccess />} />
+                <Route path="/track-order" element={<TrackOrder />} />
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/policies" element={<Policies />} />
                 <Route path="/return-policy" element={<ReturnPolicy />} />

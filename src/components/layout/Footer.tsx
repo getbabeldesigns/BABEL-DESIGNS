@@ -6,6 +6,7 @@ const navLinks = [
   { path: '/lookbook', label: 'Lookbook' },
   { path: '/materials', label: 'Material Explorer' },
   { path: '/style-quiz', label: 'Style Quiz' },
+  { path: '/track-order', label: 'Track Order' },
 ];
 
 const aboutLinks = [
