@@ -39,6 +39,7 @@ create table if not exists public.consultancy_requests (
   timeline text,
   preferred_date date,
   preferred_slot text,
+  consultation_format text,
   message text,
   created_at timestamptz not null default now()
 );
@@ -48,6 +49,7 @@ create table if not exists public.consultancy_requests (
 -- against an existing database backfills the columns instead of failing.
 alter table public.consultancy_requests add column if not exists preferred_date date;
 alter table public.consultancy_requests add column if not exists preferred_slot text;
+alter table public.consultancy_requests add column if not exists consultation_format text;
 
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),

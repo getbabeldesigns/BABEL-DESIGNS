@@ -8,6 +8,7 @@ export interface ConsultancyRequestInput {
   timeline?: string;
   preferredDate?: string;
   preferredSlot?: string;
+  consultationFormat?: string;
   message?: string;
 }
 
@@ -21,6 +22,7 @@ const sendConsultancyConfirmationEmail = async (input: ConsultancyRequestInput) 
       timeline: input.timeline ?? "",
       preferredDate: input.preferredDate ?? "",
       preferredSlot: input.preferredSlot ?? "",
+      consultationFormat: input.consultationFormat ?? "",
       message: input.message ?? "",
     },
   });
@@ -39,6 +41,7 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
     timeline: input.timeline || null,
     preferred_date: input.preferredDate || null,
     preferred_slot: input.preferredSlot || null,
+    consultation_format: input.consultationFormat || null,
     message: input.message || null,
   });
 
@@ -57,6 +60,7 @@ export const createConsultancyRequest = async (input: ConsultancyRequestInput) =
     timeline: input.timeline,
     preferredDate: input.preferredDate,
     preferredSlot: input.preferredSlot,
+    consultationFormat: input.consultationFormat,
     message: input.message,
   });
 };

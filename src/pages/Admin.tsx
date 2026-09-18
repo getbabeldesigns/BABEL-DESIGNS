@@ -406,6 +406,9 @@ const Admin = () => {
                         Requested slot: {item.preferred_date ?? "-"} {item.preferred_slot ?? ""}
                       </p>
                     )}
+                    {item.consultation_format && (
+                      <p className="text-sm text-muted-foreground">Format: {item.consultation_format}</p>
+                    )}
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
                   </div>
                 ))}

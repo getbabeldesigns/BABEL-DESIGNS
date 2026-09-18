@@ -94,7 +94,7 @@ Deno.serve(async (request: Request) => {
         .limit(20),
       supabase
         .from("consultancy_requests")
-        .select("id,name,email,project_type,preferred_date,preferred_slot,created_at")
+        .select("id,name,email,project_type,preferred_date,preferred_slot,consultation_format,created_at")
         .order("created_at", { ascending: false })
         .limit(20),
       supabase

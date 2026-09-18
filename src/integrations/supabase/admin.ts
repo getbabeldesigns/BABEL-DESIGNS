@@ -16,6 +16,7 @@ export interface AdminConsultancy {
   project_type: string | null;
   preferred_date: string | null;
   preferred_slot: string | null;
+  consultation_format: string | null;
   created_at: string;
 }
 

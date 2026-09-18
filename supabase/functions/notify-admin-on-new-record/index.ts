@@ -20,12 +20,12 @@ const escapeHtml = (value: string) =>
     .replaceAll("'", "&#39;");
 
 const formatValue = (value: unknown) => {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") return "ï¿½";
   return String(value);
 };
 
 const formatMoney = (value: unknown, currency?: unknown) => {
-  if (value === null || value === undefined || value === "") return "—";
+  if (value === null || value === undefined || value === "") return "ï¿½";
   const parsed = typeof value === "number" ? value : Number(value);
   if (Number.isNaN(parsed)) return formatValue(value);
   const label = currency ? String(currency) : "";
@@ -145,6 +145,9 @@ Deno.serve(async (request: Request) => {
         ["Phone", record.phone],
         ["Project type", record.project_type],
         ["Timeline", record.timeline],
+        ["Preferred date", record.preferred_date],
+        ["Preferred slot", record.preferred_slot],
+        ["Consultation format", record.consultation_format],
         ["Message", record.message],
         ["Submitted at", record.created_at],
         ["Request ID", record.id],
@@ -163,6 +166,9 @@ Deno.serve(async (request: Request) => {
         `Phone: ${formatValue(record.phone)}\n` +
         `Project type: ${formatValue(record.project_type)}\n` +
         `Timeline: ${formatValue(record.timeline)}\n` +
+        `Preferred date: ${formatValue(record.preferred_date)}\n` +
+        `Preferred slot: ${formatValue(record.preferred_slot)}\n` +
+        `Consultation format: ${formatValue(record.consultation_format)}\n` +
         `Message: ${formatValue(record.message)}\n` +
         `Submitted at: ${formatValue(record.created_at)}\n` +
         `Request ID: ${formatValue(record.id)}\n`;
@@ -223,7 +229,7 @@ Deno.serve(async (request: Request) => {
         `Payment provider: ${formatValue(record.payment_provider)}\n` +
         `Total: ${formatMoney(record.total_amount, record.currency)}\n` +
         `Created at: ${formatValue(record.created_at)}\n` +
-        `Items: ${(items ?? []).map((item) => `${formatValue(item.product_name)} x${formatValue(item.quantity)}`).join(", ") || "—"}\n`;
+        `Items: ${(items ?? []).map((item) => `${formatValue(item.product_name)} x${formatValue(item.quantity)}`).join(", ") || "ï¿½"}\n`;
     }
 
     if (!htmlBody || !textBody) {

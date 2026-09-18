@@ -16,6 +16,7 @@ interface ConsultancyConfirmationBody {
   timeline?: string;
   preferredDate?: string;
   preferredSlot?: string;
+  consultationFormat?: string;
   message?: string;
 }
 
@@ -49,6 +50,7 @@ Deno.serve(async (request: Request) => {
     const timeline = body.timeline?.trim() || "Not provided";
     const preferredDate = body.preferredDate?.trim() || "Not provided";
     const preferredSlot = body.preferredSlot?.trim() || "Not provided";
+    const consultationFormat = body.consultationFormat?.trim() || "Not provided";
     const message = body.message?.trim() || "Not provided";
 
     if (!email || !isValidEmail(email)) {
@@ -65,6 +67,7 @@ Deno.serve(async (request: Request) => {
     const safeTimeline = escapeHtml(timeline);
     const safePreferredDate = escapeHtml(preferredDate);
     const safePreferredSlot = escapeHtml(preferredSlot);
+    const safeConsultationFormat = escapeHtml(consultationFormat);
     const safeMessage = escapeHtml(message);
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
@@ -138,6 +141,7 @@ Deno.serve(async (request: Request) => {
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Timeline</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeTimeline}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Preferred Date</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePreferredDate}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Preferred Slot</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safePreferredSlot}</td></tr>
+              <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Consultation Format</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeConsultationFormat}</td></tr>
               <tr><td style="padding: 6px 10px; font-weight: 600; border: 1px solid #e6e6e6;">Message</td><td style="padding: 6px 10px; border: 1px solid #e6e6e6;">${safeMessage}</td></tr>
             </table>
           </div>
@@ -151,6 +155,7 @@ Deno.serve(async (request: Request) => {
           `Timeline: ${timeline}\n` +
           `Preferred Date: ${preferredDate}\n` +
           `Preferred Slot: ${preferredSlot}\n` +
+          `Consultation Format: ${consultationFormat}\n` +
           `Message: ${message}\n`,
       }),
     });

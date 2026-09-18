@@ -1,18 +1,58 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Check } from 'lucide-react';
+import { Check, Building2, Video, MapPin } from 'lucide-react';
 import AnimatedSection from '@/components/AnimatedSection';
-import { staggerContainerVariants, staggerItemVariants } from '@/lib/animations';
+import { staggerContainerVariants, staggerItemVariants, imageZoomInVariants } from '@/lib/animations';
 import { toast } from 'sonner';
 import { createConsultancyRequest } from '@/integrations/supabase/consultancy';
 import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { trackEvent } from '@/lib/analytics';
+import consultancyHeroImg from '@/assets/stillness-collection.jpg';
+
+const projectTypeOptions = [
+  'Private Residence',
+  'Full Residence',
+  'Single Room',
+  'Hospitality Project',
+  'Commercial / Office',
+  'Renovation',
+  'New Build',
+  'Yacht / Villa',
+  'Collection Piece',
+  'Other',
+];
+
+const consultationFormats = [
+  {
+    value: 'In-Studio Visit',
+    label: 'In-Studio Visit',
+    description: 'Meet our design team at the Babel Designs atelier.',
+    icon: Building2,
+  },
+  {
+    value: 'Virtual Consultation',
+    label: 'Virtual Consultation',
+    description: 'A video call from wherever you are, at your convenience.',
+    icon: Video,
+  },
+  {
+    value: 'On-Site Visit',
+    label: 'On-Site Visit',
+    description: "Our team comes to you to experience the space firsthand.",
+    icon: MapPin,
+  },
+];
+
+const consultationSlots = [
+  '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM',
+  '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM',
+];
 
 const Consultancy = () => {
-  const consultationSlots = ['10:00 AM', '12:00 PM', '03:00 PM', '05:00 PM'];
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [selectedSlot, setSelectedSlot] = useState('');
   const [bookingDate, setBookingDate] = useState('');
+  const [selectedFormat, setSelectedFormat] = useState('');
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -35,6 +75,7 @@ const Consultancy = () => {
         ...formData,
         preferredDate: bookingDate || '',
         preferredSlot: selectedSlot || '',
+        consultationFormat: selectedFormat || '',
       });
       trackEvent({ event: 'consultancy_submit_success', project_type: formData.projectType || 'unknown' });
       toast.success('Thank you for your inquiry. We will be in touch within 48 hours.');
@@ -48,6 +89,7 @@ const Consultancy = () => {
       });
       setBookingDate('');
       setSelectedSlot('');
+      setSelectedFormat('');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Failed to submit inquiry';
       trackEvent({ event: 'consultancy_submit_failed' });
@@ -83,25 +125,43 @@ const Consultancy = () => {
       {/* Header */}
       <section className="section-padding section-transition pt-0 pb-12">
         <div className="container-editorial">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="max-w-3xl"
-          >
-            <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
-              Consultancy
-            </p>
-            <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6 leading-tight">
-              Begin your<br />
-              design journey.
-            </h1>
-            <p className="font-sans text-muted-foreground leading-relaxed max-w-2xl">
-              Our consultancy service offers a direct dialogue with our design team. 
-              Whether you're furnishing a single room or an entire residence, we guide 
-              you toward pieces that will become part of your life's story.
-            </p>
-          </motion.div>
+          <div className="grid grid-cols-1 gap-12 lg:grid-cols-12 lg:items-center">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="lg:col-span-7"
+            >
+              <p className="font-sans text-xs tracking-[0.3em] uppercase text-muted-foreground mb-4">
+                Consultancy
+              </p>
+              <h1 className="font-serif text-4xl md:text-5xl lg:text-6xl font-light text-foreground mb-6 leading-tight">
+                Begin your<br />
+                design journey.
+              </h1>
+              <p className="font-sans text-muted-foreground leading-relaxed max-w-2xl">
+                Our consultancy service offers a direct dialogue with our design team.
+                Whether you're furnishing a single room or an entire residence, we guide
+                you toward pieces that will become part of your life's story.
+              </p>
+            </motion.div>
+            <motion.div
+              className="relative overflow-hidden lg:col-span-5"
+              variants={imageZoomInVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <div className="relative aspect-[4/5] overflow-hidden border border-border/70">
+                <img
+                  src={consultancyHeroImg}
+                  alt="A sunlit studio setting where Babel Designs consultations take place"
+                  className="h-full w-full object-cover"
+                  loading="eager"
+                />
+                <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,hsl(var(--foreground)/0.16)_100%)]" />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
@@ -245,6 +305,9 @@ const Consultancy = () => {
                   <p className="mt-1 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
                     {selectedSlot || 'Slot not selected'}
                   </p>
+                  <p className="mt-3 font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                    {selectedFormat || 'Format not selected'}
+                  </p>
                 </div>
               </div>
             </aside>
@@ -290,7 +353,7 @@ const Consultancy = () => {
                         label: 'Project Type',
                         name: 'projectType',
                         type: 'select',
-                        options: ['Private Residence', 'Hospitality', 'Commercial', 'Collection Piece'],
+                        options: projectTypeOptions,
                       },
                     ].map((field) => (
                       <div key={field.name}>
@@ -366,7 +429,7 @@ const Consultancy = () => {
                     <label className="mb-3 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
                       Preferred Slot
                     </label>
-                    <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+                    <div className="grid grid-cols-3 gap-3">
                       {consultationSlots.map((slot) => {
                         const active = selectedSlot === slot;
                         return (
@@ -377,6 +440,32 @@ const Consultancy = () => {
                             className={`border px-3 py-3 font-sans text-[11px] uppercase tracking-[0.2em] transition-colors ${active ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/40'}`}
                           >
                             {slot}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="mb-3 block font-sans text-xs uppercase tracking-[0.22em] text-muted-foreground">
+                      Consultation Format
+                    </label>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                      {consultationFormats.map((format) => {
+                        const active = selectedFormat === format.value;
+                        const Icon = format.icon;
+                        return (
+                          <button
+                            key={format.value}
+                            type="button"
+                            onClick={() => setSelectedFormat(format.value)}
+                            className={`border p-4 text-left transition-colors ${active ? 'border-foreground bg-foreground text-background' : 'border-border bg-background hover:border-foreground/40'}`}
+                          >
+                            <Icon size={18} className="mb-3" />
+                            <p className="font-sans text-xs uppercase tracking-[0.2em]">{format.label}</p>
+                            <p className={`mt-2 font-sans text-xs leading-relaxed ${active ? 'text-background/75' : 'text-muted-foreground'}`}>
+                              {format.description}
+                            </p>
                           </button>
                         );
                       })}
