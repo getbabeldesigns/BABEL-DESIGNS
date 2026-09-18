@@ -76,6 +76,7 @@ Deno.serve(async (request: Request) => {
     const [
       ordersResult,
       consultancyResult,
+      contactMessagesResult,
       subscribersResult,
       collectionsResult,
       productsResult,
@@ -85,6 +86,7 @@ Deno.serve(async (request: Request) => {
       totalOrdersResult,
       totalPaidOrdersResult,
       totalConsultancyResult,
+      totalContactMessagesResult,
       totalSubscribersResult,
     ] = await Promise.all([
       supabase
@@ -95,6 +97,11 @@ Deno.serve(async (request: Request) => {
       supabase
         .from("consultancy_requests")
         .select("id,name,email,project_type,preferred_date,preferred_slot,consultation_format,created_at")
+        .order("created_at", { ascending: false })
+        .limit(20),
+      supabase
+        .from("contact_messages")
+        .select("id,name,email,subject,message,created_at")
         .order("created_at", { ascending: false })
         .limit(20),
       supabase
@@ -116,12 +123,14 @@ Deno.serve(async (request: Request) => {
         .select("id", { count: "exact", head: true })
         .eq("payment_status", "paid"),
       supabase.from("consultancy_requests").select("id", { count: "exact", head: true }),
+      supabase.from("contact_messages").select("id", { count: "exact", head: true }),
       supabase.from("studio_dispatch_subscribers").select("id", { count: "exact", head: true }),
     ]);
 
     for (const [label, result] of [
       ["orders", ordersResult],
       ["consultancy_requests", consultancyResult],
+      ["contact_messages", contactMessagesResult],
       ["studio_dispatch_subscribers", subscribersResult],
       ["collections", collectionsResult],
       ["products", productsResult],
@@ -133,6 +142,7 @@ Deno.serve(async (request: Request) => {
 
     const orders = ordersResult.data ?? [];
     const consultancyRequests = consultancyResult.data ?? [];
+    const contactMessages = contactMessagesResult.data ?? [];
     const subscribers = subscribersResult.data ?? [];
     const collections = collectionsResult.data ?? [];
     const products = productsResult.data ?? [];
@@ -141,6 +151,7 @@ Deno.serve(async (request: Request) => {
       orders: totalOrdersResult.count ?? 0,
       paidOrders: totalPaidOrdersResult.count ?? 0,
       consultancyRequests: totalConsultancyResult.count ?? 0,
+      contactMessages: totalContactMessagesResult.count ?? 0,
       subscribers: totalSubscribersResult.count ?? 0,
     };
 
@@ -149,6 +160,7 @@ Deno.serve(async (request: Request) => {
         metrics,
         orders,
         consultancyRequests,
+        contactMessages,
         subscribers,
         collections,
         products,

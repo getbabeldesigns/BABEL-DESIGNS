@@ -13,9 +13,7 @@ const aboutLinks = [
   { path: '/philosophy', label: 'Philosophy' },
   { path: '/blogs', label: 'Journal' },
   { path: '/consultancy', label: 'Consultancy' },
-  // No dedicated /contact page exists yet; the consultancy form is the site's
-  // actual "get in touch" path, so point the Contact link there instead of a 404.
-  { path: '/consultancy', label: 'Contact' },
+  { path: '/contact', label: 'Contact' },
 ];
 
 const legalLinks = [

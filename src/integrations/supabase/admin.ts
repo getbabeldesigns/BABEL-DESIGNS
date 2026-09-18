@@ -20,6 +20,15 @@ export interface AdminConsultancy {
   created_at: string;
 }
 
+export interface AdminContactMessage {
+  id: string;
+  name: string;
+  email: string;
+  subject: string | null;
+  message: string;
+  created_at: string;
+}
+
 export interface AdminSubscriber {
   id: string;
   email: string;
@@ -48,10 +57,12 @@ export interface AdminDashboardResponse {
     orders: number;
     paidOrders: number;
     consultancyRequests: number;
+    contactMessages: number;
     subscribers: number;
   };
   orders: AdminOrder[];
   consultancyRequests: AdminConsultancy[];
+  contactMessages: AdminContactMessage[];
   subscribers: AdminSubscriber[];
   collections: AdminCollection[];
   products: AdminProduct[];

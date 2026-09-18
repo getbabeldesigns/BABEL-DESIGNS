@@ -51,6 +51,19 @@ alter table public.consultancy_requests add column if not exists preferred_date 
 alter table public.consultancy_requests add column if not exists preferred_slot text;
 alter table public.consultancy_requests add column if not exists consultation_format text;
 
+-- General "get in touch" messages (a real Contact page) are kept separate
+-- from consultancy_requests: a quick question is a different intent from a
+-- full design-brief booking, and mixing them made the consultancy admin
+-- view noisy with one-off questions that don't need a slot/format/timeline.
+create table if not exists public.contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  subject text,
+  message text not null,
+  created_at timestamptz not null default now()
+);
+
 create table if not exists public.orders (
   id uuid primary key default gen_random_uuid(),
   full_name text,
@@ -119,12 +132,14 @@ create index if not exists idx_products_active on public.products(active);
 create index if not exists idx_orders_created_at on public.orders(created_at desc);
 create index if not exists idx_orders_razorpay_order_id on public.orders(razorpay_order_id);
 create index if not exists idx_consultancy_created_at on public.consultancy_requests(created_at desc);
+create index if not exists idx_contact_messages_created_at on public.contact_messages(created_at desc);
 create index if not exists idx_studio_dispatch_email on public.studio_dispatch_subscribers(email);
 create index if not exists idx_user_carts_updated_at on public.user_carts(updated_at desc);
 
 alter table public.collections enable row level security;
 alter table public.products enable row level security;
 alter table public.consultancy_requests enable row level security;
+alter table public.contact_messages enable row level security;
 alter table public.orders enable row level security;
 alter table public.order_items enable row level security;
 alter table public.studio_dispatch_subscribers enable row level security;
@@ -143,6 +158,11 @@ create policy "Public read active products"
 drop policy if exists "Public insert consultancy" on public.consultancy_requests;
 create policy "Public insert consultancy"
   on public.consultancy_requests for insert
+  with check (true);
+
+drop policy if exists "Public insert contact messages" on public.contact_messages;
+create policy "Public insert contact messages"
+  on public.contact_messages for insert
   with check (true);
 
 drop policy if exists "Public insert orders" on public.orders;

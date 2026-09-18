@@ -223,10 +223,11 @@ const Admin = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-12">
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.orders}</p></div>
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Paid Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.paidOrders}</p></div>
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Consultancy</p><p className="text-3xl font-serif mt-2">{data.metrics.consultancyRequests}</p></div>
+            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Contact Messages</p><p className="text-3xl font-serif mt-2">{data.metrics.contactMessages}</p></div>
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Subscribers</p><p className="text-3xl font-serif mt-2">{data.metrics.subscribers}</p></div>
           </div>
 
@@ -392,7 +393,7 @@ const Admin = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div>
               <h2 className="font-serif text-2xl mb-4">Recent Consultancy Requests</h2>
               <div className="space-y-3">
@@ -409,6 +410,21 @@ const Admin = () => {
                     {item.consultation_format && (
                       <p className="text-sm text-muted-foreground">Format: {item.consultation_format}</p>
                     )}
+                    <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h2 className="font-serif text-2xl mb-4">Recent Contact Messages</h2>
+              <div className="space-y-3">
+                {(data.contactMessages ?? []).map((item) => (
+                  <div key={item.id} className="border border-border p-4 bg-card">
+                    <p className="font-serif text-lg">{item.name}</p>
+                    <p className="text-sm text-muted-foreground">{item.email}</p>
+                    <p className="text-sm text-muted-foreground">{item.subject ?? "General question"}</p>
+                    <p className="text-sm text-foreground mt-2 line-clamp-3">{item.message}</p>
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
                   </div>
                 ))}

@@ -35,6 +35,7 @@ const Navbar = () => {
     { path: '/collections', label: 'Collections' },
     { path: '/philosophy', label: 'Philosophy' },
     { path: '/consultancy', label: 'Consultancy' },
+    { path: '/contact', label: 'Contact' },
   ];
 
   useEffect(() => {

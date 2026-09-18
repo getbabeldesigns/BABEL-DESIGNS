@@ -19,6 +19,7 @@ const CollectionDetail = lazy(() => import("./pages/CollectionDetail"));
 const ProductDetail = lazy(() => import("./pages/ProductDetail"));
 const Philosophy = lazy(() => import("./pages/Philosophy"));
 const Consultancy = lazy(() => import("./pages/Consultancy"));
+const Contact = lazy(() => import("./pages/Contact"));
 const Lookbook = lazy(() => import("./pages/Lookbook"));
 const MaterialExplorer = lazy(() => import("./pages/MaterialExplorer"));
 const StyleQuiz = lazy(() => import("./pages/StyleQuiz"));
@@ -96,6 +97,14 @@ const routeSeo = (pathname: string) => {
     return {
       title: "Consultancy | Babel Designs",
       description: "Book a design consultancy to create bespoke furniture solutions for your space.",
+      canonicalPath: pathname,
+    };
+  }
+
+  if (pathname === "/contact") {
+    return {
+      title: "Contact | Babel Designs",
+      description: "Get in touch with Babel Designs for questions about orders, pieces, or anything else.",
       canonicalPath: pathname,
     };
   }
@@ -387,6 +396,7 @@ const AppContent = () => {
                 <Route path="/product/:id" element={<ProductDetail />} />
                 <Route path="/philosophy" element={<Philosophy />} />
                 <Route path="/consultancy" element={<Consultancy />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="/lookbook" element={<Lookbook />} />
                 <Route path="/materials" element={<MaterialExplorer />} />
                 <Route path="/style-quiz" element={<StyleQuiz />} />
