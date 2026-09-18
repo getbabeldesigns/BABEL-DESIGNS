@@ -48,7 +48,7 @@ const ProductDetail = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-40 text-center">
+      <div className="min-h-screen pt-48 text-center">
         <h1 className="font-serif text-2xl">Loading product...</h1>
       </div>
     );
@@ -56,7 +56,7 @@ const ProductDetail = () => {
 
   if (isError || !product) {
     return (
-      <div className="min-h-screen pt-40 text-center">
+      <div className="min-h-screen pt-48 text-center">
         <h1 className="font-serif text-2xl">Product not found</h1>
         <Link to="/collections" className="text-muted-foreground hover:text-foreground mt-4 inline-block">
           Return to Collections
@@ -68,7 +68,7 @@ const ProductDetail = () => {
   const galleryImages = product.images?.length ? product.images : [product.image, product.image, product.image];
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <motion.div

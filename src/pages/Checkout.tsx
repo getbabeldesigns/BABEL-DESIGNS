@@ -185,7 +185,7 @@ const Checkout = () => {
 
   if (!items.length) {
     return (
-      <div className="min-h-screen bg-background pt-40 md:pt-52">
+      <div className="min-h-screen bg-background pt-48 md:pt-52">
         <section className="section-padding">
           <div className="container-editorial text-center">
             <h1 className="font-serif text-4xl font-light">Your cart is empty</h1>
@@ -199,7 +199,7 @@ const Checkout = () => {
   }
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background pt-40 md:pt-52">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-48 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <Link to="/cart" className="mb-8 inline-flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-muted-foreground hover:text-foreground">

@@ -106,7 +106,7 @@ const Account = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-[#faf9f8] pt-32 pb-24">
+      <div className="min-h-screen bg-[#faf9f8] pt-48 md:pt-52 pb-24">
         <div className="mx-auto max-w-6xl px-6">
           <div className="h-10 w-48 mb-12 animate-pulse bg-[#eaeaea] rounded" />
           <div className="flex flex-col md:flex-row gap-12">
@@ -140,7 +140,7 @@ const Account = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf9f8] text-[#333] pt-32 pb-24 font-sans selection:bg-[#111] selection:text-white">
+    <div className="min-h-screen bg-[#faf9f8] text-[#333] pt-48 md:pt-52 pb-24 font-sans selection:bg-[#111] selection:text-white">
       <div className="mx-auto max-w-[1100px] px-6 md:px-12">
         
         <motion.div 

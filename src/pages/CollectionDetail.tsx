@@ -29,7 +29,7 @@ const CollectionDetail = () => {
 
   if (isCollectionLoading || isProductsLoading) {
     return (
-      <div className="min-h-screen pt-40 text-center">
+      <div className="min-h-screen pt-48 text-center">
         <h1 className="font-serif text-2xl">Loading collection...</h1>
       </div>
     );
@@ -37,7 +37,7 @@ const CollectionDetail = () => {
 
   if (isCollectionError || !collection) {
     return (
-      <div className="min-h-screen pt-40 text-center">
+      <div className="min-h-screen pt-48 text-center">
         <h1 className="font-serif text-2xl">Collection not found</h1>
         <Link to="/collections" className="text-muted-foreground hover:text-foreground mt-4 inline-block">
           Return to Collections
@@ -61,7 +61,7 @@ const CollectionDetail = () => {
         : 'from-neutral-300/45 via-stone-200/20 to-transparent';
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding pt-0 pb-12">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

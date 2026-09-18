@@ -35,7 +35,7 @@
   ];
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-background pt-40 md:pt-52">
+    <div className="relative min-h-screen overflow-hidden bg-background pt-48 md:pt-52">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute -left-8 top-16 h-52 w-52 rounded-full bg-secondary/45 blur-3xl" />
         <div className="absolute right-0 top-56 h-64 w-64 rounded-full bg-accent/35 blur-3xl" />

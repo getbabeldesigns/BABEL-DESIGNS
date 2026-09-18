@@ -37,7 +37,7 @@ const Lookbook = () => {
   });
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }} className="max-w-3xl">

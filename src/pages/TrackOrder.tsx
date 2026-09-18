@@ -44,7 +44,7 @@ const TrackOrder = () => {
   };
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding section-transition pt-0 pb-12">
         <div className="container-editorial max-w-2xl">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>

@@ -121,7 +121,7 @@ const Consultancy = () => {
   ];
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       {/* Header */}
       <section className="section-padding section-transition pt-0 pb-12">
         <div className="container-editorial">

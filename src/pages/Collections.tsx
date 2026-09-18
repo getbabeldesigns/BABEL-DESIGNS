@@ -151,7 +151,7 @@ const Collections = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen pt-40 md:pt-52">
+      <div className="min-h-screen pt-48 md:pt-52">
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial">
             <div className="mb-12"><div className="mb-4 h-4 w-32 animate-pulse bg-muted" /><div className="h-12 w-80 animate-pulse bg-muted" /></div>
@@ -168,7 +168,7 @@ const Collections = () => {
 
   if (isError) {
     return (
-      <div className="min-h-screen pt-40 md:pt-52">
+      <div className="min-h-screen pt-48 md:pt-52">
         <section className="section-padding pt-0 section-transition">
           <div className="container-editorial text-center">
             <h1 className="font-serif text-3xl text-foreground mb-4">Unable to load collections</h1>
@@ -180,7 +180,7 @@ const Collections = () => {
   }
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding pt-0 section-transition">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }} className="text-center mb-12">

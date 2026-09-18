@@ -146,7 +146,7 @@ const StyleQuiz = () => {
   };
 
   return (
-    <div className="min-h-screen pt-40 md:pt-52">
+    <div className="min-h-screen pt-48 md:pt-52">
       <section className="section-padding pt-0">
         <div className="container-editorial">
           <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="mx-auto max-w-2xl border border-border/70 bg-card/70 p-8 md:p-10">
