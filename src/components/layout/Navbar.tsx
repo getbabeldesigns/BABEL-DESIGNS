@@ -332,13 +332,13 @@ const Navbar = () => {
         </div>
 
         {/* Mobile Menu */}
-        <div className="lg:hidden border-t border-border px-4 py-3 sm:px-6 md:px-8 md:py-3.5">
-          <div className="grid w-full grid-cols-2 gap-2 sm:grid-cols-4 md:gap-3">
+        <div className="lg:hidden border-t border-border px-2 py-3 sm:px-6 md:px-8 md:py-3.5">
+          <div className="grid w-full grid-cols-4 gap-1 sm:gap-2 md:gap-3">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex min-h-9 items-center justify-center border px-2 text-center font-sans text-[11px] tracking-[0.12em] uppercase transition-colors md:min-h-10 md:text-[12px] md:tracking-[0.14em] ${
+                className={`flex min-h-9 items-center justify-center border px-0.5 text-center font-sans text-[8.5px] tracking-[0.04em] uppercase transition-colors sm:px-2 sm:text-[11px] sm:tracking-[0.12em] md:min-h-10 md:text-[12px] md:tracking-[0.14em] ${
                   isActive(link.path)
                     ? 'border-foreground/35 bg-foreground text-background'
                     : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'
