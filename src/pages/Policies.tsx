@@ -1,17 +1,10 @@
 ﻿import { Link } from 'react-router-dom';
 
 const Policies = () => {
+  // Return/Refund entries removed while the business is consultancy-only
+  // (product sales paused) — those pages now redirect home, which would be a
+  // dead link from this hub. Re-add them here when relevant again.
   const policyCards = [
-    {
-      title: 'Return Policy',
-      copy: 'Eligibility, exclusions, and return request flow for physical products.',
-      link: '/return-policy',
-    },
-    {
-      title: 'Refund Policy',
-      copy: 'Refund timelines, deductions, and payment reversal conditions.',
-      link: '/refund-policy',
-    },
     {
       title: 'Privacy Policy',
       copy: 'How data is collected, protected, and shared with partners.',
@@ -36,7 +29,7 @@ const Policies = () => {
           <p className="mb-4 text-xs uppercase tracking-[0.3em] text-muted-foreground">Policies</p>
           <h1 className="mb-4 font-serif text-4xl font-light text-foreground md:text-5xl">Legal center</h1>
           <p className="max-w-2xl font-sans text-sm text-muted-foreground md:text-base">
-            Access all legal policies required for order placement and payment processing.
+            Access Babel Designs' privacy and disclaimer policies.
           </p>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">

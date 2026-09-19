@@ -59,11 +59,11 @@ const NotFound = () => {
               Back Home
             </Link>
             <Link
-              to="/collections"
+              to="/consultancy"
               className="inline-flex items-center gap-2 border border-foreground/35 px-6 py-3 font-sans text-xs uppercase tracking-[0.2em] text-foreground transition-colors hover:bg-foreground hover:text-background"
             >
               <Compass size={14} />
-              Browse Collections
+              Book a Consultation
             </Link>
           </div>
 

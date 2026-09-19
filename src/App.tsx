@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import { CartProvider } from "@/context/CartContext";
 import Navbar from "@/components/layout/Navbar";
@@ -277,7 +277,9 @@ const LoadingShell = () => (
   </div>
 );
 
-const swipeRoutes = ["/", "/collections", "/philosophy", "/consultancy"];
+// "/collections" removed: it now redirects straight back to "/", which made a
+// swipe into it bounce back instantly. Re-add it here when the page is restored.
+const swipeRoutes = ["/", "/philosophy", "/consultancy"];
 
 const MobileSwipeNavigator = () => {
   const location = useLocation();
@@ -391,25 +393,32 @@ const AppContent = () => {
             <Suspense fallback={<LoadingShell />}>
               <Routes location={location}>
                 <Route path="/" element={<Index />} />
-                <Route path="/collections" element={<Collections />} />
-                <Route path="/collections/:slug" element={<CollectionDetail />} />
-                <Route path="/product/:id" element={<ProductDetail />} />
+                {/*
+                  --- Temporarily hidden while the business is consultancy-only (product sales paused). ---
+                  To re-enable a page: replace its `<Navigate to="/" replace />` with the original
+                  `element={<PageName />}` shown in the comment beside each line below. The lazy
+                  imports at the top of this file and every page component/file are left intact
+                  on purpose so this is a one-line swap per route when products come back.
+                */}
+                <Route path="/collections" element={<Navigate to="/" replace />} /> {/* was: <Collections /> */}
+                <Route path="/collections/:slug" element={<Navigate to="/" replace />} /> {/* was: <CollectionDetail /> */}
+                <Route path="/product/:id" element={<Navigate to="/" replace />} /> {/* was: <ProductDetail /> */}
                 <Route path="/philosophy" element={<Philosophy />} />
                 <Route path="/consultancy" element={<Consultancy />} />
                 <Route path="/contact" element={<Contact />} />
-                <Route path="/lookbook" element={<Lookbook />} />
-                <Route path="/materials" element={<MaterialExplorer />} />
-                <Route path="/style-quiz" element={<StyleQuiz />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/lookbook" element={<Navigate to="/" replace />} /> {/* was: <Lookbook /> */}
+                <Route path="/materials" element={<Navigate to="/" replace />} /> {/* was: <MaterialExplorer /> */}
+                <Route path="/style-quiz" element={<Navigate to="/" replace />} /> {/* was: <StyleQuiz /> */}
+                <Route path="/cart" element={<Navigate to="/" replace />} /> {/* was: <Cart /> */}
+                <Route path="/checkout" element={<Navigate to="/" replace />} /> {/* was: <Checkout /> */}
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/account" element={<Account />} />
-                <Route path="/order/success/:orderId" element={<OrderSuccess />} />
-                <Route path="/track-order" element={<TrackOrder />} />
+                <Route path="/order/success/:orderId" element={<Navigate to="/" replace />} /> {/* was: <OrderSuccess /> */}
+                <Route path="/track-order" element={<Navigate to="/" replace />} /> {/* was: <TrackOrder /> */}
                 <Route path="/admin" element={<Admin />} />
                 <Route path="/policies" element={<Policies />} />
-                <Route path="/return-policy" element={<ReturnPolicy />} />
-                <Route path="/refund-policy" element={<RefundPolicy />} />
+                <Route path="/return-policy" element={<Navigate to="/" replace />} /> {/* was: <ReturnPolicy /> */}
+                <Route path="/refund-policy" element={<Navigate to="/" replace />} /> {/* was: <RefundPolicy /> */}
                 <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                 <Route path="/disclaimer" element={<DisclaimerPage />} />
                 <Route path="/blogs" element={<Blogs />} />

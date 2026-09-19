@@ -1,6 +1,4 @@
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag } from 'lucide-react';
-import { useCart } from '@/context/CartContext';
 import { useEffect, useRef, useState } from 'react';
 import gsap from 'gsap';
 import type { User } from '@supabase/supabase-js';
@@ -8,13 +6,10 @@ import { isSupabaseConfigured, getSupabaseClient } from '@/integrations/supabase
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 
 const Navbar = () => {
-  const { totalItems } = useCart();
   const location = useLocation();
   const navRef = useRef<HTMLElement>(null);
   const logoRef = useRef<HTMLAnchorElement>(null);
   const linksRef = useRef<HTMLDivElement>(null);
-  const cartRef = useRef<HTMLAnchorElement>(null);
-  const badgeRef = useRef<HTMLSpanElement>(null);
   const [user, setUser] = useState<User | null>(null);
 
   const isActive = (path: string) => location.pathname === path;
@@ -31,8 +26,11 @@ const Navbar = () => {
       .join('');
   };
 
+  // "Collections" removed while the business is consultancy-only (product sales
+  // paused) — the route still exists (see src/App.tsx) and redirects home, but
+  // it's no longer surfaced in navigation. Add `{ path: '/collections', label:
+  // 'Collections' }` back here when products return.
   const navLinks = [
-    { path: '/collections', label: 'Collections' },
     { path: '/philosophy', label: 'Philosophy' },
     { path: '/consultancy', label: 'Consultancy' },
     { path: '/contact', label: 'Contact' },
@@ -68,7 +66,6 @@ const Navbar = () => {
     if (!navRef.current) return;
 
     const timeline = gsap.timeline();
-    const isDesktop = window.matchMedia('(min-width: 768px)').matches;
 
     // Navbar slides down and fades in
     timeline.from(navRef.current, {
@@ -108,38 +105,7 @@ const Navbar = () => {
       );
     }
 
-    // Cart icon animates in
-    if (cartRef.current && isDesktop) {
-      timeline.from(
-        cartRef.current,
-        {
-          opacity: 0,
-          x: 30,
-          duration: 0.6,
-          ease: 'power2.out',
-        },
-        '-=0.5'
-      );
-    }
-
-    timeline.eventCallback('onComplete', () => {
-      if (cartRef.current) {
-        gsap.set(cartRef.current, { clearProps: 'opacity,transform' });
-      }
-    });
   }, []);
-
-  // Animate badge when totalItems changes
-  useEffect(() => {
-    if (badgeRef.current && totalItems > 0) {
-      gsap.to(badgeRef.current, {
-        scale: 1,
-        opacity: 1,
-        duration: 0.4,
-        ease: 'elastic.out(1, 0.5)',
-      });
-    }
-  }, [totalItems]);
 
   const getNavLinkRestColor = (target: HTMLAnchorElement, isActivePath: boolean) => {
     // Filled active mobile buttons use a dark background and must keep light text.
@@ -181,24 +147,6 @@ const Navbar = () => {
     gsap.to(e.currentTarget.querySelector('h1'), {
       color: 'var(--foreground)',
       duration: 0.3,
-      ease: 'power2.out',
-    });
-  };
-
-  const handleCartHover = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    gsap.to(e.currentTarget, {
-      y: -1,
-      scale: 1.04,
-      duration: 0.25,
-      ease: 'power2.out',
-    });
-  };
-
-  const handleCartHoverEnd = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    gsap.to(e.currentTarget, {
-      y: 0,
-      scale: 1,
-      duration: 0.25,
       ease: 'power2.out',
     });
   };
@@ -273,27 +221,6 @@ const Navbar = () => {
                 </Avatar>
               </Link>
             )}
-
-            {/* Cart */}
-            <Link
-              to="/cart"
-              ref={cartRef}
-              className="relative ml-1 flex items-center text-foreground transition-opacity hover:opacity-70"
-              aria-label="Cart"
-              onMouseEnter={handleCartHover}
-              onMouseLeave={handleCartHoverEnd}
-              data-cursor="Cart"
-            >
-              <ShoppingBag size={20} strokeWidth={2} />
-              {totalItems > 0 && (
-                <span
-                  ref={badgeRef}
-                  className="absolute -top-2 -right-2 flex h-5 w-5 scale-0 items-center justify-center rounded-full bg-foreground font-sans text-xs text-background opacity-0"
-                >
-                  {totalItems}
-                </span>
-              )}
-            </Link>
           </div>
 
           {/* Mobile Nav */}
@@ -313,32 +240,20 @@ const Navbar = () => {
                 </Avatar>
               </Link>
             )}
-            <Link
-              to="/cart"
-              className="relative text-foreground transition-opacity hover:opacity-70"
-              aria-label="Cart"
-              onMouseEnter={handleCartHover}
-              onMouseLeave={handleCartHoverEnd}
-              data-cursor="Cart"
-            >
-              <ShoppingBag size={20} strokeWidth={2} />
-              {totalItems > 0 && (
-                <span className="absolute -top-2 -right-2 w-5 h-5 bg-foreground text-background text-xs flex items-center justify-center rounded-full font-sans">
-                  {totalItems}
-                </span>
-              )}
-            </Link>
           </div>
         </div>
 
         {/* Mobile Menu */}
+        {/* Now 3 items (Collections dropped) — grid-cols-3, with sizing relaxed
+            back toward normal since each item has more room than the previous
+            4-up layout. */}
         <div className="lg:hidden border-t border-border px-2 py-3 sm:px-6 md:px-8 md:py-3.5">
-          <div className="grid w-full grid-cols-4 gap-1 sm:gap-2 md:gap-3">
+          <div className="grid w-full grid-cols-3 gap-2 sm:gap-3 md:gap-4">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className={`flex min-h-9 items-center justify-center border px-0.5 text-center font-sans text-[8.5px] tracking-[0.04em] uppercase transition-colors sm:px-2 sm:text-[11px] sm:tracking-[0.12em] md:min-h-10 md:text-[12px] md:tracking-[0.14em] ${
+                className={`flex min-h-9 items-center justify-center border px-1 text-center font-sans text-[10px] tracking-[0.08em] uppercase transition-colors sm:px-3 sm:text-[11px] sm:tracking-[0.14em] md:min-h-10 md:text-[12px] md:tracking-[0.16em] ${
                   isActive(link.path)
                     ? 'border-foreground/35 bg-foreground text-background'
                     : 'border-border/70 text-muted-foreground hover:border-foreground/35 hover:text-foreground'

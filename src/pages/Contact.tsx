@@ -97,11 +97,11 @@ const Contact = () => {
                 <MessageCircle size={18} className="mb-3 text-foreground" />
                 <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Order Support</p>
                 <p className="font-sans text-sm text-foreground">
-                  You can also{' '}
-                  <a href="/track-order" className="underline underline-offset-2 hover:text-foreground">
-                    track an order
-                  </a>{' '}
-                  directly using your email.
+                  {/* Was a link to /track-order, hidden while the business is
+                      consultancy-only (product sales paused); this now
+                      points customers to email instead of a dead link. */}
+                  Have an existing order? Email us directly with your order
+                  reference and we'll help you track it.
                 </p>
               </div>
             </div>

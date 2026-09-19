@@ -2,12 +2,10 @@ import { Link } from 'react-router-dom';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import AnimatedSection from '@/components/AnimatedSection';
 import {
   staggerContainerVariants,
-  staggerItemVariants,
   heroHeadingVariants,
   heroSubheadingVariants,
   heroCTAVariants,
@@ -17,7 +15,6 @@ import heroBg from '@/assets/bench-viola-hero.webp';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
-import { fetchCollections } from '@/integrations/supabase/catalog';
 import { createStudioDispatchSubscription } from '@/integrations/supabase/studio_dispatch';
 import { isSupabaseConfigured } from '@/integrations/supabase/client';
 import { trackEvent } from '@/lib/analytics';
@@ -30,18 +27,6 @@ const Index = () => {
   const heroOffset = useTransform(scrollY, [0, 600], enableHeroMotion ? [0, 90] : [0, 0]);
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { data: collections = [] } = useQuery({
-    queryKey: ['collections'],
-    queryFn: fetchCollections,
-  });
-
-  const fallbackCollections = [
-    { slug: 'monolith', name: 'The Monolith Collection', tagline: 'Permanence in form', image: monolithImg },
-    { slug: 'stillness', name: 'The Stillness Collection', tagline: 'Quiet refinement', image: stillnessImg },
-    { slug: 'origin', name: 'The Origin Series', tagline: 'Return to essence', image: originImg },
-  ];
-
-  const previewCollections = collections.length > 0 ? collections : fallbackCollections;
 
   useEffect(() => {
     const query = window.matchMedia('(pointer: coarse)');
@@ -119,8 +104,8 @@ const Index = () => {
 
           <motion.div variants={enableHeroMotion ? heroCTAVariants : undefined} className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-6">
             <motion.div whileHover={isCoarsePointer ? undefined : { scale: 0.9 }} whileTap={{ scale: 0.78 }} className="w-full sm:w-auto">
-              <Link to="/collections" data-cursor="Explore" className="group flex w-full items-center justify-center gap-3 border border-primary-foreground/40 px-6 py-3 font-sans text-xs uppercase tracking-[0.2em] text-primary-foreground transition-all duration-500 hover:bg-primary-foreground hover:text-foreground sm:w-auto sm:px-8 sm:py-4 sm:text-sm sm:tracking-widest">
-                Explore Collections
+              <Link to="/blogs" data-cursor="Explore" className="group flex w-full items-center justify-center gap-3 border border-primary-foreground/40 px-6 py-3 font-sans text-xs uppercase tracking-[0.2em] text-primary-foreground transition-all duration-500 hover:bg-primary-foreground hover:text-foreground sm:w-auto sm:px-8 sm:py-4 sm:text-sm sm:tracking-widest">
+                View Our Work
                 <motion.span initial={{ x: 0 }} whileHover={isCoarsePointer ? undefined : { x: 4 }} transition={{ duration: 0.2 }}>
                   <ArrowRight size={16} />
                 </motion.span>
@@ -144,34 +129,15 @@ const Index = () => {
         )}
       </section>
 
-      <section className="section-padding section-transition">
-        <div className="container-editorial">
-          <motion.div variants={staggerContainerVariants} initial="hidden" whileInView="visible" viewport={{ once: true, margin: '-100px' }} className="grid grid-cols-1 md:grid-cols-3 gap-12">
-            {previewCollections.map((collection) => (
-              <motion.div key={collection.slug} variants={staggerItemVariants}>
-                <Link to={`/collections/${collection.slug}`} className="group block card-hover-lift" data-cursor="View">
-                  <motion.div className="aspect-[4/5] overflow-hidden mb-6 relative">
-                    <img src={collection.image} alt={collection.name} className="w-full h-full object-cover" loading="lazy" decoding="async" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-foreground/20 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                  </motion.div>
-                  <div className="h-px w-0 bg-foreground/45 transition-all duration-500 group-hover:w-20 mb-4" />
-                  <motion.h3 className="font-serif text-xl font-light text-foreground mb-2 group-hover:text-muted-foreground transition-colors" whileHover={{ x: 4 }}>
-                    {collection.name}
-                  </motion.h3>
-                  <p className="font-sans text-sm text-muted-foreground">{collection.tagline}</p>
-                </Link>
-              </motion.div>
-            ))}
-          </motion.div>
-
-          <AnimatedSection className="text-center mt-16">
-            <Link to="/collections" data-cursor="Browse" className="inline-flex items-center gap-3 font-sans text-sm tracking-widest uppercase text-foreground border-b border-foreground/30 pb-2 hover:border-foreground transition-colors">
-              View All Collections
-              <ArrowRight size={14} />
-            </Link>
-          </AnimatedSection>
-        </div>
-      </section>
+      {/*
+        Product-collection preview grid + "View All Collections" CTA removed
+        while the business is consultancy-only (product sales paused) — it
+        was pure product-showcase content linking to /collections, which now
+        redirects home. Restore this section (it used to fetch
+        `fetchCollections` from `@/integrations/supabase/catalog` with a
+        static fallback drawing on monolithImg/stillnessImg/originImg) when
+        products return.
+      */}
 
       <section className="section-padding pt-6 section-transition">
         <div className="container-editorial">

@@ -1,13 +1,11 @@
 import { Link } from 'react-router-dom';
 import { Instagram, Linkedin } from 'lucide-react';
 
-const navLinks = [
-  { path: '/collections', label: 'Collections' },
-  { path: '/lookbook', label: 'Lookbook' },
-  { path: '/materials', label: 'Material Explorer' },
-  { path: '/style-quiz', label: 'Style Quiz' },
-  { path: '/track-order', label: 'Track Order' },
-];
+// The "Explore" column (Collections/Lookbook/Material Explorer/Style Quiz/
+// Track Order) was removed while the business is consultancy-only (product
+// sales paused) — every one of those pages now redirects home (see
+// src/App.tsx). Restore the column and its `navLinks` array when products
+// return; the routes and page components are all still intact.
 
 const aboutLinks = [
   { path: '/philosophy', label: 'Philosophy' },
@@ -16,9 +14,10 @@ const aboutLinks = [
   { path: '/contact', label: 'Contact' },
 ];
 
+// Returns/Refunds entries removed for the same reason — those policy pages
+// now redirect home. Re-add `{ path: '/return-policy', label: 'Returns' }`
+// and `{ path: '/refund-policy', label: 'Refunds' }` here when relevant again.
 const legalLinks = [
-  { path: '/return-policy', label: 'Returns' },
-  { path: '/refund-policy', label: 'Refunds' },
   { path: '/privacy-policy', label: 'Privacy' },
   { path: '/disclaimer', label: 'Disclaimer' },
 ];
@@ -36,14 +35,14 @@ const Footer = () => {
         <div className="bg-[#1a1a1a] text-[#f7f7f7] rounded-[2rem] p-12 md:p-24 text-center flex flex-col items-center shadow-2xl shadow-black/10">
           <h2 className="text-3xl md:text-5xl font-light mb-6 tracking-wide">Ready to elevate your space?</h2>
           <p className="text-sm md:text-base text-gray-400 mb-10 max-w-md font-light leading-relaxed">
-            Discover pieces that speak across cultures and time.
+            Let's shape a piece that speaks across cultures and time.
           </p>
-          <Link 
-            to="/collections" 
+          <Link
+            to="/consultancy"
             onClick={handleScrollToTop}
             className="bg-[#f7f7f7] text-[#1a1a1a] px-8 py-3.5 rounded-full text-sm uppercase tracking-widest hover:bg-white hover:scale-[1.02] active:scale-95 transition-all duration-300"
           >
-            Explore Collections
+            Begin Your Consultation
           </Link>
         </div>
       </div>
@@ -70,7 +69,7 @@ const Footer = () => {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-8 mb-20">
               
               {/* 1. LEFT SECTION */}
-              <div className="col-span-1 lg:col-span-5 flex flex-col items-start">
+              <div className="col-span-1 lg:col-span-6 flex flex-col items-start">
                 <Link to="/" onClick={handleScrollToTop} className="mb-6 inline-block">
                   <h3
                     className="logo-title text-2xl font-light tracking-wide text-[#111]"
@@ -117,29 +116,12 @@ const Footer = () => {
               </div>
 
               {/* 2. RIGHT SECTION (NAVIGATION COLUMNS) */}
-              <div className="col-span-1 lg:col-span-7 grid grid-cols-2 md:grid-cols-3 gap-10 lg:gap-8 pt-2 lg:pt-0">
-                
-                {/* Column 1 — Explore */}
-                <div className="flex flex-col space-y-5">
-                  <h4 className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#888] mb-1">
-                    Explore
-                  </h4>
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.path}
-                      to={link.path}
-                      onClick={handleScrollToTop}
-                      className="group inline-flex items-center text-sm font-light tracking-wide text-[#444] hover:text-[#111] transition-colors w-fit"
-                    >
-                      <span className="relative">
-                        {link.label}
-                        <span className="absolute left-0 -bottom-1 h-[1px] w-0 bg-[#111] transition-all duration-300 group-hover:w-full opacity-30"></span>
-                      </span>
-                    </Link>
-                  ))}
-                </div>
+              {/* Was 3 columns (Explore/About/Legal) in a 2/3-col grid; the
+                  "Explore" column only ever pointed at now-hidden shopping
+                  pages, so it's dropped and this is a plain 2-column grid. */}
+              <div className="col-span-1 lg:col-span-6 grid grid-cols-2 gap-10 lg:gap-16 pt-2 lg:pt-0">
 
-                {/* Column 2 — About */}
+                {/* Column 1 — About */}
                 <div className="flex flex-col space-y-5">
                   <h4 className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#888] mb-1">
                     About
@@ -159,8 +141,8 @@ const Footer = () => {
                   ))}
                 </div>
 
-                {/* Column 3 — Legal */}
-                <div className="flex flex-col space-y-5 col-span-2 md:col-span-1 mt-6 md:mt-0">
+                {/* Column 2 — Legal */}
+                <div className="flex flex-col space-y-5">
                   <h4 className="font-sans text-[10px] uppercase tracking-[0.2em] text-[#888] mb-1">
                     Legal
                   </h4>

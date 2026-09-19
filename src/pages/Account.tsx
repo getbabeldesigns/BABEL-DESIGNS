@@ -8,7 +8,7 @@ import {
   User as UserIcon,
   ShoppingBag,
   Settings,
-  Package,
+  Mail,
   Clock
 } from "lucide-react";
 import { toast } from "sonner";
@@ -218,13 +218,16 @@ const Account = () => {
                   <section>
                     <h3 className="text-[10px] uppercase tracking-[0.25em] text-[#888] mb-6 pl-1">Quick Actions</h3>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                      {/* Was "Explore Collections" -> /collections; repointed
+                          to Contact since the shopping pages are hidden while
+                          the business is consultancy-only. */}
                       <Link
-                        to="/collections"
+                        to="/contact"
                         className="group flex flex-col justify-between p-6 border border-[#eaeaea] rounded-2xl bg-white hover:border-[#ccc] hover:shadow-md transition-all duration-300 h-36"
                       >
-                        <Package size={20} className="text-[#888] group-hover:text-[#111] transition-colors" />
+                        <Mail size={20} className="text-[#888] group-hover:text-[#111] transition-colors" />
                         <div className="flex items-center justify-between w-full">
-                          <span className="text-[11px] uppercase tracking-[0.15em] text-[#555] group-hover:text-[#111]">Explore Collections</span>
+                          <span className="text-[11px] uppercase tracking-[0.15em] text-[#555] group-hover:text-[#111]">Contact Us</span>
                           <ArrowUpRight size={16} className="text-[#888] group-hover:text-[#111] group-hover:-translate-y-0.5 group-hover:translate-x-0.5 transition-transform" />
                         </div>
                       </Link>
@@ -271,10 +274,10 @@ const Account = () => {
                       <ShoppingBag size={28} className="text-[#aaa] mb-6" />
                       <p className="text-sm font-light text-[#666] mb-8">Your collection is currently empty.</p>
                       <Link
-                        to="/collections"
+                        to="/consultancy"
                         className="inline-flex items-center justify-center bg-[#1c1c1c] text-[#fcfcfc] rounded-xl px-8 py-3.5 text-[11px] font-medium uppercase tracking-[0.2em] transition-all hover:bg-[#333] active:scale-[0.98] shadow-sm"
                       >
-                        Browse Studio
+                        Book a Consultation
                       </Link>
                     </div>
                   )}

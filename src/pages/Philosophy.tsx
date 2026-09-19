@@ -169,10 +169,10 @@ const Philosophy = () => {
           </p>
           <div className="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link
-              to="/collections"
+              to="/consultancy"
               className="inline-flex items-center gap-3 border border-foreground/35 px-7 py-4 font-sans text-xs uppercase tracking-[0.24em] text-foreground transition-colors hover:bg-foreground hover:text-background"
             >
-              Continue to Collections
+              Begin a Consultation
               <ArrowRight size={16} />
             </Link>
           </div>
