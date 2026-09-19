@@ -6,6 +6,7 @@ import {
   updateAdminCollection,
   updateAdminOrderStatus,
   updateAdminProduct,
+  uploadAdminImage,
 } from "@/integrations/supabase/admin";
 import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/supabase/auth";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
@@ -29,6 +30,10 @@ const Admin = () => {
 
   const [collectionEdit, setCollectionEdit] = useState<Record<string, { tagline: string; description: string; heroImageUrl: string }>>({});
   const [productEdit, setProductEdit] = useState<Record<string, { imageUrl: string; active: boolean }>>({});
+  // Tracks which collection/product is mid-upload so its file input can show
+  // "Uploading..." and be disabled — keyed by id, same shape as *Edit above.
+  const [uploadingCollectionId, setUploadingCollectionId] = useState<string | null>(null);
+  const [uploadingProductId, setUploadingProductId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!isSupabaseConfigured) {
@@ -121,6 +126,40 @@ const Admin = () => {
       toast.error(message);
     },
   });
+
+  const handleCollectionImageUpload = async (collectionId: string, edit: { tagline: string; description: string; heroImageUrl: string }, file: File) => {
+    setUploadingCollectionId(collectionId);
+    try {
+      const publicUrl = await uploadAdminImage(file, "collections");
+      setCollectionEdit((prev) => ({
+        ...prev,
+        [collectionId]: { ...edit, heroImageUrl: publicUrl },
+      }));
+      toast.success("Image uploaded. Click Save Collection to publish it.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to upload image.";
+      toast.error(message);
+    } finally {
+      setUploadingCollectionId(null);
+    }
+  };
+
+  const handleProductImageUpload = async (productId: string, edit: { imageUrl: string; active: boolean }, file: File) => {
+    setUploadingProductId(productId);
+    try {
+      const publicUrl = await uploadAdminImage(file, "products");
+      setProductEdit((prev) => ({
+        ...prev,
+        [productId]: { ...edit, imageUrl: publicUrl },
+      }));
+      toast.success("Image uploaded. Click Save Product to publish it.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Failed to upload image.";
+      toast.error(message);
+    } finally {
+      setUploadingProductId(null);
+    }
+  };
 
   const collectionModel = useMemo(() => {
     if (!data) return [];
@@ -312,17 +351,34 @@ const Admin = () => {
                     rows={3}
                     placeholder="Description"
                   />
-                  <input
-                    value={collection.edit.heroImageUrl}
-                    onChange={(event) =>
-                      setCollectionEdit((prev) => ({
-                        ...prev,
-                        [collection.id]: { ...collection.edit, heroImageUrl: event.target.value },
-                      }))
-                    }
-                    className="mb-3 w-full border border-border bg-background px-3 py-2 text-sm"
-                    placeholder="Hero image URL"
-                  />
+                  <div className="mb-3 flex items-center gap-3">
+                    {collection.edit.heroImageUrl && (
+                      <img
+                        src={collection.edit.heroImageUrl}
+                        alt={`${collection.name} hero preview`}
+                        className="h-14 w-14 flex-shrink-0 border border-border object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Hero image
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        disabled={uploadingCollectionId === collection.id}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          event.target.value = "";
+                          if (file) handleCollectionImageUpload(collection.id, collection.edit, file);
+                        }}
+                        className="w-full border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+                      />
+                      {uploadingCollectionId === collection.id && (
+                        <p className="mt-1 text-xs text-muted-foreground">Uploading...</p>
+                      )}
+                    </div>
+                  </div>
                   <button
                     onClick={() =>
                       updateCollectionMutation.mutate({
@@ -365,17 +421,34 @@ const Admin = () => {
                       Published
                     </label>
                   </div>
-                  <input
-                    value={product.edit.imageUrl}
-                    onChange={(event) =>
-                      setProductEdit((prev) => ({
-                        ...prev,
-                        [product.id]: { ...product.edit, imageUrl: event.target.value },
-                      }))
-                    }
-                    className="mb-3 w-full border border-border bg-background px-3 py-2 text-sm"
-                    placeholder="Image URL"
-                  />
+                  <div className="mb-3 flex items-center gap-3">
+                    {product.edit.imageUrl && (
+                      <img
+                        src={product.edit.imageUrl}
+                        alt={`${product.name} preview`}
+                        className="h-14 w-14 flex-shrink-0 border border-border object-cover"
+                      />
+                    )}
+                    <div className="flex-1">
+                      <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">
+                        Product image
+                      </label>
+                      <input
+                        type="file"
+                        accept="image/png,image/jpeg,image/webp,image/gif"
+                        disabled={uploadingProductId === product.id}
+                        onChange={(event) => {
+                          const file = event.target.files?.[0];
+                          event.target.value = "";
+                          if (file) handleProductImageUpload(product.id, product.edit, file);
+                        }}
+                        className="w-full border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+                      />
+                      {uploadingProductId === product.id && (
+                        <p className="mt-1 text-xs text-muted-foreground">Uploading...</p>
+                      )}
+                    </div>
+                  </div>
                   <button
                     onClick={() =>
                       updateProductMutation.mutate({

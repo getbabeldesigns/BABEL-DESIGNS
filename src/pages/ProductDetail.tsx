@@ -10,6 +10,7 @@ import { fetchProductById, fetchProducts } from '@/integrations/supabase/catalog
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
 import { handleImageError } from '@/lib/image';
+import { useSeo } from '@/lib/seo';
 import {
   getRecentlyViewedProducts,
   getYouMayAlsoLikeProducts,
@@ -45,6 +46,14 @@ const ProductDetail = () => {
     if (!product) return [];
     return getRecentlyViewedProducts(product.id, allProducts, 4);
   }, [allProducts, product]);
+
+  useSeo({
+    title: product ? `${product.name} | Babel Designs` : 'Product Details | Babel Designs',
+    description: product
+      ? `${product.description} Crafted from ${product.materials.join(', ')}. Part of ${product.collection}.`
+      : 'View product materials, dimensions, and philosophy from Babel Designs.',
+    canonicalPath: id ? `/product/${id}` : undefined,
+  });
 
   if (isLoading) {
     return (

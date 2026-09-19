@@ -128,3 +128,46 @@ export const updateAdminProduct = async (input: {
   if (error) throw error;
   return data as { success: boolean };
 };
+
+const readFileAsBase64 = (file: File): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== "string") {
+        reject(new Error("Failed to read file."));
+        return;
+      }
+      // reader.result is a data: URL ("data:image/png;base64,AAAA..."); the
+      // edge function only wants the base64 payload after the comma.
+      const commaIndex = result.indexOf(",");
+      resolve(commaIndex === -1 ? result : result.slice(commaIndex + 1));
+    };
+    reader.onerror = () => reject(reader.error ?? new Error("Failed to read file."));
+    reader.readAsDataURL(file);
+  });
+
+// Uploads an admin-picked image file to Supabase Storage (via the
+// admin-upload-image edge function, which is auth-gated the same way as
+// admin-manage-catalog) and returns its public URL. This replaces the old
+// "paste an image URL" text field in the admin dashboard.
+export const uploadAdminImage = async (
+  file: File,
+  folder: "collections" | "products",
+): Promise<string> => {
+  const fileBase64 = await readFileAsBase64(file);
+
+  const { data, error } = await getSupabaseClient().functions.invoke("admin-upload-image", {
+    body: {
+      fileName: file.name,
+      fileBase64,
+      contentType: file.type,
+      folder,
+    },
+  });
+
+  if (error) throw error;
+
+  const result = data as { success: boolean; publicUrl: string };
+  return result.publicUrl;
+};

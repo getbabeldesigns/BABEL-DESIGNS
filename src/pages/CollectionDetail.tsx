@@ -7,6 +7,7 @@ import { useCart } from '@/context/CartContext';
 import { trackEvent } from '@/lib/analytics';
 import { formatINR } from '@/lib/currency';
 import { getSafeImageSrc, handleImageError } from '@/lib/image';
+import { useSeo } from '@/lib/seo';
 import monolithImg from '@/assets/monolith-collection.jpg';
 import stillnessImg from '@/assets/stillness-collection.jpg';
 import originImg from '@/assets/origin-collection.jpg';
@@ -25,6 +26,14 @@ const CollectionDetail = () => {
     queryKey: ['collection-products', slug],
     queryFn: () => fetchProductsByCollectionSlug(slug || ''),
     enabled: Boolean(slug),
+  });
+
+  useSeo({
+    title: collection ? `${collection.name} | Babel Designs` : 'Collection Details | Babel Designs',
+    description: collection
+      ? `${collection.description} ${collection.tagline}.`
+      : 'Discover signature pieces and design philosophy for this collection.',
+    canonicalPath: slug ? `/collections/${slug}` : undefined,
   });
 
   if (isCollectionLoading || isProductsLoading) {

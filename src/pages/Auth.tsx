@@ -119,8 +119,8 @@ const Auth = () => {
       {/* LEFT SIDE: Visual Section */}
       <div className="relative w-full lg:w-1/2 min-h-[40vh] lg:min-h-screen order-2 lg:order-1">
         <img
-          src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
-          alt="Minimalist Architecture"
+          src="/loginpage_bg.webp"
+          alt="Babel Designs — Tower of Babel illustration"
           className="absolute inset-0 h-full w-full object-cover object-center"
         />
         {/* Subtle dark gradient overlay */}

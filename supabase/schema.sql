@@ -195,3 +195,23 @@ create policy "Users update own cart"
   on public.user_carts for update
   using (auth.uid() = user_id)
   with check (auth.uid() = user_id);
+
+-- Storage bucket for admin-uploaded catalog images (collection hero images,
+-- product images), replacing the old "paste an image URL" admin flow.
+-- Public (public = true) because these images are shown on the public site,
+-- so anyone needs to be able to GET them without auth.
+-- Uploads/updates/deletes are deliberately NOT opened up to authenticated
+-- clients here: the only write path is the admin-upload-image edge function,
+-- which uses the service-role key (same pattern as admin_users above) and so
+-- bypasses storage RLS entirely after checking admin_users itself. That
+-- means no permissive INSERT/UPDATE/DELETE policy is needed — or wanted —
+-- for this bucket; leaving storage.objects locked down for it is what keeps
+-- "only admins, via the edge function" true.
+insert into storage.buckets (id, name, public)
+values ('catalog-images', 'catalog-images', true)
+on conflict (id) do nothing;
+
+drop policy if exists "Public read catalog images" on storage.objects;
+create policy "Public read catalog images"
+  on storage.objects for select
+  using (bucket_id = 'catalog-images');
