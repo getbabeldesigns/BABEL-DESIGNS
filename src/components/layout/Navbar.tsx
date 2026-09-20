@@ -172,7 +172,7 @@ const Navbar = () => {
             onMouseLeave={handleLogoHoverEnd}
             data-cursor="Home"
           >
-            <h1 className="logo-title text-[clamp(15px,1.8vw,24px)] font-light tracking-[clamp(0.1em,0.6vw,0.2em)] text-foreground leading-tight">
+            <h1 className="logo-title whitespace-nowrap text-[clamp(13px,4.2vw,24px)] font-light tracking-[clamp(0.05em,0.6vw,0.2em)] text-foreground leading-tight">
               BABEL DESIGNS
             </h1>
           </Link>

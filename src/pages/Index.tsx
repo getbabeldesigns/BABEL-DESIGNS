@@ -94,7 +94,7 @@ const Index = () => {
           initial={enableHeroMotion ? "hidden" : false}
           animate={enableHeroMotion ? "visible" : false}
         >
-          <motion.h1 variants={enableHeroMotion ? heroHeadingVariants : undefined} className="logo-title mb-3 text-3xl font-light tracking-[0.14em] text-primary-foreground sm:text-5xl sm:tracking-wide md:text-7xl lg:text-7xl">
+          <motion.h1 variants={enableHeroMotion ? heroHeadingVariants : undefined} className="logo-title mb-3 whitespace-nowrap text-2xl font-light tracking-[0.06em] text-primary-foreground sm:text-5xl sm:tracking-wide md:text-7xl lg:text-7xl">
             BABEL DESIGNS
           </motion.h1>
 
