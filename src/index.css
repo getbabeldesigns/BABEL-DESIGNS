@@ -1,4 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;500&display=swap');
+/* Lato is loaded via the combined Google Fonts <link> in index.html (along
+   with Crimson Text/Inter) instead of a CSS @import here — @import blocks
+   rendering until it round-trips and can't be discovered early by the
+   browser's preloader, so it was adding a second, slower font fetch on top
+   of the one index.html already makes. */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
