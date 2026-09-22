@@ -123,7 +123,7 @@ Deno.serve(async (request: Request) => {
 
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const adminEmail = Deno.env.get("ADMIN_NOTIFICATION_EMAIL");
-    const fromEmail = Deno.env.get("ADMIN_NOTIFICATION_FROM_EMAIL") ?? "Babel Designs <onboarding@resend.dev>";
+    const fromEmail = Deno.env.get("ADMIN_NOTIFICATION_FROM_EMAIL") ?? "Babel Designs <contact@getbabeldesigns.com>";
     const replyToEmail = Deno.env.get("ADMIN_NOTIFICATION_REPLY_TO");
 
     if (!resendApiKey || !adminEmail) {
