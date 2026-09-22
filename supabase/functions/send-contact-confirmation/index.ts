@@ -58,7 +58,7 @@ Deno.serve(async (request: Request) => {
     const resendApiKey = Deno.env.get("RESEND_API_KEY");
     const fromEmail = Deno.env.get("CONTACT_CONFIRMATION_FROM_EMAIL") ?? "Babel Designs <onboarding@resend.dev>";
     const replyToEmail = Deno.env.get("CONTACT_CONFIRMATION_REPLY_TO");
-    const adminEmail = Deno.env.get("CONTACT_NOTIFICATION_EMAIL") ?? "getbabeldesigns@gmail.com";
+    const adminEmail = Deno.env.get("CONTACT_NOTIFICATION_EMAIL") ?? "contact@getbabeldesigns.com";
 
     if (!resendApiKey) {
       return new Response(JSON.stringify({ error: "Missing RESEND_API_KEY secret." }), {

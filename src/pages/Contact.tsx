@@ -86,7 +86,7 @@ const Contact = () => {
               <div className="border border-border/70 bg-card/70 p-6">
                 <Mail size={18} className="mb-3 text-foreground" />
                 <p className="font-sans text-xs uppercase tracking-[0.2em] text-muted-foreground mb-1">Email</p>
-                <p className="font-sans text-sm text-foreground">getbabeldesigns@gmail.com</p>
+                <p className="font-sans text-sm text-foreground">contact@getbabeldesigns.com</p>
               </div>
               <div className="border border-border/70 bg-card/70 p-6">
                 <Clock size={18} className="mb-3 text-foreground" />

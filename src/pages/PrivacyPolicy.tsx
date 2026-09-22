@@ -29,7 +29,7 @@
       points: [
         "You may request data correction or account information updates.",
         "You may request deletion of personal data, subject to legal and tax retention duties.",
-        "For requests, contact getbabeldesigns@gmail.com from your registered email.",
+        "For requests, email contact@getbabeldesigns.com from your registered email.",
       ],
     },
   ];
