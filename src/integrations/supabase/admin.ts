@@ -1,4 +1,5 @@
 import { getSupabaseClient } from "./client";
+import { getAccessToken } from "./auth";
 
 export interface AdminOrder {
   id: string;
@@ -68,66 +69,91 @@ export interface AdminDashboardResponse {
   products: AdminProduct[];
 }
 
-// No token headers needed here: supabase-js's functions.invoke() automatically
-// sends `Authorization: Bearer <current session's access token>` for a
-// signed-in user, which is exactly what the admin edge functions now check
-// (real Supabase auth + admin_users membership) instead of a shared secret.
+// Thrown instead of a raw supabase-js error whenever an admin edge function
+// call fails for an auth reason, so the UI can tell two very different cases
+// apart:
+//  - "unauthenticated": there's no valid session at all (never signed in,
+//    signed out, or the session expired) — the UI should just fall back to
+//    the sign-in screen, not accuse the user of lacking admin access.
+//  - "forbidden": there IS a valid, verified session, but this user's id
+//    isn't in admin_users — a real "you don't have access" case.
+export class AdminAuthError extends Error {
+  readonly kind: "unauthenticated" | "forbidden";
+  constructor(kind: "unauthenticated" | "forbidden", message: string) {
+    super(message);
+    this.name = "AdminAuthError";
+    this.kind = kind;
+  }
+}
 
-export const fetchAdminDashboard = async (): Promise<AdminDashboardResponse> => {
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-dashboard");
-  if (error) throw error;
-  return data as AdminDashboardResponse;
+// Every admin edge function requires a real signed-in Supabase user whose id
+// is in admin_users (see supabase/schema.sql) — being signed in isn't enough
+// on its own. supabase-js's functions.invoke() can auto-attach an
+// Authorization header from its own internal session cache, but that cache
+// briefly lagging behind the rest of the app's session state (most visible
+// right after a page reload) is exactly what let a genuine admin see a false
+// "not authorized" until they retried. Fetching the access token ourselves
+// with getAccessToken() and attaching it explicitly closes that gap: whatever
+// session that call resolves to is exactly what gets sent, every time.
+const invokeAdmin = async <T>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
+  const accessToken = await getAccessToken();
+  if (!accessToken) {
+    throw new AdminAuthError("unauthenticated", "You're not signed in.");
+  }
+
+  const { data, error } = await getSupabaseClient().functions.invoke(functionName, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+    ...(body ? { body } : {}),
+  });
+
+  if (error) {
+    const status = (error as { context?: { status?: number } })?.context?.status;
+    if (status === 401) {
+      throw new AdminAuthError("unauthenticated", "Your session has expired. Please sign in again.");
+    }
+    if (status === 403) {
+      throw new AdminAuthError("forbidden", "This account doesn't have admin access.");
+    }
+    throw error;
+  }
+
+  return data as T;
 };
+
+export const fetchAdminDashboard = async (): Promise<AdminDashboardResponse> =>
+  invokeAdmin<AdminDashboardResponse>("admin-dashboard");
 
 export const updateAdminOrderStatus = async (
   orderId: string,
   status: string,
   paymentStatus?: string | null,
-) => {
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-update-order-status", {
-    body: {
-      orderId,
-      status,
-      paymentStatus,
-    },
+) =>
+  invokeAdmin<{ success: boolean }>("admin-update-order-status", {
+    orderId,
+    status,
+    paymentStatus,
   });
-
-  if (error) throw error;
-  return data as { success: boolean };
-};
 
 export const updateAdminCollection = async (input: {
   collectionId: string;
   tagline: string;
   description: string;
   heroImageUrl: string;
-}) => {
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-manage-catalog", {
-    body: {
-      action: "update_collection",
-      ...input,
-    },
+}) =>
+  invokeAdmin<{ success: boolean }>("admin-manage-catalog", {
+    action: "update_collection",
+    ...input,
   });
-
-  if (error) throw error;
-  return data as { success: boolean };
-};
 
 export const updateAdminProduct = async (input: {
   productId: string;
   active: boolean;
   imageUrl: string;
-}) => {
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-manage-catalog", {
-    body: {
-      action: "update_product",
-      ...input,
-    },
+}) =>
+  invokeAdmin<{ success: boolean }>("admin-manage-catalog", {
+    action: "update_product",
+    ...input,
   });
-
-  if (error) throw error;
-  return data as { success: boolean };
-};
 
 const readFileAsBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
@@ -157,17 +183,12 @@ export const uploadAdminImage = async (
 ): Promise<string> => {
   const fileBase64 = await readFileAsBase64(file);
 
-  const { data, error } = await getSupabaseClient().functions.invoke("admin-upload-image", {
-    body: {
-      fileName: file.name,
-      fileBase64,
-      contentType: file.type,
-      folder,
-    },
+  const result = await invokeAdmin<{ success: boolean; publicUrl: string }>("admin-upload-image", {
+    fileName: file.name,
+    fileBase64,
+    contentType: file.type,
+    folder,
   });
 
-  if (error) throw error;
-
-  const result = data as { success: boolean; publicUrl: string };
   return result.publicUrl;
 };

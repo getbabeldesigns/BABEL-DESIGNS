@@ -1,7 +1,9 @@
 import { useEffect, useMemo, useState } from "react";
+import { Navigate } from "react-router-dom";
 import type { User } from "@supabase/supabase-js";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
+  AdminAuthError,
   fetchAdminDashboard,
   updateAdminCollection,
   updateAdminOrderStatus,
@@ -23,7 +25,9 @@ const Admin = () => {
   // the edge functions check whether this signed-in user's id is in the
   // admin_users table (see supabase/schema.sql). There's no shared secret
   // anymore, so being signed in isn't enough on its own — see the
-  // isForbidden handling below for the "signed in but not an admin" case.
+  // AdminAuthError handling below for the "signed in but not an admin" case
+  // (redirects to /admin/forbidden) versus "no valid session" (drops back to
+  // the sign-in screen instead of wrongly claiming "not authorized").
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
@@ -61,12 +65,28 @@ const Admin = () => {
     };
   }, []);
 
-  const { data, isLoading, isError } = useQuery({
+  const { data, isLoading, isError, error } = useQuery({
     queryKey: ["admin-dashboard", user?.id],
     queryFn: () => fetchAdminDashboard(),
     enabled: Boolean(user),
     retry: false,
   });
+
+  const isForbidden = isError && error instanceof AdminAuthError && error.kind === "forbidden";
+
+  // A failure that ISN'T "signed in but not an admin" (an expired/invalid
+  // session, a dropped request, etc.) shouldn't show the "not authorized"
+  // page at all — that page is specifically for a real admin_users mismatch.
+  // Instead, drop back to the sign-in screen so the user can just
+  // re-authenticate, rather than being wrongly told this account lacks
+  // access. This is what fixes the "works right after login, then says not
+  // authorized after a refresh" bug: that was an auth/session hiccup being
+  // misreported as a permissions problem.
+  useEffect(() => {
+    if (isError && !isForbidden) {
+      setUser(null);
+    }
+  }, [isError, isForbidden]);
 
   const handleSignIn = () => {
     setIsSigningIn(true);
@@ -233,21 +253,15 @@ const Admin = () => {
     );
   }
 
+  if (isForbidden) {
+    return <Navigate to="/admin/forbidden" replace />;
+  }
+
   if (isError || !data) {
-    return (
-      <div className="min-h-screen pt-48 md:pt-52">
-        <section className="section-padding pt-0">
-          <div className="container-editorial max-w-lg">
-            <h1 className="font-serif text-4xl mb-4">Not authorized</h1>
-            <p className="font-sans text-muted-foreground mb-6">
-              You're signed in as {user.email}, but this account doesn't have admin access. Ask an
-              existing admin to add your account, or sign in with a different one.
-            </p>
-            <button onClick={handleSignOut} className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em]">Sign out</button>
-          </div>
-        </section>
-      </div>
-    );
+    // Any other failure already triggers the effect above, which clears
+    // `user` and re-renders into the "!user" sign-in branch on the next
+    // pass — this is just a brief one-frame fallback while that happens.
+    return null;
   }
 
   return (

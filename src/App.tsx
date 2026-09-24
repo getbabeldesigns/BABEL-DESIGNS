@@ -30,6 +30,7 @@ const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const Admin = lazy(() => import("./pages/Admin"));
+const AdminForbidden = lazy(() => import("./pages/AdminForbidden"));
 const Policies = lazy(() => import("./pages/Policies"));
 const ReturnPolicy = lazy(() => import("./pages/ReturnPolicy"));
 const RefundPolicy = lazy(() => import("./pages/RefundPolicy"));
@@ -252,6 +253,15 @@ const routeSeo = (pathname: string) => {
     };
   }
 
+  if (pathname === "/admin/forbidden") {
+    return {
+      title: "Not Authorized | Babel Designs",
+      description: "This account doesn't have admin access.",
+      canonicalPath: pathname,
+      noIndex: true,
+    };
+  }
+
   return {
     title: "Page Not Found | Babel Designs",
     description: "The page you requested could not be found.",
@@ -416,6 +426,7 @@ const AppContent = () => {
                 <Route path="/order/success/:orderId" element={<Navigate to="/" replace />} /> {/* was: <OrderSuccess /> */}
                 <Route path="/track-order" element={<Navigate to="/" replace />} /> {/* was: <TrackOrder /> */}
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/admin/forbidden" element={<AdminForbidden />} />
                 <Route path="/policies" element={<Policies />} />
                 <Route path="/return-policy" element={<Navigate to="/" replace />} /> {/* was: <ReturnPolicy /> */}
                 <Route path="/refund-policy" element={<Navigate to="/" replace />} /> {/* was: <RefundPolicy /> */}
