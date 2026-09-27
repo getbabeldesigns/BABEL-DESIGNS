@@ -30,6 +30,7 @@ const Account = lazy(() => import("./pages/Account"));
 const OrderSuccess = lazy(() => import("./pages/OrderSuccess"));
 const TrackOrder = lazy(() => import("./pages/TrackOrder"));
 const Admin = lazy(() => import("./pages/Admin"));
+const Portal = lazy(() => import("./pages/Portal"));
 const AdminForbidden = lazy(() => import("./pages/AdminForbidden"));
 const Policies = lazy(() => import("./pages/Policies"));
 const ReturnPolicy = lazy(() => import("./pages/ReturnPolicy"));
@@ -426,6 +427,7 @@ const AppContent = () => {
                 <Route path="/order/success/:orderId" element={<Navigate to="/" replace />} /> {/* was: <OrderSuccess /> */}
                 <Route path="/track-order" element={<Navigate to="/" replace />} /> {/* was: <TrackOrder /> */}
                 <Route path="/admin" element={<Admin />} />
+                <Route path="/portal" element={<Portal />} />
                 <Route path="/admin/forbidden" element={<AdminForbidden />} />
                 <Route path="/policies" element={<Policies />} />
                 <Route path="/return-policy" element={<Navigate to="/" replace />} /> {/* was: <ReturnPolicy /> */}

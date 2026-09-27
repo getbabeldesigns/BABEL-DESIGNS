@@ -67,6 +67,28 @@ export const signInWithEmail = async (email: string, password: string) => {
   return data;
 };
 
+// Client Portal login: passwordless, since a client never goes through the
+// site's own sign-up flow — the admin side just records their email on the
+// project (projects.client_email), and this is how they turn that into
+// access. Supabase auto-creates the auth.users row on first magic-link
+// click if one doesn't already exist. completeOAuthSignInFromUrl (above)
+// already handles both the PKCE `?code=` redirect and the hash-token
+// redirect, so the /portal page reuses it verbatim rather than needing its
+// own callback handling.
+export const sendMagicLink = async (email: string) => {
+  if (!isSupabaseConfigured) {
+    throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");
+  }
+
+  const redirectTo = `${window.location.origin}/portal`;
+  const { error } = await getSupabaseClient().auth.signInWithOtp({
+    email,
+    options: { emailRedirectTo: redirectTo },
+  });
+
+  if (error) throw error;
+};
+
 export const startOAuthSignIn = async (provider: OAuthProvider) => {
   if (!isSupabaseConfigured) {
     throw new Error("Supabase is not configured. Set VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY (or VITE_SUPABASE_PUBLISHABLE_KEY).");

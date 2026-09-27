@@ -5,13 +5,16 @@ import type { AdminTeamMember } from "@/integrations/supabase/admin";
 import {
   PROJECT_STAGES,
   addProjectDocumentLink,
+  addProjectInspirationLink,
   addProjectNote,
   addProjectTask,
+  deleteProjectInspiration,
   fetchProjectDetail,
   getProjectDocumentUrl,
   updateProject,
   updateProjectTask,
   uploadProjectDocument,
+  uploadProjectInspirationImage,
   type ProjectStage,
 } from "@/integrations/supabase/execution";
 
@@ -56,6 +59,10 @@ const ProjectDetail = ({
   const [linkName, setLinkName] = useState("");
   const [docFolder, setDocFolder] = useState("General");
   const [uploading, setUploading] = useState(false);
+
+  const [inspLinkUrl, setInspLinkUrl] = useState("");
+  const [inspCaption, setInspCaption] = useState("");
+  const [inspUploading, setInspUploading] = useState(false);
 
   const refetchAll = () => {
     queryClient.invalidateQueries({ queryKey });
@@ -126,11 +133,41 @@ const ProjectDetail = ({
     }
   };
 
+  const addInspirationLinkMutation = useMutation({
+    mutationFn: () => addProjectInspirationLink({ projectId, url: inspLinkUrl, caption: inspCaption || undefined }),
+    onSuccess: () => {
+      toast.success("Added to the inspiration board.");
+      setInspLinkUrl(""); setInspCaption("");
+      refetchAll();
+    },
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to add that."),
+  });
+
+  const deleteInspirationMutation = useMutation({
+    mutationFn: (inspirationId: string) => deleteProjectInspiration(inspirationId),
+    onSuccess: refetchAll,
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Failed to delete."),
+  });
+
+  const handleInspirationUpload = async (file: File) => {
+    setInspUploading(true);
+    try {
+      await uploadProjectInspirationImage({ projectId, file, caption: inspCaption || undefined });
+      toast.success("Added to the inspiration board.");
+      setInspCaption("");
+      refetchAll();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to upload image.");
+    } finally {
+      setInspUploading(false);
+    }
+  };
+
   if (isLoading || !data) {
     return <div className="mb-12 text-sm text-muted-foreground">Loading project...</div>;
   }
 
-  const { project, notes, tasks, timelineSummary, documents } = data;
+  const { project, notes, tasks, timelineSummary, documents, inspiration } = data;
   const bucketOrder: (keyof typeof timelineSummary)[] = ["delayed", "current", "upcoming", "done"];
   const documentsByFolder = documents.reduce<Record<string, typeof documents>>((acc, doc) => {
     (acc[doc.folder] ??= []).push(doc);
@@ -355,6 +392,84 @@ const ProjectDetail = ({
                   </div>
                 ))}
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Client Portal — Inspiration board (two-way: client uploads show up
+          here too, and this section's own additions show as "From Babel
+          Design" on the client's side). */}
+      <div className="mt-8">
+        <h3 className="font-serif text-xl mb-3">Client Inspiration Board</h3>
+        <div className="mb-4 border border-border bg-card p-4">
+          <input
+            value={inspCaption}
+            onChange={(e) => setInspCaption(e.target.value)}
+            placeholder="Caption (optional)"
+            className="mb-2 w-full border border-border bg-background px-3 py-2 text-sm md:w-64"
+          />
+          <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+            <div className="flex gap-2">
+              <input
+                value={inspLinkUrl}
+                onChange={(e) => setInspLinkUrl(e.target.value)}
+                placeholder="Pinterest / Instagram / image link"
+                className="flex-1 border border-border bg-background px-3 py-2 text-sm"
+              />
+              <button
+                onClick={() => addInspirationLinkMutation.mutate()}
+                disabled={!inspLinkUrl.trim() || addInspirationLinkMutation.isPending}
+                className="border border-foreground/40 px-3 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+              >
+                Add Link
+              </button>
+            </div>
+            <div>
+              <input
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/gif"
+                disabled={inspUploading}
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  e.target.value = "";
+                  if (file) handleInspirationUpload(file);
+                }}
+                className="w-full border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+              />
+              {inspUploading && <p className="mt-1 text-xs text-muted-foreground">Uploading...</p>}
+            </div>
+          </div>
+        </div>
+
+        {inspiration.length === 0 && <p className="text-sm text-muted-foreground">Nothing shared yet.</p>}
+        <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
+          {inspiration.map((item) => (
+            <div key={item.id} className="border border-border bg-card">
+              {item.kind === "image" ? (
+                <img src={item.url} alt={item.caption ?? ""} className="aspect-square w-full object-cover" />
+              ) : (
+                <a
+                  href={item.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex aspect-square w-full items-center justify-center p-3 text-center text-xs underline"
+                >
+                  {item.url}
+                </a>
+              )}
+              <div className="flex items-center justify-between p-2">
+                <p className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground">
+                  {item.source === "admin" ? "From Us" : "From Client"}
+                </p>
+                <button
+                  onClick={() => deleteInspirationMutation.mutate(item.id)}
+                  className="text-[10px] uppercase tracking-[0.15em] text-muted-foreground hover:text-foreground"
+                >
+                  Remove
+                </button>
+              </div>
+              {item.caption && <p className="px-2 pb-2 text-xs">{item.caption}</p>}
             </div>
           ))}
         </div>

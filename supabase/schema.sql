@@ -340,3 +340,32 @@ alter table public.client_project_access enable row level security;
 insert into storage.buckets (id, name, public)
 values ('project-documents', 'project-documents', false)
 on conflict (id) do nothing;
+
+-- ============================================================================
+-- Client Portal — magic-link client login (client_project_access already
+-- exists from the earlier migration) + two-way inspiration sharing.
+-- ============================================================================
+
+-- Inspiration images/links either side can add: the client shares things they
+-- like, the design team shares picks back — both show up in the same feed,
+-- distinguished by `source`. Images go to the public 'project-inspiration'
+-- bucket below (unlike project-documents, these aren't sensitive files, so
+-- no signed-URL plumbing needed); `kind='link'` rows just store the URL.
+create table if not exists public.project_inspiration (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  source text not null check (source in ('client', 'admin')),
+  kind text not null check (kind in ('image', 'link')),
+  url text not null,
+  caption text,
+  created_by_user_id uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_project_inspiration_project_id on public.project_inspiration(project_id, created_at desc);
+
+alter table public.project_inspiration enable row level security;
+
+insert into storage.buckets (id, name, public)
+values ('project-inspiration', 'project-inspiration', true)
+on conflict (id) do nothing;

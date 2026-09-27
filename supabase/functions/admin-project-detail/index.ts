@@ -69,7 +69,7 @@ Deno.serve(async (request: Request) => {
     const projectId = body.projectId;
     if (!projectId) return json({ error: "projectId is required." }, 400);
 
-    const [projectResult, notesResult, tasksResult, documentsResult, teamResult] = await Promise.all([
+    const [projectResult, notesResult, tasksResult, documentsResult, inspirationResult, teamResult] = await Promise.all([
       supabase.from("projects").select("*").eq("id", projectId).maybeSingle(),
       supabase
         .from("project_notes")
@@ -84,6 +84,11 @@ Deno.serve(async (request: Request) => {
       supabase
         .from("project_documents")
         .select("id, folder, file_name, kind, created_at")
+        .eq("project_id", projectId)
+        .order("created_at", { ascending: false }),
+      supabase
+        .from("project_inspiration")
+        .select("id, source, kind, url, caption, created_at")
         .eq("project_id", projectId)
         .order("created_at", { ascending: false }),
       supabase.from("admin_users").select("user_id, full_name, email"),
@@ -118,6 +123,7 @@ Deno.serve(async (request: Request) => {
       tasks,
       timelineSummary,
       documents: documentsResult.data ?? [],
+      inspiration: inspirationResult.data ?? [],
       teamMembers: (teamResult.data ?? []).map((row) => ({
         id: row.user_id,
         name: row.full_name ?? row.email ?? "Unknown",

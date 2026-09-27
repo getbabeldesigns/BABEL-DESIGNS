@@ -68,12 +68,22 @@ export interface ProjectDocument {
   created_at: string;
 }
 
+export interface ProjectInspirationItem {
+  id: string;
+  source: "client" | "admin";
+  kind: "image" | "link";
+  url: string;
+  caption: string | null;
+  created_at: string;
+}
+
 export interface ProjectDetailResponse {
   project: ProjectRecord;
   notes: ProjectNote[];
   tasks: ProjectTask[];
   timelineSummary: { current: number; upcoming: number; delayed: number; done: number };
   documents: ProjectDocument[];
+  inspiration: ProjectInspirationItem[];
   teamMembers: { id: string; name: string; email: string | null }[];
 }
 
@@ -141,3 +151,29 @@ export const stageLabel = (stage: string) => PROJECT_STAGES.find((s) => s.value 
 
 export const updateLeadStatus = (consultancyRequestId: string, status: "open" | "converted" | "lost") =>
   invokeAdmin<{ success: boolean; lead: unknown }>("admin-execution", { action: "update_lead_status", consultancyRequestId, status });
+
+// Client Portal inspiration board — admin side. The client's mirror-image
+// calls (upload_inspiration_image / add_inspiration_link) live in the
+// client-portal edge function, scoped to that client's own projects instead
+// of any project id like these admin ones.
+export const addProjectInspirationLink = (input: { projectId: string; url: string; caption?: string }) =>
+  invokeAdmin<{ success: boolean; item: ProjectInspirationItem }>("admin-execution", {
+    action: "add_inspiration_link",
+    ...input,
+  });
+
+export const uploadProjectInspirationImage = async (input: { projectId: string; file: File; caption?: string }) => {
+  const fileBase64 = await readFileAsBase64(input.file);
+  return invokeAdmin<{ success: boolean; item: ProjectInspirationItem }>("admin-execution", {
+    action: "upload_inspiration_image",
+    projectId: input.projectId,
+    caption: input.caption,
+    fileName: input.file.name,
+    fileBase64,
+    contentType: input.file.type || "image/png",
+  });
+};
+
+export const deleteProjectInspiration = (inspirationId: string) =>
+  invokeAdmin<{ success: boolean }>("admin-execution", { action: "delete_inspiration", inspirationId });
+

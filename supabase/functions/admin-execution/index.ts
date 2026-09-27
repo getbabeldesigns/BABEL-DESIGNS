@@ -47,6 +47,23 @@ const STAGES = [
 const escapeHtml = (value: string) =>
   value.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#39;");
 
+// For the admin side of the Client Portal's two-way inspiration board (the
+// client's own upload_inspiration_image lives in the client-portal
+// function, with an identical size/type policy).
+const ALLOWED_INSPIRATION_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/webp", "image/gif"]);
+const MAX_INSPIRATION_IMAGE_BYTES = 8 * 1024 * 1024;
+
+const sanitizeFileName = (name: string) => {
+  const trimmed = name.trim().slice(-120);
+  return trimmed.replace(/[^a-zA-Z0-9.\-_]/g, "_") || "upload";
+};
+
+const stripDataUrlPrefix = (value: string) => {
+  const commaIndex = value.indexOf(",");
+  if (value.startsWith("data:") && commaIndex !== -1) return value.slice(commaIndex + 1);
+  return value;
+};
+
 // Emails everyone tagged in a note. Reuses the same Resend setup already
 // sending confirmation emails (RESEND_API_KEY, the verified
 // getbabeldesigns.com sender) — no SMS/WhatsApp here by design, see the
@@ -279,6 +296,97 @@ Deno.serve(async (request: Request) => {
           return json({ error: "Failed to update lead status." }, 500);
         }
         return json({ success: true, lead: data });
+      }
+
+      case "add_inspiration_link": {
+        const projectId = typeof body.projectId === "string" ? body.projectId : "";
+        const url = typeof body.url === "string" ? body.url.trim() : "";
+        const caption = typeof body.caption === "string" ? body.caption.trim() : null;
+        if (!projectId || !url) return json({ error: "projectId and url are required." }, 400);
+
+        const { data, error } = await supabase
+          .from("project_inspiration")
+          .insert({ project_id: projectId, source: "admin", kind: "link", url, caption, created_by_user_id: userId })
+          .select()
+          .single();
+
+        if (error) {
+          console.error("admin-execution add_inspiration_link error", error);
+          return json({ error: "Failed to add that." }, 500);
+        }
+        return json({ success: true, item: data });
+      }
+
+      case "upload_inspiration_image": {
+        const projectId = typeof body.projectId === "string" ? body.projectId : "";
+        const fileName = typeof body.fileName === "string" ? body.fileName : "";
+        const fileBase64 = typeof body.fileBase64 === "string" ? body.fileBase64 : "";
+        const contentType = typeof body.contentType === "string" ? body.contentType : "";
+        const caption = typeof body.caption === "string" ? body.caption.trim() : null;
+        if (!projectId || !fileName || !fileBase64 || !contentType) {
+          return json({ error: "projectId, fileName, fileBase64 and contentType are required." }, 400);
+        }
+        if (!ALLOWED_INSPIRATION_IMAGE_TYPES.has(contentType)) return json({ error: "Unsupported image type." }, 400);
+
+        const base64Payload = stripDataUrlPrefix(fileBase64);
+        const approxDecodedBytes = Math.floor((base64Payload.length * 3) / 4);
+        if (approxDecodedBytes > MAX_INSPIRATION_IMAGE_BYTES) {
+          return json({ error: "Image is too large. Maximum size is 8MB." }, 400);
+        }
+
+        let bytes: Uint8Array;
+        try {
+          const binaryString = atob(base64Payload);
+          bytes = Uint8Array.from(binaryString, (char) => char.charCodeAt(0));
+        } catch {
+          return json({ error: "fileBase64 is not valid base64." }, 400);
+        }
+        if (bytes.byteLength > MAX_INSPIRATION_IMAGE_BYTES) {
+          return json({ error: "Image is too large. Maximum size is 8MB." }, 400);
+        }
+
+        const path = `${projectId}/${crypto.randomUUID()}-${sanitizeFileName(fileName)}`;
+        const { error: uploadError } = await supabase.storage
+          .from("project-inspiration")
+          .upload(path, bytes, { contentType, upsert: false });
+
+        if (uploadError) {
+          console.error("admin-execution upload_inspiration_image storage error", uploadError);
+          return json({ error: "Failed to upload image." }, 500);
+        }
+
+        const { data: publicUrlData } = supabase.storage.from("project-inspiration").getPublicUrl(path);
+
+        const { data, error } = await supabase
+          .from("project_inspiration")
+          .insert({
+            project_id: projectId,
+            source: "admin",
+            kind: "image",
+            url: publicUrlData.publicUrl,
+            caption,
+            created_by_user_id: userId,
+          })
+          .select()
+          .single();
+
+        if (error) {
+          console.error("admin-execution upload_inspiration_image insert error", error);
+          return json({ error: "Uploaded, but failed to record it." }, 500);
+        }
+        return json({ success: true, item: data });
+      }
+
+      case "delete_inspiration": {
+        const inspirationId = typeof body.inspirationId === "string" ? body.inspirationId : "";
+        if (!inspirationId) return json({ error: "inspirationId is required." }, 400);
+
+        const { error } = await supabase.from("project_inspiration").delete().eq("id", inspirationId);
+        if (error) {
+          console.error("admin-execution delete_inspiration error", error);
+          return json({ error: "Failed to delete." }, 500);
+        }
+        return json({ success: true });
       }
 
       default:
