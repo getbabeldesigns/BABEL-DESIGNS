@@ -65,6 +65,12 @@ export default {
         wood: "hsl(var(--wood))",
         linen: "hsl(var(--linen))",
         charcoal: "hsl(var(--charcoal))",
+        // Admin dashboard accent roles (see src/lib/statusColors.ts) — stage
+        // and lead-status colors, kept in the same muted warm family.
+        "accent-neutral": "hsl(var(--accent-neutral))",
+        "accent-progress": "hsl(var(--accent-progress))",
+        "accent-caution": "hsl(var(--accent-caution))",
+        "accent-success": "hsl(var(--accent-success))",
       },
       fontFamily: {
         serif: ["var(--font-serif)", "Georgia", "serif"],

@@ -3,6 +3,7 @@ import { useMutation } from "@tanstack/react-query";
 import { toast } from "sonner";
 import type { AdminProjectSummary, AdminTeamMember } from "@/integrations/supabase/admin";
 import { PROJECT_STAGES, createProject, stageLabel, updateProject, type ProjectStage } from "@/integrations/supabase/execution";
+import { accentBorder, accentText, projectStageAccent } from "@/lib/statusColors";
 import ProjectDetail from "./ProjectDetail";
 
 const formatDate = (value: string | null) => (value ? new Date(value).toLocaleDateString() : "-");
@@ -187,7 +188,7 @@ const AdminExecution = ({
                   <select
                     defaultValue={project.stage}
                     onChange={(e) => stageMutation.mutate({ projectId: project.id, stage: e.target.value as ProjectStage })}
-                    className="border border-border bg-background px-2 py-1"
+                    className={`border bg-background px-2 py-1 font-medium ${accentBorder(projectStageAccent(project.stage))} ${accentText(projectStageAccent(project.stage))}`}
                   >
                     {PROJECT_STAGES.map((s) => (
                       <option key={s.value} value={s.value}>{s.label}</option>

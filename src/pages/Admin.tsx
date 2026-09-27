@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import AdminSalesInsights from "@/components/admin/AdminSalesInsights";
 import AdminExecution from "@/components/admin/AdminExecution";
 import { createProject, updateLeadStatus } from "@/integrations/supabase/execution";
+import { accentBorder, accentText, accentTopBar, leadStatusAccent } from "@/lib/statusColors";
 
 type AdminTab = "overview" | "sales" | "execution";
 
@@ -317,7 +318,9 @@ const Admin = () => {
                 key={value}
                 onClick={() => setTab(value)}
                 className={`px-4 py-3 text-xs uppercase tracking-[0.2em] border-b-2 -mb-px transition-colors ${
-                  tab === value ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                  tab === value
+                    ? "border-[hsl(var(--clay))] text-[hsl(var(--wood))]"
+                    : "border-transparent text-muted-foreground hover:text-foreground"
                 }`}
               >
                 {label}
@@ -338,11 +341,11 @@ const Admin = () => {
           {tab === "overview" && (
           <>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
-            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.orders}</p></div>
-            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Paid Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.paidOrders}</p></div>
-            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Consultancy</p><p className="text-3xl font-serif mt-2">{data.metrics.consultancyRequests}</p></div>
-            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Contact Messages</p><p className="text-3xl font-serif mt-2">{data.metrics.contactMessages}</p></div>
-            <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Subscribers</p><p className="text-3xl font-serif mt-2">{data.metrics.subscribers}</p></div>
+            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("neutral")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Orders</p><p className={`text-3xl font-serif mt-2 ${accentText("neutral")}`}>{data.metrics.orders}</p></div>
+            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("success")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Paid Orders</p><p className={`text-3xl font-serif mt-2 ${accentText("success")}`}>{data.metrics.paidOrders}</p></div>
+            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("progress")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Consultancy</p><p className={`text-3xl font-serif mt-2 ${accentText("progress")}`}>{data.metrics.consultancyRequests}</p></div>
+            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("caution")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Contact Messages</p><p className={`text-3xl font-serif mt-2 ${accentText("caution")}`}>{data.metrics.contactMessages}</p></div>
+            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("neutral")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Subscribers</p><p className={`text-3xl font-serif mt-2 ${accentText("neutral")}`}>{data.metrics.subscribers}</p></div>
           </div>
 
           <div className="mb-10">
@@ -563,7 +566,7 @@ const Admin = () => {
                       <select
                         defaultValue={item.status}
                         onChange={(e) => updateLeadStatusMutation.mutate({ id: item.id, status: e.target.value as "open" | "converted" | "lost" })}
-                        className="border border-border bg-background px-2 py-1 text-xs"
+                        className={`border bg-background px-2 py-1 text-xs font-medium ${accentBorder(leadStatusAccent(item.status))} ${accentText(leadStatusAccent(item.status))}`}
                       >
                         <option value="open">Open</option>
                         <option value="converted">Converted</option>

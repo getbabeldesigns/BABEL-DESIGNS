@@ -62,6 +62,16 @@
     --linen: 42 30% 94%;
     --charcoal: 30 10% 18%;
 
+    /* Admin dashboard accent roles — muted, on-brand status/stage colors
+       (used for stat-tile accents, stage badges and lead-status dots), never
+       the site's generic red/green/amber: each is a darker, more saturated
+       step of the same warm family as --stone/--clay/--wood so status always
+       reads as "this brand's dashboard", not a stock admin template. */
+    --accent-neutral: 30 8% 45%;
+    --accent-progress: 25 40% 42%;
+    --accent-caution: 38 60% 40%;
+    --accent-success: 140 22% 28%;
+
     /* Typography */
     --font-serif: 'Crimson Text', Georgia, serif;
     --font-sans: 'Lato', 'Inter', system-ui, sans-serif;
@@ -118,6 +128,12 @@
     --sidebar-accent-foreground: 40 15% 90%;
     --sidebar-border: 30 8% 18%;
     --sidebar-ring: 40 15% 70%;
+
+    /* Same roles, stepped lighter for legibility on the dark surface. */
+    --accent-neutral: 30 8% 65%;
+    --accent-progress: 25 40% 62%;
+    --accent-caution: 38 60% 60%;
+    --accent-success: 140 22% 55%;
   }
 }
 

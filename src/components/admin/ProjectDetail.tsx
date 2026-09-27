@@ -17,6 +17,7 @@ import {
   uploadProjectInspirationImage,
   type ProjectStage,
 } from "@/integrations/supabase/execution";
+import { accentBorder, accentText, projectStageAccent, type AccentRole } from "@/lib/statusColors";
 
 const formatDate = (value: string | null) => (value ? new Date(value).toLocaleDateString() : "-");
 const formatDateTime = (value: string) => new Date(value).toLocaleString();
@@ -26,6 +27,13 @@ const BUCKET_LABELS: Record<string, string> = {
   current: "Due Soon",
   upcoming: "Upcoming",
   done: "Done",
+};
+
+const BUCKET_ACCENT: Record<string, AccentRole> = {
+  delayed: "critical",
+  current: "caution",
+  upcoming: "progress",
+  done: "success",
 };
 
 // Project Summary + Notes + Timeline + Documents, combined — Summary is
@@ -190,7 +198,7 @@ const ProjectDetail = ({
           <select
             defaultValue={project.stage}
             onChange={(e) => stageMutation.mutate(e.target.value as ProjectStage)}
-            className="border border-border bg-background px-3 py-2 text-sm"
+            className={`border bg-background px-3 py-2 text-sm font-medium ${accentBorder(projectStageAccent(project.stage))} ${accentText(projectStageAccent(project.stage))}`}
           >
             {PROJECT_STAGES.map((s) => (<option key={s.value} value={s.value}>{s.label}</option>))}
           </select>
@@ -198,9 +206,9 @@ const ProjectDetail = ({
         <div className="grid grid-cols-2 gap-4 text-sm md:grid-cols-6">
           <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Start</p><p>{formatDate(project.tentative_start_date)}</p></div>
           <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Handover</p><p>{formatDate(project.tentative_handover_date)}</p></div>
-          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Delayed</p><p>{timelineSummary.delayed}</p></div>
-          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Due Soon</p><p>{timelineSummary.current}</p></div>
-          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Upcoming</p><p>{timelineSummary.upcoming}</p></div>
+          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Delayed</p><p className={`font-medium ${accentText("critical")}`}>{timelineSummary.delayed}</p></div>
+          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Due Soon</p><p className={`font-medium ${accentText("caution")}`}>{timelineSummary.current}</p></div>
+          <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Upcoming</p><p className={`font-medium ${accentText("progress")}`}>{timelineSummary.upcoming}</p></div>
           <div><p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Notes</p><p>{notes.length}</p></div>
         </div>
       </div>
@@ -305,7 +313,7 @@ const ProjectDetail = ({
               if (bucketTasks.length === 0) return null;
               return (
                 <div key={bucket}>
-                  <p className="mb-2 text-xs uppercase tracking-[0.25em] text-muted-foreground">{BUCKET_LABELS[bucket]}</p>
+                  <p className={`mb-2 text-xs uppercase tracking-[0.25em] font-medium ${accentText(BUCKET_ACCENT[bucket])}`}>{BUCKET_LABELS[bucket]}</p>
                   <div className="space-y-2">
                     {bucketTasks.map((task) => (
                       <label key={task.id} className="flex items-center justify-between gap-3 border border-border bg-card p-3 text-sm">
