@@ -215,3 +215,128 @@ drop policy if exists "Public read catalog images" on storage.objects;
 create policy "Public read catalog images"
   on storage.objects for select
   using (bucket_id = 'catalog-images');
+
+-- ============================================================================
+-- Execution suite: projects, notes/remarks, timeline tasks, documents, and
+-- the mapping table a future Client Portal will use for per-client access.
+-- Added for the "Project & Quotation Platform" build (see the requirements
+-- doc) — everything below follows admin_users' pattern: RLS enabled, no
+-- policies, so only the service-role key (used inside edge functions, which
+-- gate on admin_users themselves) can read or write these tables. Real
+-- client-facing RLS policies get added once the Client Portal's own pages
+-- are built (client_project_access exists now so that work isn't blocked on
+-- a schema change later).
+-- ============================================================================
+
+-- A lead's outcome for the Sales — Lead Insights stat boxes. Existing rows
+-- backfill to 'open' via the column default.
+alter table public.consultancy_requests add column if not exists status text not null default 'open';
+alter table public.consultancy_requests drop constraint if exists consultancy_requests_status_check;
+alter table public.consultancy_requests add constraint consultancy_requests_status_check
+  check (status in ('open', 'converted', 'lost'));
+
+-- Team member directory: reuses admin_users (today, everyone who can sign
+-- into the dashboard is an admin — see the "Roles" open question in the
+-- requirements doc for the lighter-role option this may need later) rather
+-- than a second table, so mention-notifications and the @mention picker
+-- have a name/email/phone to work from without a new join.
+alter table public.admin_users add column if not exists full_name text;
+alter table public.admin_users add column if not exists email text;
+alter table public.admin_users add column if not exists phone text;
+
+create table if not exists public.projects (
+  id uuid primary key default gen_random_uuid(),
+  consultancy_request_id uuid references public.consultancy_requests(id) on delete set null,
+  client_name text not null,
+  client_phone text,
+  client_email text,
+  project_name text not null,
+  stage text not null default 'just_started',
+  owner_user_id uuid references auth.users(id) on delete set null,
+  assigned_mailbox text,
+  tentative_start_date date,
+  tentative_handover_date date,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.projects drop constraint if exists projects_stage_check;
+alter table public.projects add constraint projects_stage_check
+  check (stage in (
+    'just_started', 'planning', 'executed', 'production', 'on_hold', 'cancelled',
+    'near_completing', 'settlement_pending', 'retention_pending', 'settled_closed', 'jms_pending'
+  ));
+
+-- One feed covers both "project notes" and the client-visibility-toggled
+-- "remarks" from the requirements doc (see the Open Questions note on that) —
+-- client_visible is that toggle, defaulting to hidden.
+create table if not exists public.project_notes (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  author_user_id uuid references auth.users(id) on delete set null,
+  body text not null,
+  mentioned_user_ids uuid[] not null default '{}',
+  client_visible boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.project_tasks (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  title text not null,
+  due_date date not null,
+  done boolean not null default false,
+  assignee_user_id uuid references auth.users(id) on delete set null,
+  client_visible boolean not null default false,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists public.project_documents (
+  id uuid primary key default gen_random_uuid(),
+  project_id uuid not null references public.projects(id) on delete cascade,
+  folder text not null default 'General',
+  file_name text not null,
+  file_url text not null,
+  kind text not null default 'file',
+  uploaded_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now()
+);
+
+alter table public.project_documents drop constraint if exists project_documents_kind_check;
+alter table public.project_documents add constraint project_documents_kind_check
+  check (kind in ('file', 'link'));
+
+-- Not used by anything yet (the Client Portal itself is next up), but
+-- created now so that build isn't also a schema migration later.
+create table if not exists public.client_project_access (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references auth.users(id) on delete cascade,
+  project_id uuid not null references public.projects(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  unique (user_id, project_id)
+);
+
+create index if not exists idx_projects_stage on public.projects(stage);
+create index if not exists idx_projects_owner on public.projects(owner_user_id);
+create index if not exists idx_project_notes_project_id on public.project_notes(project_id, created_at desc);
+create index if not exists idx_project_tasks_project_id on public.project_tasks(project_id, due_date);
+create index if not exists idx_project_documents_project_id on public.project_documents(project_id, folder);
+create index if not exists idx_client_project_access_user on public.client_project_access(user_id);
+create index if not exists idx_consultancy_status on public.consultancy_requests(status);
+
+alter table public.projects enable row level security;
+alter table public.project_notes enable row level security;
+alter table public.project_tasks enable row level security;
+alter table public.project_documents enable row level security;
+alter table public.client_project_access enable row level security;
+
+-- Private bucket for project documents (PDFs, DWG, images, etc.) — unlike
+-- catalog-images this is NOT public: these can be client project files, so
+-- access only ever happens through the admin-project-documents edge
+-- function (service-role key + a short-lived signed URL per file), never a
+-- public URL. No storage.objects policy is added, same reasoning as
+-- admin_users: RLS is on with zero policies, so only the service role can
+-- touch it.
+insert into storage.buckets (id, name, public)
+values ('project-documents', 'project-documents', false)
+on conflict (id) do nothing;

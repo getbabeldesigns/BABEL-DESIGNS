@@ -13,6 +13,11 @@ import {
 import { getCurrentUser, onAuthChange, signOutUser, startOAuthSignIn } from "@/integrations/supabase/auth";
 import { isSupabaseConfigured } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import AdminSalesInsights from "@/components/admin/AdminSalesInsights";
+import AdminExecution from "@/components/admin/AdminExecution";
+import { createProject, updateLeadStatus } from "@/integrations/supabase/execution";
+
+type AdminTab = "overview" | "sales" | "execution";
 
 const formatDate = (iso: string) => new Date(iso).toLocaleString();
 
@@ -31,6 +36,7 @@ const Admin = () => {
   const [user, setUser] = useState<User | null>(null);
   const [authLoading, setAuthLoading] = useState(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
+  const [tab, setTab] = useState<AdminTab>("overview");
 
   const [collectionEdit, setCollectionEdit] = useState<Record<string, { tagline: string; description: string; heroImageUrl: string }>>({});
   const [productEdit, setProductEdit] = useState<Record<string, { imageUrl: string; active: boolean }>>({});
@@ -133,6 +139,31 @@ const Admin = () => {
       const message = error instanceof Error ? error.message : "Failed to update collection.";
       toast.error(message);
     },
+  });
+
+  const updateLeadStatusMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "open" | "converted" | "lost" }) => updateLeadStatus(id, status),
+    onSuccess: () => {
+      toast.success("Lead status updated.");
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Failed to update lead status."),
+  });
+
+  const convertLeadMutation = useMutation({
+    mutationFn: (lead: { id: string; name: string; email: string }) =>
+      createProject({
+        clientName: lead.name,
+        clientEmail: lead.email,
+        projectName: `${lead.name} — New Project`,
+        consultancyRequestId: lead.id,
+      }),
+    onSuccess: () => {
+      toast.success("Converted to a project — see the Execution tab.");
+      setTab("execution");
+      queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] });
+    },
+    onError: (error) => toast.error(error instanceof Error ? error.message : "Failed to convert lead."),
   });
 
   const updateProductMutation = useMutation({
@@ -276,6 +307,36 @@ const Admin = () => {
             </div>
           </div>
 
+          <div className="mb-10 flex gap-2 border-b border-border">
+            {([
+              ["overview", "Overview"],
+              ["sales", "Sales — Lead Insights"],
+              ["execution", "Execution"],
+            ] as const).map(([value, label]) => (
+              <button
+                key={value}
+                onClick={() => setTab(value)}
+                className={`px-4 py-3 text-xs uppercase tracking-[0.2em] border-b-2 -mb-px transition-colors ${
+                  tab === value ? "border-foreground text-foreground" : "border-transparent text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {tab === "sales" && <AdminSalesInsights metrics={data.metrics} />}
+
+          {tab === "execution" && (
+            <AdminExecution
+              projects={data.projects ?? []}
+              teamMembers={data.teamMembers ?? []}
+              onChanged={() => queryClient.invalidateQueries({ queryKey: ["admin-dashboard", user?.id] })}
+            />
+          )}
+
+          {tab === "overview" && (
+          <>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.orders}</p></div>
             <div className="border border-border p-5 bg-card"><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Paid Orders</p><p className="text-3xl font-serif mt-2">{data.metrics.paidOrders}</p></div>
@@ -498,6 +559,24 @@ const Admin = () => {
                       <p className="text-sm text-muted-foreground">Format: {item.consultation_format}</p>
                     )}
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <select
+                        defaultValue={item.status}
+                        onChange={(e) => updateLeadStatusMutation.mutate({ id: item.id, status: e.target.value as "open" | "converted" | "lost" })}
+                        className="border border-border bg-background px-2 py-1 text-xs"
+                      >
+                        <option value="open">Open</option>
+                        <option value="converted">Converted</option>
+                        <option value="lost">Lost</option>
+                      </select>
+                      <button
+                        onClick={() => convertLeadMutation.mutate({ id: item.id, name: item.name, email: item.email })}
+                        disabled={convertLeadMutation.isPending}
+                        className="border border-foreground/40 px-3 py-1 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+                      >
+                        Convert to Project
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -530,6 +609,8 @@ const Admin = () => {
               </div>
             </div>
           </div>
+          </>
+          )}
         </div>
       </section>
     </div>

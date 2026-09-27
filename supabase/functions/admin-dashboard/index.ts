@@ -80,6 +80,8 @@ Deno.serve(async (request: Request) => {
       subscribersResult,
       collectionsResult,
       productsResult,
+      projectsResult,
+      teamMembersResult,
       // True totals via `count: 'exact', head: true` (no rows returned, just
       // the count) so the dashboard's KPI tiles reflect the whole table, not
       // just the most-recent 20 rows fetched above for the list views.
@@ -88,6 +90,10 @@ Deno.serve(async (request: Request) => {
       totalConsultancyResult,
       totalContactMessagesResult,
       totalSubscribersResult,
+      // Sales — Lead Insights stat boxes: consultancy_requests.status buckets.
+      openLeadsResult,
+      convertedLeadsResult,
+      lostLeadsResult,
     ] = await Promise.all([
       supabase
         .from("orders")
@@ -96,7 +102,7 @@ Deno.serve(async (request: Request) => {
         .limit(20),
       supabase
         .from("consultancy_requests")
-        .select("id,name,email,project_type,preferred_date,preferred_slot,consultation_format,created_at")
+        .select("id,name,email,project_type,preferred_date,preferred_slot,consultation_format,status,created_at")
         .order("created_at", { ascending: false })
         .limit(20),
       supabase
@@ -117,6 +123,14 @@ Deno.serve(async (request: Request) => {
         .from("products")
         .select("id,slug,name,active,image_url")
         .order("sort_order", { ascending: true }),
+      supabase
+        .from("projects")
+        .select(
+          "id,client_name,client_phone,client_email,project_name,stage,owner_user_id,assigned_mailbox,tentative_start_date,tentative_handover_date,created_at",
+        )
+        .order("created_at", { ascending: false })
+        .limit(200),
+      supabase.from("admin_users").select("user_id, full_name, email"),
       supabase.from("orders").select("id", { count: "exact", head: true }),
       supabase
         .from("orders")
@@ -125,6 +139,9 @@ Deno.serve(async (request: Request) => {
       supabase.from("consultancy_requests").select("id", { count: "exact", head: true }),
       supabase.from("contact_messages").select("id", { count: "exact", head: true }),
       supabase.from("studio_dispatch_subscribers").select("id", { count: "exact", head: true }),
+      supabase.from("consultancy_requests").select("id", { count: "exact", head: true }).eq("status", "open"),
+      supabase.from("consultancy_requests").select("id", { count: "exact", head: true }).eq("status", "converted"),
+      supabase.from("consultancy_requests").select("id", { count: "exact", head: true }).eq("status", "lost"),
     ]);
 
     for (const [label, result] of [
@@ -134,6 +151,7 @@ Deno.serve(async (request: Request) => {
       ["studio_dispatch_subscribers", subscribersResult],
       ["collections", collectionsResult],
       ["products", productsResult],
+      ["projects", projectsResult],
     ] as const) {
       if (result.error) {
         console.error(`admin-dashboard: failed to load ${label}`, result.error);
@@ -146,6 +164,12 @@ Deno.serve(async (request: Request) => {
     const subscribers = subscribersResult.data ?? [];
     const collections = collectionsResult.data ?? [];
     const products = productsResult.data ?? [];
+    const projects = projectsResult.data ?? [];
+    const teamMembers = (teamMembersResult.data ?? []).map((row) => ({
+      id: row.user_id,
+      name: row.full_name ?? row.email ?? "Unknown",
+      email: row.email,
+    }));
 
     const metrics = {
       orders: totalOrdersResult.count ?? 0,
@@ -153,6 +177,10 @@ Deno.serve(async (request: Request) => {
       consultancyRequests: totalConsultancyResult.count ?? 0,
       contactMessages: totalContactMessagesResult.count ?? 0,
       subscribers: totalSubscribersResult.count ?? 0,
+      leadsGenerated: totalConsultancyResult.count ?? 0,
+      leadsOpen: openLeadsResult.count ?? 0,
+      leadsConverted: convertedLeadsResult.count ?? 0,
+      leadsLost: lostLeadsResult.count ?? 0,
     };
 
     return new Response(
@@ -164,6 +192,8 @@ Deno.serve(async (request: Request) => {
         subscribers,
         collections,
         products,
+        projects,
+        teamMembers,
       }),
       {
         headers: { ...corsHeaders, "Content-Type": "application/json" },

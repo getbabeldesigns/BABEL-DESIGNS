@@ -18,6 +18,7 @@ export interface AdminConsultancy {
   preferred_date: string | null;
   preferred_slot: string | null;
   consultation_format: string | null;
+  status: "open" | "converted" | "lost";
   created_at: string;
 }
 
@@ -53,6 +54,26 @@ export interface AdminProduct {
   image_url: string | null;
 }
 
+export interface AdminProjectSummary {
+  id: string;
+  client_name: string;
+  client_phone: string | null;
+  client_email: string | null;
+  project_name: string;
+  stage: string;
+  owner_user_id: string | null;
+  assigned_mailbox: string | null;
+  tentative_start_date: string | null;
+  tentative_handover_date: string | null;
+  created_at: string;
+}
+
+export interface AdminTeamMember {
+  id: string;
+  name: string;
+  email: string | null;
+}
+
 export interface AdminDashboardResponse {
   metrics: {
     orders: number;
@@ -60,6 +81,10 @@ export interface AdminDashboardResponse {
     consultancyRequests: number;
     contactMessages: number;
     subscribers: number;
+    leadsGenerated: number;
+    leadsOpen: number;
+    leadsConverted: number;
+    leadsLost: number;
   };
   orders: AdminOrder[];
   consultancyRequests: AdminConsultancy[];
@@ -67,6 +92,8 @@ export interface AdminDashboardResponse {
   subscribers: AdminSubscriber[];
   collections: AdminCollection[];
   products: AdminProduct[];
+  projects: AdminProjectSummary[];
+  teamMembers: AdminTeamMember[];
 }
 
 // Thrown instead of a raw supabase-js error whenever an admin edge function
@@ -95,7 +122,10 @@ export class AdminAuthError extends Error {
 // "not authorized" until they retried. Fetching the access token ourselves
 // with getAccessToken() and attaching it explicitly closes that gap: whatever
 // session that call resolves to is exactly what gets sent, every time.
-const invokeAdmin = async <T>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
+// Exported so other admin-only integrations (execution.ts, for the
+// Execution/Sales tabs) can reuse the same auth-aware invoke instead of
+// duplicating the token-fetch-and-attach logic above.
+export const invokeAdmin = async <T>(functionName: string, body?: Record<string, unknown>): Promise<T> => {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     throw new AdminAuthError("unauthenticated", "You're not signed in.");
@@ -155,7 +185,9 @@ export const updateAdminProduct = async (input: {
     ...input,
   });
 
-const readFileAsBase64 = (file: File): Promise<string> =>
+// Exported for execution.ts's document upload, which needs the same
+// data:-URL-to-base64-payload conversion as the image upload below.
+export const readFileAsBase64 = (file: File): Promise<string> =>
   new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
