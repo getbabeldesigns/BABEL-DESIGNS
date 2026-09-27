@@ -15,10 +15,13 @@ import { isSupabaseConfigured } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import AdminSalesInsights from "@/components/admin/AdminSalesInsights";
 import AdminExecution from "@/components/admin/AdminExecution";
+import AdminShell, { type AdminTab } from "@/components/admin/AdminShell";
+import IconStatCard from "@/components/admin/IconStatCard";
+import MetricBarChart, { type MetricBarDatum } from "@/components/admin/MetricBarChart";
+import RatioRing from "@/components/admin/RatioRing";
 import { createProject, updateLeadStatus } from "@/integrations/supabase/execution";
-import { accentBorder, accentText, accentTopBar, leadStatusAccent } from "@/lib/statusColors";
-
-type AdminTab = "overview" | "sales" | "execution";
+import { accentBorder, accentText, leadStatusAccent } from "@/lib/statusColors";
+import { ShoppingBag, CheckCircle2, MessageCircle, Mail, Users } from "lucide-react";
 
 const formatDate = (iso: string) => new Date(iso).toLocaleString();
 
@@ -250,25 +253,24 @@ const Admin = () => {
 
   if (!user) {
     return (
-      <div className="min-h-screen pt-48 md:pt-52">
-        <section className="section-padding pt-0">
-          <div className="container-editorial max-w-lg">
-            <h1 className="font-serif text-4xl mb-6">Admin Access</h1>
-            <div className="space-y-4 border border-border bg-card p-6">
-              <p className="text-sm text-muted-foreground">
-                Sign in with the Google account that's been granted admin access to manage orders,
-                collections, products and requests.
-              </p>
-              <button
-                onClick={handleSignIn}
-                disabled={isSigningIn}
-                className="w-full border border-foreground/40 py-3 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors disabled:opacity-60"
-              >
-                {isSigningIn ? "Connecting..." : "Sign in with Google"}
-              </button>
-            </div>
+      <div className="flex min-h-screen items-center justify-center bg-background px-6">
+        <div className="w-full max-w-md rounded-2xl border border-border bg-card p-8 shadow-sm">
+          <div className="mb-6 flex h-11 w-11 items-center justify-center rounded-xl bg-[hsl(var(--clay))] font-serif text-lg text-[hsl(var(--charcoal))]">
+            B
           </div>
-        </section>
+          <h1 className="mb-2 font-serif text-3xl">Admin Access</h1>
+          <p className="mb-6 text-sm text-muted-foreground">
+            Sign in with the Google account that's been granted admin access to manage orders,
+            collections, products and requests.
+          </p>
+          <button
+            onClick={handleSignIn}
+            disabled={isSigningIn}
+            className="w-full rounded-xl bg-[hsl(var(--wood))] py-3 text-xs uppercase tracking-[0.2em] text-white transition-opacity hover:opacity-90 disabled:opacity-60"
+          >
+            {isSigningIn ? "Connecting..." : "Sign in with Google"}
+          </button>
+        </div>
       </div>
     );
   }
@@ -297,37 +299,7 @@ const Admin = () => {
   }
 
   return (
-    <div className="min-h-screen pt-48 md:pt-52">
-      <section className="section-padding pt-0">
-        <div className="container-editorial">
-          <div className="mb-8 flex items-center justify-between">
-            <h1 className="font-serif text-4xl md:text-5xl">Admin Dashboard</h1>
-            <div className="flex items-center gap-3">
-              <span className="text-xs text-muted-foreground">{user.email}</span>
-              <button onClick={handleSignOut} className="border border-border px-4 py-2 text-xs uppercase tracking-[0.2em]">Sign out</button>
-            </div>
-          </div>
-
-          <div className="mb-10 flex gap-2 border-b border-border">
-            {([
-              ["overview", "Overview"],
-              ["sales", "Sales — Lead Insights"],
-              ["execution", "Execution"],
-            ] as const).map(([value, label]) => (
-              <button
-                key={value}
-                onClick={() => setTab(value)}
-                className={`px-4 py-3 text-xs uppercase tracking-[0.2em] border-b-2 -mb-px transition-colors ${
-                  tab === value
-                    ? "border-[hsl(var(--clay))] text-[hsl(var(--wood))]"
-                    : "border-transparent text-muted-foreground hover:text-foreground"
-                }`}
-              >
-                {label}
-              </button>
-            ))}
-          </div>
-
+    <AdminShell tab={tab} onTabChange={setTab} userEmail={user.email ?? ""} onSignOut={handleSignOut}>
           {tab === "sales" && <AdminSalesInsights metrics={data.metrics} />}
 
           {tab === "execution" && (
@@ -340,17 +312,35 @@ const Admin = () => {
 
           {tab === "overview" && (
           <>
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-12">
-            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("neutral")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Orders</p><p className={`text-3xl font-serif mt-2 ${accentText("neutral")}`}>{data.metrics.orders}</p></div>
-            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("success")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Paid Orders</p><p className={`text-3xl font-serif mt-2 ${accentText("success")}`}>{data.metrics.paidOrders}</p></div>
-            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("progress")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Consultancy</p><p className={`text-3xl font-serif mt-2 ${accentText("progress")}`}>{data.metrics.consultancyRequests}</p></div>
-            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("caution")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Contact Messages</p><p className={`text-3xl font-serif mt-2 ${accentText("caution")}`}>{data.metrics.contactMessages}</p></div>
-            <div className={`relative overflow-hidden border border-border p-5 bg-card ${accentTopBar("neutral")}`}><p className="text-xs uppercase tracking-[0.25em] text-muted-foreground">Subscribers</p><p className={`text-3xl font-serif mt-2 ${accentText("neutral")}`}>{data.metrics.subscribers}</p></div>
+          <div className="mb-6 grid grid-cols-2 gap-4 md:grid-cols-5">
+            <IconStatCard icon={ShoppingBag} label="Orders" value={data.metrics.orders} role="neutral" />
+            <IconStatCard icon={CheckCircle2} label="Paid Orders" value={data.metrics.paidOrders} role="success" />
+            <IconStatCard icon={MessageCircle} label="Consultancy" value={data.metrics.consultancyRequests} role="progress" />
+            <IconStatCard icon={Mail} label="Contact Messages" value={data.metrics.contactMessages} role="caution" />
+            <IconStatCard icon={Users} label="Subscribers" value={data.metrics.subscribers} role="neutral" />
+          </div>
+
+          <div className="mb-12 grid grid-cols-1 gap-4 lg:grid-cols-3">
+            <div className="rounded-2xl border border-border bg-card p-5 shadow-sm lg:col-span-2">
+              <p className="mb-3 text-xs uppercase tracking-[0.2em] text-muted-foreground">Activity at a Glance</p>
+              <MetricBarChart
+                data={[
+                  { label: "Orders", value: data.metrics.orders, role: "neutral" },
+                  { label: "Paid", value: data.metrics.paidOrders, role: "success" },
+                  { label: "Consultancy", value: data.metrics.consultancyRequests, role: "progress" },
+                  { label: "Contact", value: data.metrics.contactMessages, role: "caution" },
+                  { label: "Subscribers", value: data.metrics.subscribers, role: "neutral" },
+                ]}
+              />
+            </div>
+            <div className="flex items-center justify-center rounded-2xl border border-border bg-card p-5 shadow-sm">
+              <RatioRing value={data.metrics.paidOrders} total={data.metrics.orders} label="Orders Paid" role="success" />
+            </div>
           </div>
 
           <div className="mb-10">
             <h2 className="font-serif text-2xl mb-4">Recent Orders</h2>
-            <div className="overflow-x-auto border border-border">
+            <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
               <table className="w-full text-sm">
                 <thead className="bg-muted/50">
                   <tr>
@@ -404,7 +394,7 @@ const Admin = () => {
             <h2 className="font-serif text-2xl mb-4">Collections Content</h2>
             <div className="space-y-4">
               {collectionModel.map((collection) => (
-                <div key={collection.id} className="border border-border bg-card p-4">
+                <div key={collection.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                   <p className="mb-3 font-serif text-xl">{collection.name}</p>
                   <input
                     value={collection.edit.tagline}
@@ -479,7 +469,7 @@ const Admin = () => {
             <h2 className="font-serif text-2xl mb-4">Products Draft / Publish</h2>
             <div className="space-y-3">
               {productModel.map((product) => (
-                <div key={product.id} className="border border-border bg-card p-4">
+                <div key={product.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                   <div className="mb-3 flex items-center justify-between gap-4">
                     <div>
                       <p className="font-serif text-lg">{product.name}</p>
@@ -549,7 +539,7 @@ const Admin = () => {
               <h2 className="font-serif text-2xl mb-4">Recent Consultancy Requests</h2>
               <div className="space-y-3">
                 {(data.consultancyRequests ?? []).map((item) => (
-                  <div key={item.id} className="border border-border p-4 bg-card">
+                  <div key={item.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                     <p className="font-serif text-lg">{item.name}</p>
                     <p className="text-sm text-muted-foreground">{item.email}</p>
                     <p className="text-sm text-muted-foreground">{item.project_type ?? "-"}</p>
@@ -589,7 +579,7 @@ const Admin = () => {
               <h2 className="font-serif text-2xl mb-4">Recent Contact Messages</h2>
               <div className="space-y-3">
                 {(data.contactMessages ?? []).map((item) => (
-                  <div key={item.id} className="border border-border p-4 bg-card">
+                  <div key={item.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                     <p className="font-serif text-lg">{item.name}</p>
                     <p className="text-sm text-muted-foreground">{item.email}</p>
                     <p className="text-sm text-muted-foreground">{item.subject ?? "General question"}</p>
@@ -604,7 +594,7 @@ const Admin = () => {
               <h2 className="font-serif text-2xl mb-4">Recent Subscribers</h2>
               <div className="space-y-3">
                 {(data.subscribers ?? []).map((item) => (
-                  <div key={item.id} className="border border-border p-4 bg-card">
+                  <div key={item.id} className="rounded-2xl border border-border bg-card p-4 shadow-sm">
                     <p className="font-sans">{item.email}</p>
                     <p className="text-xs text-muted-foreground mt-2">{formatDate(item.created_at)}</p>
                   </div>
@@ -614,9 +604,7 @@ const Admin = () => {
           </div>
           </>
           )}
-        </div>
-      </section>
-    </div>
+    </AdminShell>
   );
 };
 

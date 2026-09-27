@@ -85,43 +85,43 @@ const AdminExecution = ({
         <h2 className="font-serif text-2xl">Projects</h2>
         <button
           onClick={() => setShowCreateForm((prev) => !prev)}
-          className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors"
+          className="rounded-lg border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors"
         >
           {showCreateForm ? "Cancel" : "New Project"}
         </button>
       </div>
 
       {showCreateForm && (
-        <div className="mb-6 border border-border bg-card p-4">
+        <div className="mb-6 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <input
               value={form.clientName}
               onChange={(e) => setForm((f) => ({ ...f, clientName: e.target.value }))}
               placeholder="Client name"
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <input
               value={form.projectName}
               onChange={(e) => setForm((f) => ({ ...f, projectName: e.target.value }))}
               placeholder="Project name"
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <input
               value={form.clientPhone}
               onChange={(e) => setForm((f) => ({ ...f, clientPhone: e.target.value }))}
               placeholder="Client phone"
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <input
               value={form.clientEmail}
               onChange={(e) => setForm((f) => ({ ...f, clientEmail: e.target.value }))}
               placeholder="Client email"
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <select
               value={form.ownerUserId}
               onChange={(e) => setForm((f) => ({ ...f, ownerUserId: e.target.value }))}
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             >
               <option value="">Project owner...</option>
               {teamMembers.map((member) => (
@@ -132,7 +132,7 @@ const AdminExecution = ({
               value={form.assignedMailbox}
               onChange={(e) => setForm((f) => ({ ...f, assignedMailbox: e.target.value }))}
               placeholder="Team mailbox assigned to this client"
-              className="border border-border bg-background px-3 py-2 text-sm"
+              className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <div>
               <label className="mb-1 block text-xs uppercase tracking-[0.2em] text-muted-foreground">Tentative start</label>
@@ -140,7 +140,7 @@ const AdminExecution = ({
                 type="date"
                 value={form.tentativeStartDate}
                 onChange={(e) => setForm((f) => ({ ...f, tentativeStartDate: e.target.value }))}
-                className="w-full border border-border bg-background px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
             </div>
             <div>
@@ -149,21 +149,21 @@ const AdminExecution = ({
                 type="date"
                 value={form.tentativeHandoverDate}
                 onChange={(e) => setForm((f) => ({ ...f, tentativeHandoverDate: e.target.value }))}
-                className="w-full border border-border bg-background px-3 py-2 text-sm"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
             </div>
           </div>
           <button
             onClick={() => createMutation.mutate()}
             disabled={!form.clientName || !form.projectName || createMutation.isPending}
-            className="mt-4 border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+            className="mt-4 rounded-lg border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
           >
             {createMutation.isPending ? "Creating..." : "Create Project"}
           </button>
         </div>
       )}
 
-      <div className="overflow-x-auto border border-border">
+      <div className="overflow-x-auto rounded-2xl border border-border bg-card shadow-sm">
         <table className="w-full text-sm">
           <thead className="bg-muted/50">
             <tr>
@@ -201,7 +201,7 @@ const AdminExecution = ({
                 <td className="p-3">
                   <button
                     onClick={() => setSelectedProjectId(project.id)}
-                    className="border border-border px-3 py-1 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors"
+                    className="rounded-lg border border-border px-3 py-1 text-xs uppercase tracking-[0.2em] hover:bg-foreground hover:text-background transition-colors"
                   >
                     Open
                   </button>

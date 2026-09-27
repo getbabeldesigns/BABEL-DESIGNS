@@ -189,7 +189,7 @@ const ProjectDetail = ({
       </button>
 
       {/* Summary */}
-      <div className="mb-8 border border-border bg-card p-5">
+      <div className="mb-8 rounded-2xl border border-border bg-card p-5 shadow-sm">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <div>
             <h2 className="font-serif text-2xl">{project.project_name}</h2>
@@ -217,13 +217,13 @@ const ProjectDetail = ({
         {/* Notes */}
         <div>
           <h3 className="font-serif text-xl mb-3">Notes</h3>
-          <div className="mb-4 border border-border bg-card p-4">
+          <div className="mb-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
             <textarea
               value={noteBody}
               onChange={(e) => setNoteBody(e.target.value)}
               placeholder="Add a note..."
               rows={3}
-              className="mb-2 w-full border border-border bg-background px-3 py-2 text-sm"
+              className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <div className="mb-2 flex flex-wrap gap-3">
               {teamMembers.map((member) => (
@@ -246,7 +246,7 @@ const ProjectDetail = ({
             <button
               onClick={() => noteMutation.mutate()}
               disabled={!noteBody.trim() || noteMutation.isPending}
-              className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+              className="rounded-lg border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
             >
               {noteMutation.isPending ? "Posting..." : "Post Note"}
             </button>
@@ -254,7 +254,7 @@ const ProjectDetail = ({
           <div className="space-y-3">
             {notes.length === 0 && <p className="text-sm text-muted-foreground">No notes yet.</p>}
             {notes.map((note) => (
-              <div key={note.id} className="border border-border bg-card p-3">
+              <div key={note.id} className="rounded-xl border border-border bg-card p-3 shadow-sm">
                 <div className="mb-1 flex items-center justify-between text-xs text-muted-foreground">
                   <span>{note.author_name}</span>
                   <span>{formatDateTime(note.created_at)}</span>
@@ -272,24 +272,24 @@ const ProjectDetail = ({
         {/* Timeline */}
         <div>
           <h3 className="font-serif text-xl mb-3">Timeline</h3>
-          <div className="mb-4 border border-border bg-card p-4">
+          <div className="mb-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
             <input
               value={taskTitle}
               onChange={(e) => setTaskTitle(e.target.value)}
               placeholder="Task title"
-              className="mb-2 w-full border border-border bg-background px-3 py-2 text-sm"
+              className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm"
             />
             <div className="mb-2 grid grid-cols-2 gap-2">
               <input
                 type="date"
                 value={taskDueDate}
                 onChange={(e) => setTaskDueDate(e.target.value)}
-                className="border border-border bg-background px-3 py-2 text-sm"
+                className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <select
                 value={taskAssignee}
                 onChange={(e) => setTaskAssignee(e.target.value)}
-                className="border border-border bg-background px-3 py-2 text-sm"
+                className="rounded-lg border border-border bg-background px-3 py-2 text-sm"
               >
                 <option value="">Assignee...</option>
                 {teamMembers.map((member) => (<option key={member.id} value={member.id}>{member.name}</option>))}
@@ -302,7 +302,7 @@ const ProjectDetail = ({
             <button
               onClick={() => taskMutation.mutate()}
               disabled={!taskTitle.trim() || !taskDueDate || taskMutation.isPending}
-              className="border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+              className="rounded-lg border border-foreground/40 px-4 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
             >
               {taskMutation.isPending ? "Adding..." : "Add Task"}
             </button>
@@ -316,7 +316,7 @@ const ProjectDetail = ({
                   <p className={`mb-2 text-xs uppercase tracking-[0.25em] font-medium ${accentText(BUCKET_ACCENT[bucket])}`}>{BUCKET_LABELS[bucket]}</p>
                   <div className="space-y-2">
                     {bucketTasks.map((task) => (
-                      <label key={task.id} className="flex items-center justify-between gap-3 border border-border bg-card p-3 text-sm">
+                      <label key={task.id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-card p-3 text-sm shadow-sm">
                         <span className="flex items-center gap-2">
                           <input
                             type="checkbox"
@@ -340,12 +340,12 @@ const ProjectDetail = ({
       {/* Documents */}
       <div className="mt-8">
         <h3 className="font-serif text-xl mb-3">Documents</h3>
-        <div className="mb-4 border border-border bg-card p-4">
+        <div className="mb-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <input
             value={docFolder}
             onChange={(e) => setDocFolder(e.target.value || "General")}
             placeholder="Folder (e.g. Drawings, Contracts)"
-            className="mb-2 w-full border border-border bg-background px-3 py-2 text-sm md:w-64"
+            className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm md:w-64"
           />
           <div className="mb-2 grid grid-cols-1 gap-2 md:grid-cols-2">
             <div className="flex gap-2">
@@ -353,18 +353,18 @@ const ProjectDetail = ({
                 value={linkUrl}
                 onChange={(e) => setLinkUrl(e.target.value)}
                 placeholder="Google Drive / external link"
-                className="flex-1 border border-border bg-background px-3 py-2 text-sm"
+                className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <input
                 value={linkName}
                 onChange={(e) => setLinkName(e.target.value)}
                 placeholder="Label (optional)"
-                className="w-32 border border-border bg-background px-3 py-2 text-sm"
+                className="w-32 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <button
                 onClick={() => addLinkMutation.mutate()}
                 disabled={!linkUrl.trim() || addLinkMutation.isPending}
-                className="border border-foreground/40 px-3 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+                className="rounded-lg border border-foreground/40 px-3 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
               >
                 Add Link
               </button>
@@ -378,7 +378,7 @@ const ProjectDetail = ({
                   e.target.value = "";
                   if (file) handleUpload(file);
                 }}
-                className="w-full border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
               />
               {uploading && <p className="mt-1 text-xs text-muted-foreground">Uploading...</p>}
             </div>
@@ -392,7 +392,7 @@ const ProjectDetail = ({
               <p className="mb-2 text-xs uppercase tracking-[0.25em] text-muted-foreground">{folder}</p>
               <div className="space-y-2">
                 {docs.map((doc) => (
-                  <div key={doc.id} className="flex items-center justify-between border border-border bg-card p-3 text-sm">
+                  <div key={doc.id} className="flex items-center justify-between rounded-xl border border-border bg-card p-3 text-sm shadow-sm">
                     <span>{doc.file_name} <span className="text-xs text-muted-foreground">({doc.kind})</span></span>
                     <button onClick={() => handleOpenDocument(doc.id)} className="text-xs uppercase tracking-[0.2em] underline">
                       Open
@@ -410,12 +410,12 @@ const ProjectDetail = ({
           Design" on the client's side). */}
       <div className="mt-8">
         <h3 className="font-serif text-xl mb-3">Client Inspiration Board</h3>
-        <div className="mb-4 border border-border bg-card p-4">
+        <div className="mb-4 rounded-2xl border border-border bg-card p-4 shadow-sm">
           <input
             value={inspCaption}
             onChange={(e) => setInspCaption(e.target.value)}
             placeholder="Caption (optional)"
-            className="mb-2 w-full border border-border bg-background px-3 py-2 text-sm md:w-64"
+            className="mb-2 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm md:w-64"
           />
           <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
             <div className="flex gap-2">
@@ -423,12 +423,12 @@ const ProjectDetail = ({
                 value={inspLinkUrl}
                 onChange={(e) => setInspLinkUrl(e.target.value)}
                 placeholder="Pinterest / Instagram / image link"
-                className="flex-1 border border-border bg-background px-3 py-2 text-sm"
+                className="flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm"
               />
               <button
                 onClick={() => addInspirationLinkMutation.mutate()}
                 disabled={!inspLinkUrl.trim() || addInspirationLinkMutation.isPending}
-                className="border border-foreground/40 px-3 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
+                className="rounded-lg border border-foreground/40 px-3 py-2 text-xs uppercase tracking-[0.2em] disabled:opacity-50"
               >
                 Add Link
               </button>
@@ -443,7 +443,7 @@ const ProjectDetail = ({
                   e.target.value = "";
                   if (file) handleInspirationUpload(file);
                 }}
-                className="w-full border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm disabled:opacity-60"
               />
               {inspUploading && <p className="mt-1 text-xs text-muted-foreground">Uploading...</p>}
             </div>
@@ -453,7 +453,7 @@ const ProjectDetail = ({
         {inspiration.length === 0 && <p className="text-sm text-muted-foreground">Nothing shared yet.</p>}
         <div className="grid grid-cols-2 gap-4 md:grid-cols-4">
           {inspiration.map((item) => (
-            <div key={item.id} className="border border-border bg-card">
+            <div key={item.id} className="overflow-hidden rounded-xl border border-border bg-card">
               {item.kind === "image" ? (
                 <img src={item.url} alt={item.caption ?? ""} className="aspect-square w-full object-cover" />
               ) : (
